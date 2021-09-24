@@ -1,4 +1,6 @@
-package com.example.android_media_player;
+package com.example.android_media_player.MusicPlayer;
+
+import android.net.Uri;
 
 import androidx.documentfile.provider.DocumentFile;
 
@@ -11,5 +13,9 @@ public class Song {
 
     public String getName() {
         return file.getName();
+    }
+
+    public Uri getUri() {
+        return file.getUri();
     }
 }
