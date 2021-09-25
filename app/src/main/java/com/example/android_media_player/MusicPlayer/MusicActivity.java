@@ -93,35 +93,38 @@ public class MusicActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        Intent activityIntent = new Intent(this, MusicActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, OPEN_MUSIC_CODE,
-                activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (currentSong != null) {
+            Intent activityIntent = new Intent(this, MusicActivity.class);
+            PendingIntent contentIntent = PendingIntent.getActivity(this, OPEN_MUSIC_CODE,
+                    activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Intent playBroadcastIntent = new Intent(this, PlayNotificationReceiver.class);
-        PendingIntent playIntent = PendingIntent.getBroadcast(this,
-                PLAY_NOTIFICATION_CODE, playBroadcastIntent, 0);
+            Intent playBroadcastIntent = new Intent(this, PlayNotificationReceiver.class);
+            PendingIntent playIntent = PendingIntent.getBroadcast(this,
+                    PLAY_NOTIFICATION_CODE, playBroadcastIntent, 0);
 
-        Intent previousBroadcastIntent = new Intent(this, PrevSongNotificationReceiver.class);
-        PendingIntent previousIntent = PendingIntent.getBroadcast(this,
-                PREV_NOTIFICATION_CODE, previousBroadcastIntent, 0);
+            Intent previousBroadcastIntent = new Intent(this, PrevSongNotificationReceiver.class);
+            PendingIntent previousIntent = PendingIntent.getBroadcast(this,
+                    PREV_NOTIFICATION_CODE, previousBroadcastIntent, 0);
 
-        Intent nextBroadcastIntent = new Intent(this, NextSongNotificationReceiver.class);
-        PendingIntent nextIntent = PendingIntent.getBroadcast(this,
-                NEXT_NOTIFICATION_CODE, nextBroadcastIntent, 0);
+            Intent nextBroadcastIntent = new Intent(this, NextSongNotificationReceiver.class);
+            PendingIntent nextIntent = PendingIntent.getBroadcast(this,
+                    NEXT_NOTIFICATION_CODE, nextBroadcastIntent, 0);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Music notification");
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Music notification");
 
-        builder.setContentTitle("Music");
-        builder.setContentText(currentSong.getName());
-        builder.setColor(Color.parseColor("#0000ff"));
-        builder.setSmallIcon(R.drawable.ic_notification);
-        builder.addAction(R.mipmap.ic_launcher, "Previous", previousIntent);
-        builder.addAction(R.mipmap.ic_launcher, getNotificationActionString(), playIntent);
-        builder.addAction(R.mipmap.ic_launcher, "Next", nextIntent);
-        builder.setContentIntent(contentIntent);
+            builder.setContentTitle("Music");
+            builder.setContentText(currentSong.getName());
+            builder.setColor(Color.parseColor("#0000ff"));
+            builder.setSmallIcon(R.drawable.ic_notification);
+            builder.addAction(R.mipmap.ic_launcher, "Previous", previousIntent);
+            builder.addAction(R.mipmap.ic_launcher, getNotificationActionString(), playIntent);
+            builder.addAction(R.mipmap.ic_launcher, "Next", nextIntent);
+            builder.setContentIntent(contentIntent);
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(NOTIFICATION_CODE, builder.build());
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            notificationManager.notify(NOTIFICATION_CODE, builder.build());
+        }
+
         super.onPause();
     }
 

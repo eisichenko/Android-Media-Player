@@ -14,6 +14,8 @@ import com.example.android_media_player.R;
 public class PlayNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (MusicActivity.currentSong == null) return;
+
         if (MusicActivity.mediaPlayer.isPlaying()) {
             MusicActivity.mediaPlayer.pause();
         }

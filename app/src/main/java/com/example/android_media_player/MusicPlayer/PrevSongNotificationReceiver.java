@@ -15,6 +15,8 @@ import com.example.android_media_player.R;
 public class PrevSongNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (MusicActivity.currentSong == null) return;
+
         Song prevSong;
 
         if (MusicActivity.songList.size() == 0) return;

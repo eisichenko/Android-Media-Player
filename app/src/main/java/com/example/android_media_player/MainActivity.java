@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.documentfile.provider.DocumentFile;
 
 import com.example.android_media_player.MusicPlayer.MusicActivity;
+import com.example.android_media_player.VideoPlayer.VideoActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,8 +64,8 @@ public class MainActivity extends AppCompatActivity {
             }
             else if (requestCode == REQUEST_CODE_OPEN_VIDEO_FILE) {
                 chosenFile = DocumentFile.fromSingleUri(this, chosenUri);
-                System.out.println("VIDEO");
-                System.out.println(resultData.getData());
+                Intent intent = new Intent(this, VideoActivity.class);
+                startActivity(intent);
             }
 
             super.onActivityResult(requestCode, resultCode, resultData);

@@ -15,6 +15,8 @@ import com.example.android_media_player.R;
 public class NextSongNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (MusicActivity.currentSong == null) return;
+
         if (MusicActivity.songList.size() == 0) return;
 
         MusicActivity.selectedPosition = (MusicActivity.selectedPosition + 1) % MusicActivity.songList.size();
