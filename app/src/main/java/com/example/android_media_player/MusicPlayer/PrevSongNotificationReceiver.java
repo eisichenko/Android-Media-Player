@@ -48,7 +48,7 @@ public class PrevSongNotificationReceiver extends BroadcastReceiver {
 
         try {
             MusicActivity.mediaPlayer.reset();
-            MusicActivity.mediaPlayer.setDataSource(context, prevSong.getUri());
+            MusicActivity.mediaPlayer.setDataSource(prevSong.getPath());
             MusicActivity.mediaPlayer.prepare();
         } catch (Exception e) {
             Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();

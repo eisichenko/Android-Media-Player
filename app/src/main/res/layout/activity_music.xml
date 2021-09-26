@@ -34,10 +34,21 @@
         android:layout_weight="10"
         android:textColor="#000" />
 
+    <TextView
+        android:id="@+id/noneTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:textSize="22sp"
+        android:visibility="gone"
+        android:textColor="#f00"
+        android:layout_gravity="center"
+        android:text="No music"/>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_weight="80"
-        android:layout_height="300dp"
+        android:layout_height="250dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp">
 

@@ -26,7 +26,7 @@ public class NextSongNotificationReceiver extends BroadcastReceiver {
 
         try {
             MusicActivity.mediaPlayer.reset();
-            MusicActivity.mediaPlayer.setDataSource(context, MusicActivity.currentSong.getUri());
+            MusicActivity.mediaPlayer.setDataSource(MusicActivity.currentSong.getPath());
             MusicActivity.mediaPlayer.prepare();
         } catch (Exception e) {
             Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();

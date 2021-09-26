@@ -39,12 +39,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             songItemTextView = itemView.findViewById(R.id.songItemTextView);
 
             itemView.setOnClickListener(v -> {
+                int prevPos = MusicActivity.selectedPosition;
                 MusicActivity.currentSong = songList.get(getAdapterPosition());
                 MusicActivity.playedSongs.push(MusicActivity.currentSong);
                 MusicActivity.selectedPosition = getAdapterPosition();
                 try {
                     MusicActivity.mediaPlayer.reset();
-                    MusicActivity.mediaPlayer.setDataSource(context, MusicActivity.currentSong.getUri());
+                    MusicActivity.mediaPlayer.setDataSource(MusicActivity.currentSong.getPath());
                     MusicActivity.mediaPlayer.prepare();
                 } catch (Exception e) {
                     Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -58,7 +59,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                 MusicActivity.mediaPlayer.start();
                 MusicActivity.handler.post(MusicActivity.runnable);
-                notifyDataSetChanged();
+                notifyItemChanged(prevPos);
+                notifyItemChanged(MusicActivity.selectedPosition);
             });
         }
     }
@@ -93,6 +95,4 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public int getItemCount() {
         return songList.size();
     }
-
-
 }

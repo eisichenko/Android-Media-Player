@@ -2,20 +2,23 @@ package com.example.android_media_player.MusicPlayer;
 
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
 import androidx.documentfile.provider.DocumentFile;
 
 public class Song {
-    private DocumentFile file;
+    private String name;
+    private String path;
 
-    public Song(DocumentFile file) {
-        this.file = file;
+    public Song(String path, String name) {
+        this.path = path;
+        this.name = name;
     }
 
     public String getName() {
-        return file.getName();
+        return name;
     }
 
-    public Uri getUri() {
-        return file.getUri();
+    public String getPath() {
+        return path;
     }
 }
