@@ -25,6 +25,7 @@ public class PrevSongNotificationReceiver extends BroadcastReceiver {
             MusicActivity.selectedPosition--;
             if (MusicActivity.selectedPosition < 0) MusicActivity.selectedPosition = MusicActivity.songList.size() - 1;
             prevSong = MusicActivity.songList.get(MusicActivity.selectedPosition);
+            MusicActivity.playedSongs.push(prevSong);
         }
         else {
             prevSong = MusicActivity.playedSongs.pop();
@@ -76,7 +77,7 @@ public class PrevSongNotificationReceiver extends BroadcastReceiver {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "Music notification");
 
         builder.setContentTitle("Music");
-        builder.setContentText(MusicActivity.currentSong.getName());
+        builder.setContentText(MusicActivity.currentSong.getName() + " (" + (MusicActivity.selectedPosition + 1) + "/" + MusicActivity.songList.size() + ")");
         builder.setColor(Color.parseColor("#0000ff"));
         builder.setSmallIcon(R.drawable.ic_notification);
         builder.addAction(R.mipmap.ic_launcher, "Previous", previousIntent);

@@ -60,6 +60,7 @@ public class MusicActivity extends AppCompatActivity {
     TextView currentTimeTextView;
     TextView totalTimeTextView;
     TextView noneTextView;
+    TextView nowPlayingTextView;
     SeekBar musicSeekBar;
     RecyclerView songsRecyclerView;
     ImageView prevSongImageView;
@@ -86,6 +87,7 @@ public class MusicActivity extends AppCompatActivity {
     float xDown, yDown, xUp, yUp;
 
     static Boolean isAutoplayEnabled = true;
+    static Boolean isListHidden = false;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -126,6 +128,14 @@ public class MusicActivity extends AppCompatActivity {
         }
         else {
             autoplayItem.setTitle("Autoplay: OFF");
+        }
+
+        MenuItem hideListItem = menu.findItem(R.id.hideListMenuItem);
+        if (isListHidden) {
+            hideListItem.setTitle("Show song list");
+        }
+        else {
+            hideListItem.setTitle("Hide song list");
         }
 
         return true;
@@ -215,6 +225,20 @@ public class MusicActivity extends AppCompatActivity {
             }
             return true;
         }
+        else if (itemId == R.id.hideListMenuItem) {
+            isListHidden = !isListHidden;
+
+            MainActivity.settings.edit().putBoolean(MainActivity.HIDE_LIST_CACHE_NAME, isListHidden).apply();
+
+            if (isListHidden) {
+                item.setTitle("Show song list");
+                songsRecyclerView.setVisibility(View.INVISIBLE);
+            }
+            else {
+                item.setTitle("Hide song list");
+                songsRecyclerView.setVisibility(View.VISIBLE);
+            }
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -241,7 +265,7 @@ public class MusicActivity extends AppCompatActivity {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Music notification");
 
             builder.setContentTitle("Music");
-            builder.setContentText(currentSong.getName());
+            builder.setContentText(currentSong.getName() + " (" + (selectedPosition + 1) + "/" + songList.size() + ")");
             builder.setColor(Color.parseColor("#0000ff"));
             builder.setSmallIcon(R.drawable.ic_notification);
             builder.addAction(R.mipmap.ic_launcher, "Previous", previousIntent);
@@ -292,9 +316,22 @@ public class MusicActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        songsRecyclerView.getAdapter().notifyDataSetChanged();
+        if (selectedPosition >= 0) {
+            nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
+        }
+        else {
+            nowPlayingTextView.setText("Now playing: ");
+        }
+        super.onResume();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         isAutoplayEnabled = MainActivity.settings.getBoolean(MainActivity.AUTOPLAY_CACHE_NAME, true);
+        isListHidden = MainActivity.settings.getBoolean(MainActivity.HIDE_LIST_CACHE_NAME, false);
 
         String themeString = MainActivity.settings.getString(MainActivity.THEME_CACHE_NAME, null);
 
@@ -317,6 +354,7 @@ public class MusicActivity extends AppCompatActivity {
         setTitle("Playing music");
 
         songNameTextView = findViewById(R.id.songNameTextView);
+        nowPlayingTextView = findViewById(R.id.nowPlayingTextView);
         songsRecyclerView = findViewById(R.id.songsRecyclerView);
         prevSongImageView = findViewById(R.id.prevSongImageView);
         noneTextView = findViewById(R.id.noneTextView);
@@ -327,6 +365,10 @@ public class MusicActivity extends AppCompatActivity {
         currentTimeTextView = findViewById(R.id.currentTimeTextView);
         totalTimeTextView = findViewById(R.id.totalTimeTextView);
         musicSeekBar = findViewById(R.id.musicSeekBar);
+
+        if (isListHidden) {
+            songsRecyclerView.setVisibility(View.INVISIBLE);
+        }
 
         songNameTextView.setText("None");
 
@@ -485,6 +527,7 @@ public class MusicActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
+            nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
             playImageView.setImageResource(R.drawable.ic_pause);
             musicSeekBar.setMax(MusicActivity.mediaPlayer.getDuration());
             totalTimeTextView.setText(MusicActivity.convertTime(MusicActivity.mediaPlayer.getDuration()));
@@ -518,6 +561,7 @@ public class MusicActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
+            nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
             playImageView.setImageResource(R.drawable.ic_pause);
             musicSeekBar.setMax(MusicActivity.mediaPlayer.getDuration());
             totalTimeTextView.setText(MusicActivity.convertTime(MusicActivity.mediaPlayer.getDuration()));

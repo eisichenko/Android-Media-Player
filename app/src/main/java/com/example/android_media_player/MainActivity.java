@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String AUTOPLAY_CACHE_NAME = "autoplay";
     public static final String THEME_CACHE_NAME = "theme";
     public static final String FOLDER_URI_CACHE_NAME = "folder_uri";
+    public static final String HIDE_LIST_CACHE_NAME = "hide_list";
 
     public static ThemeType currentTheme = ThemeType.DAY;
 

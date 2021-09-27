@@ -27,6 +27,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private SeekBar musicSeekBar;
     private TextView totalTimeTextView;
     private TextView songNameTextView;
+    private TextView nowPlayingTextView;
 
     public RecyclerViewAdapter(ArrayList<Song> songList) {
         this.songList = songList;
@@ -53,6 +54,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
+
+                nowPlayingTextView.setText("Now playing (" + (MusicActivity.selectedPosition + 1) + "/" + songList.size() + "):");
                 playImageView.setImageResource(R.drawable.ic_pause);
                 musicSeekBar.setMax(MusicActivity.mediaPlayer.getDuration());
 
@@ -75,6 +78,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         musicSeekBar = parent.getRootView().findViewById(R.id.musicSeekBar);
         totalTimeTextView = parent.getRootView().findViewById(R.id.totalTimeTextView);
         songNameTextView = parent.getRootView().findViewById(R.id.songNameTextView);
+        nowPlayingTextView = parent.getRootView().findViewById(R.id.nowPlayingTextView);
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_item, parent, false);
         return new ViewHolder(itemView);
     }

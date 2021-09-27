@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.example.android_media_player.MainActivity;
 import com.example.android_media_player.R;
 
 public class NextSongNotificationReceiver extends BroadcastReceiver {
@@ -23,6 +24,7 @@ public class NextSongNotificationReceiver extends BroadcastReceiver {
 
         Song nextSong = MusicActivity.songList.get(MusicActivity.selectedPosition);
         MusicActivity.currentSong = nextSong;
+        MusicActivity.playedSongs.push(MusicActivity.currentSong);
 
         try {
             MusicActivity.mediaPlayer.reset();
@@ -54,7 +56,7 @@ public class NextSongNotificationReceiver extends BroadcastReceiver {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "Music notification");
 
         builder.setContentTitle("Music");
-        builder.setContentText(MusicActivity.currentSong.getName());
+        builder.setContentText(MusicActivity.currentSong.getName() + " (" + (MusicActivity.selectedPosition + 1) + "/" + MusicActivity.songList.size() + ")");
         builder.setColor(Color.parseColor("#0000ff"));
         builder.setSmallIcon(R.drawable.ic_notification);
         builder.addAction(R.mipmap.ic_launcher, "Previous", previousIntent);

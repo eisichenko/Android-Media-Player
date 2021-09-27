@@ -12,4 +12,8 @@
     <item android:name="sort_menu_item"
         android:id="@+id/sortMenuItem"
         android:title="Sort"/>
+
+    <item android:name="hide_list_menu_item"
+        android:id="@+id/hideListMenuItem"
+        android:title="Hide song list"/>
 </menu>
