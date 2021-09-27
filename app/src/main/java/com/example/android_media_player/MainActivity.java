@@ -2,18 +2,25 @@ package com.example.android_media_player;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
@@ -25,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     Button openMusicFolderButton;
     Button openVideoFileButton;
+    Button openLastFolderButton;
+    TextView lastFolderTextView;
 
     public final static int REQUEST_CODE_OPEN_MUSIC_FILE = 0;
     public final static int REQUEST_CODE_OPEN_VIDEO_FILE = 1;
@@ -32,6 +41,14 @@ public class MainActivity extends AppCompatActivity {
 
     public static DocumentFile chosenFile;
     public static Uri chosenUri;
+
+    public static SharedPreferences settings;
+    public static final String APP_PREFERENCES_NAME = "media_player_settings";
+    public static final String AUTOPLAY_CACHE_NAME = "autoplay";
+    public static final String THEME_CACHE_NAME = "theme";
+    public static final String FOLDER_URI_CACHE_NAME = "folder_uri";
+
+    public static ThemeType currentTheme = ThemeType.DAY;
 
     public void chooseMusicFileIntent() {
         Intent intent = new Intent().setAction(Intent.ACTION_OPEN_DOCUMENT_TREE);
@@ -64,7 +81,70 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.themeMenuItem) {
+            if (currentTheme == ThemeType.DAY) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                settings.edit().putString(THEME_CACHE_NAME, ThemeType.NIGHT.toString()).apply();
+                item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_day));
+                currentTheme = ThemeType.NIGHT;
+            }
+            else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                settings.edit().putString(THEME_CACHE_NAME, ThemeType.DAY.toString()).apply();
+                item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_night));
+                currentTheme = ThemeType.DAY;
+            }
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_menu, menu);
+        MenuItem themeMenuItem = menu.findItem(R.id.themeMenuItem);
+
+        if (currentTheme == ThemeType.DAY) {
+            themeMenuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_night));
+        }
+        else {
+            themeMenuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_day));
+        }
+
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
+        settings = getSharedPreferences(APP_PREFERENCES_NAME, Context.MODE_PRIVATE);
+
+        String themeString = settings.getString(THEME_CACHE_NAME, null);
+
+        String uriString = settings.getString(FOLDER_URI_CACHE_NAME, null);
+
+        if (uriString != null) {
+            chosenUri = Uri.parse(uriString);
+            chosenFile = DocumentFile.fromTreeUri(this, chosenUri);
+        }
+
+        if (themeString != null) {
+            if (themeString.equals(ThemeType.DAY.toString())) {
+                currentTheme = ThemeType.DAY;
+                setTheme(R.style.Theme_Day);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            }
+            else {
+                currentTheme = ThemeType.NIGHT;
+                setTheme(R.style.Theme_Night);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            }
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -72,6 +152,12 @@ public class MainActivity extends AppCompatActivity {
 
         openMusicFolderButton = findViewById(R.id.openMusicFolderButton);
         openVideoFileButton = findViewById(R.id.openVideoFileButton);
+        openLastFolderButton = findViewById(R.id.openLastFolderButton);
+        lastFolderTextView = findViewById(R.id.lastFolderTextView);
+
+        if (chosenUri != null && chosenFile != null) {
+            lastFolderTextView.setText("Last music folder: " + chosenFile.getName());
+        }
 
         openMusicFolderButton.setOnClickListener(v -> {
             if (checkPermissions(REQUEST_PERMISSIONS)) {
@@ -82,6 +168,17 @@ public class MainActivity extends AppCompatActivity {
         openVideoFileButton.setOnClickListener(v -> {
             chooseVideoFileIntent();
         });
+
+        openLastFolderButton.setOnClickListener(v -> {
+            if (chosenUri == null) {
+                Toast.makeText(this, "No recent folder", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                chosenFile = DocumentFile.fromTreeUri(this, chosenUri);
+                Intent intent = new Intent(this, MusicActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -91,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (requestCode == REQUEST_CODE_OPEN_MUSIC_FILE) {
                 chosenFile = DocumentFile.fromTreeUri(this, chosenUri);
+                settings.edit().putString(FOLDER_URI_CACHE_NAME, chosenUri.toString()).apply();
                 Intent intent = new Intent(this, MusicActivity.class);
                 startActivity(intent);
             }

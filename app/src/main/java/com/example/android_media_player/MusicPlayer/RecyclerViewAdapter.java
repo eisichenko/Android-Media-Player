@@ -1,8 +1,10 @@
 package com.example.android_media_player.MusicPlayer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,12 +83,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position) {
         Song song = songList.get(position);
         holder.songItemTextView.setText(song.getName());
+
+        TypedValue typedValue = new TypedValue();
+
         if (MusicActivity.selectedPosition != null && position == MusicActivity.selectedPosition) {
-            holder.songItemTextView.setTextColor(Color.parseColor("#000000"));
+            context.getTheme().resolveAttribute(R.attr.main_text_color, typedValue, true);
+
+            holder.songItemTextView.setTextColor(typedValue.data);
             holder.songItemTextView.setTypeface(Typeface.DEFAULT_BOLD);
         }
         else {
-            holder.songItemTextView.setTextColor(Color.parseColor("#444444"));
+            context.getTheme().resolveAttribute(R.attr.blurred_text_color, typedValue, true);
+
+            holder.songItemTextView.setTextColor(typedValue.data);
             holder.songItemTextView.setTypeface(Typeface.DEFAULT);
         }
     }

@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -43,11 +44,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.MainActivity;
 import com.example.android_media_player.R;
+import com.example.android_media_player.ThemeType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Stack;
 
@@ -83,11 +86,6 @@ public class MusicActivity extends AppCompatActivity {
     float xDown, yDown, xUp, yUp;
 
     static Boolean isAutoplayEnabled = true;
-
-    public static SharedPreferences settings;
-    public final String APP_PREFERENCES_NAME = "media_player_settings";
-    public final String AUTOPLAY_CACHE_NAME = "autoplay";
-
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -205,7 +203,7 @@ public class MusicActivity extends AppCompatActivity {
         }
         else if (itemId == R.id.autoplayMenuItem) {
             isAutoplayEnabled = !isAutoplayEnabled;
-            settings.edit().putBoolean(AUTOPLAY_CACHE_NAME, isAutoplayEnabled).apply();
+            MainActivity.settings.edit().putBoolean(MainActivity.AUTOPLAY_CACHE_NAME, isAutoplayEnabled).apply();
 
             if (isAutoplayEnabled) {
                 item.setTitle("Autoplay: ON");
@@ -295,8 +293,23 @@ public class MusicActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        settings = getSharedPreferences(APP_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        isAutoplayEnabled = settings.getBoolean(AUTOPLAY_CACHE_NAME, true);
+
+        isAutoplayEnabled = MainActivity.settings.getBoolean(MainActivity.AUTOPLAY_CACHE_NAME, true);
+
+        String themeString = MainActivity.settings.getString(MainActivity.THEME_CACHE_NAME, null);
+
+        if (themeString != null) {
+            if (themeString.equals(ThemeType.DAY.toString())) {
+                MainActivity.currentTheme = ThemeType.DAY;
+                setTheme(R.style.Theme_Day);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            }
+            else {
+                MainActivity.currentTheme = ThemeType.NIGHT;
+                setTheme(R.style.Theme_Night);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            }
+        }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
@@ -361,10 +374,9 @@ public class MusicActivity extends AppCompatActivity {
             }
         }
 
-        songList = new ArrayList<>();
-        playedSongs = new Stack<>();
-
         long start = System.currentTimeMillis();
+
+        ArrayList<Song> newSongList = new ArrayList<>();
 
         String[] projection = { MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DISPLAY_NAME };
         String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0 AND " +
@@ -380,23 +392,37 @@ public class MusicActivity extends AppCompatActivity {
                 System.out.println("================");
                 System.out.println(path);
                 System.out.println(name);
-                songList.add(new Song(path, name));
+                newSongList.add(new Song(path, name));
             }
             cursor.close();
         }
 
-        System.out.println("NEW FILTER: " + (System.currentTimeMillis() - start));
+        System.out.println(songList);
+        System.out.println(newSongList);
+
+        if (songList == null) {
+            songList = newSongList;
+            playedSongs = new Stack<>();
+        }
+        else {
+            HashSet<Song> newSet = new HashSet<>(newSongList);
+            HashSet<Song> oldSet = new HashSet<>(songList);
+            if (!newSet.equals(oldSet)) {
+                songList = newSongList;
+                playedSongs = new Stack<>();
+            }
+        }
+
+        System.out.println("GET SONGS: " + (System.currentTimeMillis() - start));
 
         if (songList.size() == 0) {
             noneTextView.setVisibility(View.VISIBLE);
             songsRecyclerView.setVisibility(View.GONE);
         }
 
-        Collections.sort(songList, (song1, song2) -> song1.getName().compareTo(song2.getName()));
-
         DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(),
                 DividerItemDecoration.VERTICAL);
-        decoration.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(getApplicationContext(), R.drawable.list_divider)));
+        decoration.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.list_divider)));
 
         songsRecyclerView.addItemDecoration(decoration);
 
@@ -421,6 +447,7 @@ public class MusicActivity extends AppCompatActivity {
 
         prevSongImageView.setOnClickListener(v -> {
             Song prevSong;
+            int prevPos = selectedPosition;
 
             if (songList.size() == 0) return;
 
@@ -428,6 +455,7 @@ public class MusicActivity extends AppCompatActivity {
                 selectedPosition--;
                 if (selectedPosition < 0) selectedPosition = songList.size() - 1;
                 prevSong = songList.get(selectedPosition);
+                playedSongs.push(prevSong);
             }
             else {
                 prevSong = playedSongs.pop();
@@ -462,7 +490,10 @@ public class MusicActivity extends AppCompatActivity {
             totalTimeTextView.setText(MusicActivity.convertTime(MusicActivity.mediaPlayer.getDuration()));
             songNameTextView.setText(prevSong.getName());
 
-            songsRecyclerView.getAdapter().notifyDataSetChanged();
+            if (prevPos >= 0) {
+                songsRecyclerView.getAdapter().notifyItemChanged(prevPos);
+            }
+            songsRecyclerView.getAdapter().notifyItemChanged(selectedPosition);
 
             MusicActivity.mediaPlayer.start();
             MusicActivity.handler.post(MusicActivity.runnable);
@@ -470,11 +501,13 @@ public class MusicActivity extends AppCompatActivity {
 
         nextSongImageView.setOnClickListener(v -> {
             if (songList.size() == 0) return;
+            int prevPos = selectedPosition;
 
             selectedPosition = (selectedPosition + 1) % songList.size();
 
             Song nextSong = songList.get(selectedPosition);
             currentSong = nextSong;
+            playedSongs.push(currentSong);
 
             try {
                 MusicActivity.mediaPlayer.reset();
@@ -490,7 +523,11 @@ public class MusicActivity extends AppCompatActivity {
             totalTimeTextView.setText(MusicActivity.convertTime(MusicActivity.mediaPlayer.getDuration()));
             songNameTextView.setText(nextSong.getName());
 
-            songsRecyclerView.getAdapter().notifyDataSetChanged();
+
+            if (prevPos >= 0) {
+                songsRecyclerView.getAdapter().notifyItemChanged(prevPos);
+            }
+            songsRecyclerView.getAdapter().notifyItemChanged(selectedPosition);
 
             MusicActivity.mediaPlayer.start();
             MusicActivity.handler.post(MusicActivity.runnable);
@@ -529,31 +566,23 @@ public class MusicActivity extends AppCompatActivity {
         });
 
         forward5ImageView.setOnClickListener(v -> {
-            if (songList.size() == 0) return;
-
-            if (mediaPlayer.isPlaying()) {
-                int pos = mediaPlayer.getCurrentPosition();
-                pos = Math.min(pos + 5000, mediaPlayer.getDuration());
-                currentTimeTextView.setText(convertTime(pos));
-                musicSeekBar.setProgress(pos);
-                mediaPlayer.seekTo(pos);
-            }
+            int pos = mediaPlayer.getCurrentPosition();
+            pos = Math.min(pos + 5000, mediaPlayer.getDuration());
+            currentTimeTextView.setText(convertTime(pos));
+            musicSeekBar.setProgress(pos);
+            mediaPlayer.seekTo(pos);
         });
 
         back5ImageView.setOnClickListener(v -> {
-            if (songList.size() == 0) return;
-
-            if (mediaPlayer.isPlaying()) {
-                int pos = mediaPlayer.getCurrentPosition();
-                pos = Math.max(pos - 5000, 0);
-                currentTimeTextView.setText(convertTime(pos));
-                musicSeekBar.setProgress(pos);
-                mediaPlayer.seekTo(pos);
-            }
+            int pos = mediaPlayer.getCurrentPosition();
+            pos = Math.max(pos - 5000, 0);
+            currentTimeTextView.setText(convertTime(pos));
+            musicSeekBar.setProgress(pos);
+            mediaPlayer.seekTo(pos);
         });
 
         mediaPlayer.setOnCompletionListener(mediaPlayer -> {
-            if (isAutoplayEnabled) {
+            if (isAutoplayEnabled && songList.size() > 0) {
                 nextSongImageView.callOnClick();
             }
             else {

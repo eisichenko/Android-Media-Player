@@ -1,140 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginStart="20dp"
-    android:layout_marginEnd="20dp"
     android:weightSum="100"
+    android:background="?attr/main_background_color"
     tools:context=".MusicPlayer.MusicActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Now playing:"
-        android:layout_gravity="center"
-        android:layout_marginTop="10dp"
-        android:textSize="22sp"
-        android:layout_weight="10"
-        android:gravity="center"/>
-
-    <TextView
-        android:id="@+id/songNameTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ellipsize="middle"
-        android:singleLine="true"
-        android:layout_marginTop="5dp"
-        android:text="qwe"
-        android:freezesText="true"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:textSize="22sp"
-        android:layout_weight="10"
-        android:textColor="#000" />
-
-    <TextView
-        android:id="@+id/noneTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:textSize="22sp"
-        android:visibility="gone"
-        android:textColor="#f00"
-        android:layout_gravity="center"
-        android:text="No music"/>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_weight="80"
-        android:layout_height="250dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/songsRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-    </ScrollView>
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="?attr/main_background_color"
+        android:weightSum="100">
 
         <TextView
-            android:id="@+id/currentTimeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:freezesText="true"
-            android:text="00:00"/>
+            android:text="Now playing:"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:textSize="22sp"
+            android:textColor="?attr/blurred_text_color"
+            android:layout_weight="10"
+            android:gravity="center"/>
 
-        <SeekBar
-            android:id="@+id/musicSeekBar"
+        <TextView
+            android:id="@+id/songNameTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_weight="1"
-            />
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:layout_marginTop="5dp"
+            android:text="qwe"
+            android:freezesText="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:layout_weight="10"
+            android:textColor="?attr/main_text_color" />
 
         <TextView
-            android:id="@+id/totalTimeTextView"
+            android:id="@+id/noneTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:freezesText="true"
-            android:text="00:00"/>
+            android:layout_marginTop="40dp"
+            android:textSize="22sp"
+            android:visibility="gone"
+            android:textColor="#f00"
+            android:layout_gravity="center"
+            android:text="No music"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_weight="80"
+            android:layout_height="250dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/songsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </ScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/currentTimeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/main_text_color"
+                android:freezesText="true"
+                android:text="00:00"/>
+
+            <SeekBar
+                android:id="@+id/musicSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_weight="1"
+                />
+
+            <TextView
+                android:id="@+id/totalTimeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:freezesText="true"
+                android:textColor="?attr/main_text_color"
+                android:text="00:00"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:weightSum="5"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/prevSongImageView"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:src="@drawable/ic_prev" />
+
+            <ImageView
+                android:id="@+id/back5ImageView"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:src="@drawable/ic_back5" />
+
+            <ImageView
+                android:id="@+id/playImageView"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:src="@drawable/ic_play" />
+
+            <ImageView
+                android:id="@+id/forward5ImageView"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:src="@drawable/ic_forward5" />
+
+            <ImageView
+                android:id="@+id/nextSongImageView"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:src="@drawable/ic_next" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:weightSum="5"
-        android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/prevSongImageView"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:src="@drawable/ic_prev" />
-
-        <ImageView
-            android:id="@+id/back5ImageView"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:src="@drawable/ic_back5" />
-
-        <ImageView
-            android:id="@+id/playImageView"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:src="@drawable/ic_play" />
-
-        <ImageView
-            android:id="@+id/forward5ImageView"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:src="@drawable/ic_forward5" />
-
-        <ImageView
-            android:id="@+id/nextSongImageView"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:src="@drawable/ic_next" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
