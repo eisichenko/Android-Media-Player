@@ -172,6 +172,8 @@ public class MusicActivity extends AppCompatActivity {
                 musicSeekBar.setProgress(0);
                 musicSeekBar.setMax(MusicActivity.mediaPlayer.getDuration());
 
+                nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
+
                 currentTimeTextView.setText("00:00");
                 totalTimeTextView.setText(MusicActivity.convertTime(MusicActivity.mediaPlayer.getDuration()));
                 songNameTextView.setText(MusicActivity.currentSong.getName());
@@ -204,6 +206,8 @@ public class MusicActivity extends AppCompatActivity {
 
                 musicSeekBar.setProgress(0);
                 musicSeekBar.setMax(MusicActivity.mediaPlayer.getDuration());
+
+                nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
 
                 currentTimeTextView.setText("00:00");
                 totalTimeTextView.setText(MusicActivity.convertTime(MusicActivity.mediaPlayer.getDuration()));
