@@ -61,6 +61,7 @@ public class MusicActivity extends AppCompatActivity {
     TextView totalTimeTextView;
     TextView noneTextView;
     TextView nowPlayingTextView;
+    TextView hiddenTextView;
     SeekBar musicSeekBar;
     RecyclerView songsRecyclerView;
     ImageView prevSongImageView;
@@ -237,10 +238,12 @@ public class MusicActivity extends AppCompatActivity {
             if (isListHidden) {
                 item.setTitle("Show song list");
                 songsRecyclerView.setVisibility(View.INVISIBLE);
+                hiddenTextView.setVisibility(View.VISIBLE);
             }
             else {
                 item.setTitle("Hide song list");
                 songsRecyclerView.setVisibility(View.VISIBLE);
+                hiddenTextView.setVisibility(View.GONE);
             }
         }
 
@@ -362,6 +365,7 @@ public class MusicActivity extends AppCompatActivity {
         songsRecyclerView = findViewById(R.id.songsRecyclerView);
         prevSongImageView = findViewById(R.id.prevSongImageView);
         noneTextView = findViewById(R.id.noneTextView);
+        hiddenTextView = findViewById(R.id.hiddenTextView);
         back5ImageView = findViewById(R.id.back5ImageView);
         playImageView = findViewById(R.id.playImageView);
         forward5ImageView = findViewById(R.id.forward5ImageView);
@@ -372,6 +376,7 @@ public class MusicActivity extends AppCompatActivity {
 
         if (isListHidden) {
             songsRecyclerView.setVisibility(View.INVISIBLE);
+            hiddenTextView.setVisibility(View.VISIBLE);
         }
 
         songNameTextView.setText("None");

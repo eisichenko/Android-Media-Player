@@ -55,6 +55,17 @@
             android:layout_gravity="center"
             android:text="No music"/>
 
+        <TextView
+            android:id="@+id/hiddenTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:textSize="22sp"
+            android:visibility="gone"
+            android:textColor="?attr/main_text_color"
+            android:layout_gravity="center"
+            android:text="List was hidden"/>
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_weight="80"
