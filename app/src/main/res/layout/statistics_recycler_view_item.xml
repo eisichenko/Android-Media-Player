@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/main_background_color"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/statsSongNameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Name: qwe"
+        android:textColor="?attr/main_text_color"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"/>
+
+    <TextView
+        android:id="@+id/statsTotalLaunchTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total launch times: 254"
+        android:textColor="?attr/main_text_color"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"/>
+
+    <TextView
+        android:id="@+id/totalTimeListenedTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total time listened: 03h:52m:03s"
+        android:textColor="?attr/main_text_color"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"/>
+
+</LinearLayout>

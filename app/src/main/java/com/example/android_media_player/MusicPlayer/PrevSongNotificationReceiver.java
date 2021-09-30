@@ -19,6 +19,8 @@ public class PrevSongNotificationReceiver extends BroadcastReceiver {
 
         Song prevSong;
 
+        MusicActivity.handler.removeCallbacks(MusicActivity.runnable);
+
         if (MusicActivity.songList.size() == 0) return;
 
         if (MusicActivity.playedSongs.size() == 0) {
@@ -44,6 +46,23 @@ public class PrevSongNotificationReceiver extends BroadcastReceiver {
             }
         }
 
+        if (prevSong != null) {
+            try {
+                Song dbSong = MusicActivity.dbHelper.findSong(prevSong.getName());
+                prevSong.setLaunchedTimes(dbSong.getLaunchedTimes() + 1);
+                prevSong.setPlayedTime(dbSong.getPlayedTime());
+                MusicActivity.dbHelper.modifyLaunchedTimes(prevSong, prevSong.getLaunchedTimes());
+            }
+            catch (Exception e) {
+                prevSong.setLaunchedTimes(1);
+                MusicActivity.dbHelper.add(prevSong);
+            }
+        }
+
+        if (MusicActivity.currentSong != null) {
+            MusicActivity.dbHelper.modifyPlayedTime(MusicActivity.currentSong, MusicActivity.currentSong.getPlayedTime());
+        }
+
         MusicActivity.currentSong = prevSong;
         System.out.println("PREV " + prevSong.getName());
 
@@ -57,6 +76,7 @@ public class PrevSongNotificationReceiver extends BroadcastReceiver {
         }
 
         MusicActivity.mediaPlayer.start();
+        MusicActivity.handler.post(MusicActivity.runnable);
 
         Intent activityIntent = new Intent(context, MusicActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context, MusicActivity.OPEN_MUSIC_CODE,

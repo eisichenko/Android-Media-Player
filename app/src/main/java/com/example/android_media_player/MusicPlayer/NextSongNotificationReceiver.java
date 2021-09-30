@@ -20,9 +20,29 @@ public class NextSongNotificationReceiver extends BroadcastReceiver {
 
         if (MusicActivity.songList.size() == 0) return;
 
+        MusicActivity.handler.removeCallbacks(MusicActivity.runnable);
+
         MusicActivity.selectedPosition = (MusicActivity.selectedPosition + 1) % MusicActivity.songList.size();
 
         Song nextSong = MusicActivity.songList.get(MusicActivity.selectedPosition);
+
+        if (nextSong != null) {
+            try {
+                Song dbSong = MusicActivity.dbHelper.findSong(nextSong.getName());
+                nextSong.setLaunchedTimes(dbSong.getLaunchedTimes() + 1);
+                nextSong.setPlayedTime(dbSong.getPlayedTime());
+                MusicActivity.dbHelper.modifyLaunchedTimes(nextSong, nextSong.getLaunchedTimes());
+            }
+            catch (Exception e) {
+                nextSong.setLaunchedTimes(1);
+                MusicActivity.dbHelper.add(nextSong);
+            }
+        }
+
+        if (MusicActivity.currentSong != null) {
+            MusicActivity.dbHelper.modifyPlayedTime(MusicActivity.currentSong, MusicActivity.currentSong.getPlayedTime());
+        }
+
         MusicActivity.currentSong = nextSong;
         MusicActivity.playedSongs.push(MusicActivity.currentSong);
 
@@ -36,6 +56,7 @@ public class NextSongNotificationReceiver extends BroadcastReceiver {
         }
 
         MusicActivity.mediaPlayer.start();
+        MusicActivity.handler.post(MusicActivity.runnable);
 
         Intent activityIntent = new Intent(context, MusicActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context, MusicActivity.OPEN_MUSIC_CODE,

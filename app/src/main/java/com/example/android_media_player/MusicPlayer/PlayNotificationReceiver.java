@@ -18,9 +18,26 @@ public class PlayNotificationReceiver extends BroadcastReceiver {
 
         if (MusicActivity.mediaPlayer.isPlaying()) {
             MusicActivity.mediaPlayer.pause();
+
+            MusicActivity.handler.removeCallbacks(MusicActivity.runnable);
+            MusicActivity.dbHelper.modifyPlayedTime(MusicActivity.currentSong,
+                    MusicActivity.currentSong.getPlayedTime());
         }
         else {
+            MusicActivity.handler.removeCallbacks(MusicActivity.runnable);
+            if (MusicActivity.currentSong != null) {
+                try {
+                    Song dbSong = MusicActivity.dbHelper.findSong(MusicActivity.currentSong.getName());
+                    MusicActivity.currentSong.setPlayedTime(dbSong.getPlayedTime());
+                    MusicActivity.dbHelper.modifyPlayedTime(MusicActivity.currentSong, MusicActivity.currentSong.getPlayedTime());
+                }
+                catch (Exception e) {
+                    MusicActivity.dbHelper.add(MusicActivity.currentSong);
+                }
+            }
+
             MusicActivity.mediaPlayer.start();
+            MusicActivity.handler.post(MusicActivity.runnable);
         }
 
         Intent activityIntent = new Intent(context, MusicActivity.class);

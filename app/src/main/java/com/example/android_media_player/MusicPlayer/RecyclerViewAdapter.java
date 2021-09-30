@@ -1,8 +1,6 @@
 package com.example.android_media_player.MusicPlayer;
 
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -42,8 +40,36 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             songItemTextView = itemView.findViewById(R.id.songItemTextView);
 
             itemView.setOnClickListener(v -> {
+                MusicActivity.handler.removeCallbacks(MusicActivity.runnable);
+
                 int prevPos = MusicActivity.selectedPosition;
+                Song prevSong = null;
+
+                if (prevPos >= 0 && prevPos < songList.size()) {
+                    prevSong = songList.get(prevPos);
+                }
+
                 MusicActivity.currentSong = songList.get(getAdapterPosition());
+
+                if (prevSong != null) {
+                    System.out.println(prevSong.getName() + " played " + prevSong.getPlayedTime());
+                    MusicActivity.dbHelper.modifyPlayedTime(prevSong, prevSong.getPlayedTime());
+                }
+
+                if (MusicActivity.currentSong != null) {
+                    try {
+                        Song dbSong = MusicActivity.dbHelper.findSong(MusicActivity.currentSong.getName());
+                        MusicActivity.currentSong.setLaunchedTimes(dbSong.getLaunchedTimes() + 1);
+                        MusicActivity.currentSong.setPlayedTime(dbSong.getPlayedTime());
+                        System.out.println(MusicActivity.currentSong.getName() + " played " + MusicActivity.currentSong.getPlayedTime());
+                        MusicActivity.dbHelper.modifyLaunchedTimes(MusicActivity.currentSong, MusicActivity.currentSong.getLaunchedTimes());
+                    }
+                    catch (Exception e) {
+                        MusicActivity.currentSong.setLaunchedTimes(1);
+                        MusicActivity.dbHelper.add(MusicActivity.currentSong);
+                    }
+                }
+
                 MusicActivity.playedSongs.push(MusicActivity.currentSong);
                 MusicActivity.selectedPosition = getAdapterPosition();
                 try {
@@ -59,7 +85,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 playImageView.setImageResource(R.drawable.ic_pause);
                 musicSeekBar.setMax(MusicActivity.mediaPlayer.getDuration());
 
-                totalTimeTextView.setText(MusicActivity.convertTime(MusicActivity.mediaPlayer.getDuration()));
+                totalTimeTextView.setText(MusicActivity.convertMusicTime(MusicActivity.mediaPlayer.getDuration()));
                 songNameTextView.setText(MusicActivity.currentSong.getName());
 
                 MusicActivity.mediaPlayer.start();

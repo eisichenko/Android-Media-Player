@@ -16,10 +16,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Day">
         <activity
+            android:name=".MusicPlayer.StatisticsActivity"
+            android:parentActivityName=".MusicPlayer.MusicActivity"
+            android:exported="true" />
+        <activity
             android:name=".VideoPlayer.VideoActivity"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
             android:exported="true"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
         <activity
             android:name=".MusicPlayer.MusicActivity"
             android:exported="true"

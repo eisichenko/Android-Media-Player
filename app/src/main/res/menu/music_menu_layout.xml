@@ -16,4 +16,8 @@
     <item android:name="hide_list_menu_item"
         android:id="@+id/hideListMenuItem"
         android:title="Hide song list"/>
+
+    <item android:name="statistics"
+        android:id="@+id/statisticsMenuItem"
+        android:title="Statistics"/>
 </menu>

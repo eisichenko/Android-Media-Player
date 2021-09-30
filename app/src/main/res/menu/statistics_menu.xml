@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:name="load_menu_item"
+        android:id="@+id/loadMenuItem"
+        android:title="Load from file"/>
+
+    <item android:name="save_menu_item"
+        android:id="@+id/saveMenuItem"
+        android:title="Save to file"/>
+
+    <item android:name="sort_order"
+        android:id="@+id/sortOrderMenuItem"
+        android:title="Order: Descending"/>
+
+    <item android:name="sort_by_name"
+        android:id="@+id/sortByNameMenuItem"
+        android:title="Sort by name" />
+
+    <item android:name="sort_by_launch_times"
+        android:id="@+id/sortByLaunchTimesMenuItem"
+        android:title="Sort by launch times" />
+
+    <item android:name="sort_by_time"
+        android:id="@+id/sortByTimeMenuItem"
+        android:title="Sort by time" />
+
+    <item android:name="clear_database"
+        android:id="@+id/clearDatabaseMenuItem"
+        android:title="Clear database" />
+</menu>
