@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -253,21 +254,21 @@ public class MusicActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         if (currentSong != null) {
-            Intent activityIntent = new Intent(this, MusicActivity.class);
-            PendingIntent contentIntent = PendingIntent.getActivity(this, OPEN_MUSIC_CODE,
+            Intent activityIntent = new Intent(this, OpenMusicNotificationReceiver.class);
+            PendingIntent contentIntent = PendingIntent.getBroadcast(this, OPEN_MUSIC_CODE,
                     activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             Intent playBroadcastIntent = new Intent(this, PlayNotificationReceiver.class);
             PendingIntent playIntent = PendingIntent.getBroadcast(this,
-                    PLAY_NOTIFICATION_CODE, playBroadcastIntent, 0);
+                    PLAY_NOTIFICATION_CODE, playBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             Intent previousBroadcastIntent = new Intent(this, PrevSongNotificationReceiver.class);
             PendingIntent previousIntent = PendingIntent.getBroadcast(this,
-                    PREV_NOTIFICATION_CODE, previousBroadcastIntent, 0);
+                    PREV_NOTIFICATION_CODE, previousBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             Intent nextBroadcastIntent = new Intent(this, NextSongNotificationReceiver.class);
             PendingIntent nextIntent = PendingIntent.getBroadcast(this,
-                    NEXT_NOTIFICATION_CODE, nextBroadcastIntent, 0);
+                    NEXT_NOTIFICATION_CODE, nextBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Music notification");
 
