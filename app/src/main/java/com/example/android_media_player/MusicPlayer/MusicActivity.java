@@ -79,6 +79,7 @@ public class MusicActivity extends AppCompatActivity {
 
     static Boolean isAutoplayEnabled = true;
     static Boolean isListHidden = false;
+    static Boolean isRepeatEnabled = false;
 
     static DatabaseHelper dbHelper;
 
@@ -108,6 +109,14 @@ public class MusicActivity extends AppCompatActivity {
         }
         else {
             hideListItem.setTitle("Hide song list");
+        }
+
+        MenuItem repeatItem = menu.findItem(R.id.repeatMenuItem);
+        if (isRepeatEnabled) {
+            repeatItem.setTitle("Repeat: ON");
+        }
+        else {
+            repeatItem.setTitle("Repeat: OFF");
         }
 
         return true;
@@ -264,6 +273,19 @@ public class MusicActivity extends AppCompatActivity {
             }
             return true;
         }
+        else if (itemId == R.id.repeatMenuItem) {
+            isRepeatEnabled = !isRepeatEnabled;
+            MainActivity.settings.edit().putBoolean(MainActivity.REPEAT_CACHE_NAME, isRepeatEnabled).apply();
+
+            if (isRepeatEnabled) {
+                item.setTitle("Repeat: ON");
+                Toast.makeText(this, "Repeat: ON", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                item.setTitle("Repeat: OFF");
+                Toast.makeText(this, "Autoplay: OFF", Toast.LENGTH_SHORT).show();
+            }
+        }
         else if (itemId == R.id.hideListMenuItem) {
             isListHidden = !isListHidden;
 
@@ -385,6 +407,7 @@ public class MusicActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
 
         isAutoplayEnabled = MainActivity.settings.getBoolean(MainActivity.AUTOPLAY_CACHE_NAME, true);
+        isRepeatEnabled = MainActivity.settings.getBoolean(MainActivity.REPEAT_CACHE_NAME, false);
         isListHidden = MainActivity.settings.getBoolean(MainActivity.HIDE_LIST_CACHE_NAME, false);
 
         String themeString = MainActivity.settings.getString(MainActivity.THEME_CACHE_NAME, null);
@@ -753,7 +776,38 @@ public class MusicActivity extends AppCompatActivity {
         });
 
         mediaPlayer.setOnCompletionListener(mediaPlayer -> {
-            if (isAutoplayEnabled && songList.size() > 0) {
+            if (isRepeatEnabled && songList.size() > 0) {
+                handler.removeCallbacks(runnable);
+                musicSeekBar.setProgress(0);
+                currentTimeTextView.setText("00:00");
+
+                if (currentSong != null) {
+                    try {
+                        Song dbSong = dbHelper.findSong(currentSong.getName());
+                        currentSong.setLaunchedTimes(dbSong.getLaunchedTimes() + 1);
+                        System.out.println(currentSong.getName() + " played " + currentSong.getPlayedTime());
+                        dbHelper.modifyLaunchedTimes(currentSong, currentSong.getLaunchedTimes());
+                        dbHelper.modifyPlayedTime(currentSong, currentSong.getPlayedTime());
+                    }
+                    catch (Exception e) {
+                        currentSong.setLaunchedTimes(1);
+                        dbHelper.add(currentSong);
+                    }
+                }
+
+                try {
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(currentSong.getPath());
+                    mediaPlayer.prepare();
+                } catch (Exception e) {
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+
+                mediaPlayer.start();
+                handler.post(runnable);
+            }
+            else if (isAutoplayEnabled && songList.size() > 0) {
                 nextSongImageView.callOnClick();
             }
             else {

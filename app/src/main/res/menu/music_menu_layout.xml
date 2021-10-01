@@ -5,6 +5,10 @@
         android:id="@+id/autoplayMenuItem"
         android:title="Autoplay"/>
 
+    <item android:name="repeat_menu_item"
+        android:id="@+id/repeatMenuItem"
+        android:title="Repeat"/>
+
     <item android:name="shuffle_menu_item"
         android:id="@+id/shuffleMenuItem"
         android:title="Shuffle"/>

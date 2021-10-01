@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     public static SharedPreferences settings;
     public static final String APP_PREFERENCES_NAME = "media_player_settings";
     public static final String AUTOPLAY_CACHE_NAME = "autoplay";
+    public static final String REPEAT_CACHE_NAME = "repeat";
     public static final String THEME_CACHE_NAME = "theme";
     public static final String FOLDER_URI_CACHE_NAME = "folder_uri";
     public static final String HIDE_LIST_CACHE_NAME = "hide_list";
@@ -158,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         openLastFolderButton = findViewById(R.id.openLastFolderButton);
         lastFolderTextView = findViewById(R.id.lastFolderTextView);
 
-        if (chosenUri != null && chosenFile != null) {
+        if (chosenUri != null && chosenFile != null && chosenFile.getName() != null) {
             lastFolderTextView.setText("Last music folder: " + chosenFile.getName());
         }
 
@@ -173,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         openLastFolderButton.setOnClickListener(v -> {
-            if (chosenUri == null) {
+            if (chosenUri == null || chosenFile == null || chosenFile.getName() == null) {
                 Toast.makeText(this, "No recent folder", Toast.LENGTH_SHORT).show();
             }
             else {
