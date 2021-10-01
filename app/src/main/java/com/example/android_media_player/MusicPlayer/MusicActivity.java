@@ -398,6 +398,14 @@ public class MusicActivity extends AppCompatActivity {
         else {
             nowPlayingTextView.setText("Now playing: ");
         }
+
+        if (mediaPlayer.isPlaying()) {
+            playImageView.setImageResource(R.drawable.ic_pause);
+        }
+        else {
+            playImageView.setImageResource(R.drawable.ic_play);
+        }
+
         super.onResume();
     }
 
