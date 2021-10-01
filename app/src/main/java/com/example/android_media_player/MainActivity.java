@@ -152,6 +152,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        startService(new Intent(this, KillNotificationService.class));
+
         setTitle("Media player");
 
         openMusicFolderButton = findViewById(R.id.openMusicFolderButton);

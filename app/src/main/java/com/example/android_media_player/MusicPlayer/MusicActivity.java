@@ -419,6 +419,13 @@ public class MusicActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.cancelAll();
+        super.onDestroy();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         dbHelper = new DatabaseHelper(this);
