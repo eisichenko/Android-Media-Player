@@ -3,6 +3,7 @@ package com.example.android_media_player.MusicPlayer;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -80,6 +81,7 @@ public class MusicActivity extends AppCompatActivity {
     static Boolean isAutoplayEnabled = true;
     static Boolean isListHidden = false;
     static Boolean isRepeatEnabled = false;
+    static Boolean isActivityPaused = false;
 
     static DatabaseHelper dbHelper;
 
@@ -309,8 +311,42 @@ public class MusicActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    void sendNotification() {
+        Intent activityIntent = new Intent(this, OpenMusicNotificationReceiver.class);
+        PendingIntent contentIntent = PendingIntent.getBroadcast(this, OPEN_MUSIC_CODE,
+                activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent playBroadcastIntent = new Intent(this, PlayNotificationReceiver.class);
+        PendingIntent playIntent = PendingIntent.getBroadcast(this,
+                PLAY_NOTIFICATION_CODE, playBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent previousBroadcastIntent = new Intent(this, PrevSongNotificationReceiver.class);
+        PendingIntent previousIntent = PendingIntent.getBroadcast(this,
+                PREV_NOTIFICATION_CODE, previousBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent nextBroadcastIntent = new Intent(this, NextSongNotificationReceiver.class);
+        PendingIntent nextIntent = PendingIntent.getBroadcast(this,
+                NEXT_NOTIFICATION_CODE, nextBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Music notification");
+
+        builder.setContentTitle("Music");
+        builder.setContentText(currentSong.getName() + " (" + (selectedPosition + 1) + "/" + songList.size() + ")");
+        builder.setColor(Color.parseColor("#0000ff"));
+        builder.setSmallIcon(R.drawable.ic_notification);
+        builder.addAction(R.mipmap.ic_launcher, "Previous", previousIntent);
+        builder.addAction(R.mipmap.ic_launcher, getNotificationActionString(), playIntent);
+        builder.addAction(R.mipmap.ic_launcher, "Next", nextIntent);
+        builder.setContentIntent(contentIntent);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(NOTIFICATION_CODE, builder.build());
+    }
+
     @Override
     protected void onPause() {
+        isActivityPaused = true;
+
         if (currentSong != null) {
             handler.removeCallbacks(runnable);
             dbHelper.modifyPlayedTime(currentSong, currentSong.getPlayedTime());
@@ -320,35 +356,7 @@ public class MusicActivity extends AppCompatActivity {
 
             System.out.println(currentSong + " played " + currentSong.getPlayedTime());
 
-            Intent activityIntent = new Intent(this, OpenMusicNotificationReceiver.class);
-            PendingIntent contentIntent = PendingIntent.getBroadcast(this, OPEN_MUSIC_CODE,
-                    activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            Intent playBroadcastIntent = new Intent(this, PlayNotificationReceiver.class);
-            PendingIntent playIntent = PendingIntent.getBroadcast(this,
-                    PLAY_NOTIFICATION_CODE, playBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            Intent previousBroadcastIntent = new Intent(this, PrevSongNotificationReceiver.class);
-            PendingIntent previousIntent = PendingIntent.getBroadcast(this,
-                    PREV_NOTIFICATION_CODE, previousBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            Intent nextBroadcastIntent = new Intent(this, NextSongNotificationReceiver.class);
-            PendingIntent nextIntent = PendingIntent.getBroadcast(this,
-                    NEXT_NOTIFICATION_CODE, nextBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Music notification");
-
-            builder.setContentTitle("Music");
-            builder.setContentText(currentSong.getName() + " (" + (selectedPosition + 1) + "/" + songList.size() + ")");
-            builder.setColor(Color.parseColor("#0000ff"));
-            builder.setSmallIcon(R.drawable.ic_notification);
-            builder.addAction(R.mipmap.ic_launcher, "Previous", previousIntent);
-            builder.addAction(R.mipmap.ic_launcher, getNotificationActionString(), playIntent);
-            builder.addAction(R.mipmap.ic_launcher, "Next", nextIntent);
-            builder.setContentIntent(contentIntent);
-
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-            notificationManager.notify(NOTIFICATION_CODE, builder.build());
+            sendNotification();
         }
 
         super.onPause();
@@ -391,6 +399,7 @@ public class MusicActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        isActivityPaused = false;
         songsRecyclerView.getAdapter().notifyDataSetChanged();
         if (selectedPosition >= 0) {
             nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
@@ -724,6 +733,10 @@ public class MusicActivity extends AppCompatActivity {
 
             MusicActivity.mediaPlayer.start();
             MusicActivity.handler.post(MusicActivity.runnable);
+
+            if (isActivityPaused && currentSong != null) {
+                sendNotification();
+            }
         });
 
         System.out.println("BEFORE ADAPTER: " + (System.currentTimeMillis() - start));
