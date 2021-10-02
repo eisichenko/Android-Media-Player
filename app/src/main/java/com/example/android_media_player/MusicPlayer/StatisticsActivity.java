@@ -196,6 +196,8 @@ public class StatisticsActivity extends AppCompatActivity {
         noneTextView = findViewById(R.id.noneTextView);
         statisticsRecyclerView.setFocusable(false);
 
+        long start = System.currentTimeMillis();
+
         try {
             Song favoriteSong = MusicActivity.dbHelper.getMostPlayedSong();
             favoriteSongTextView.setText("Most played song: " + favoriteSong.getName());
@@ -203,6 +205,8 @@ public class StatisticsActivity extends AppCompatActivity {
         catch (Exception e) {
             favoriteSongTextView.setText("Most played song: None");
         }
+
+        System.out.println("MOST PLAYED: " + (System.currentTimeMillis() - start));
 
         try {
             Long totalPlayedTime = MusicActivity.dbHelper.getTotalPlayedTime();
@@ -212,6 +216,8 @@ public class StatisticsActivity extends AppCompatActivity {
             totalTimeListenedTextView.setText("Total listened time: 0s");
         }
 
+        System.out.println("TOTAL PLAYED: " + (System.currentTimeMillis() - start));
+
         try {
             Integer totalLaunchedTimes = MusicActivity.dbHelper.getTotalLaunchedTimes();
             totalLaunchedTimesTextView.setText("Total launched times: " + totalLaunchedTimes);
@@ -219,6 +225,8 @@ public class StatisticsActivity extends AppCompatActivity {
         catch (Exception e) {
             totalLaunchedTimesTextView.setText("Total launched times: 0");
         }
+
+        System.out.println("TOTAL LAUNCHED: " + (System.currentTimeMillis() - start));
 
         DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(),
                 DividerItemDecoration.VERTICAL);
@@ -230,6 +238,8 @@ public class StatisticsActivity extends AppCompatActivity {
 
         statisticsList = MusicActivity.dbHelper.selectALl(currentSortType, lastColumnName);
 
+        System.out.println("SELECT ALL: " + (System.currentTimeMillis() - start));
+
         if (statisticsList.size() == 0) {
             noneTextView.setVisibility(View.VISIBLE);
             statisticsRecyclerView.setVisibility(View.GONE);
@@ -240,6 +250,8 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         setAdapter(statisticsList);
+
+        System.out.println("SET ADAPTER: " + (System.currentTimeMillis() - start));
     }
 
     public void setAdapter(ArrayList<Song> songs) {

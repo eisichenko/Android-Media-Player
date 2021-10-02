@@ -428,7 +428,7 @@ public class MusicActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        dbHelper = new DatabaseHelper(this);
+        dbHelper = MainActivity.dbHelper;
 
         isAutoplayEnabled = MainActivity.settings.getBoolean(MainActivity.AUTOPLAY_CACHE_NAME, true);
         isRepeatEnabled = MainActivity.settings.getBoolean(MainActivity.REPEAT_CACHE_NAME, false);

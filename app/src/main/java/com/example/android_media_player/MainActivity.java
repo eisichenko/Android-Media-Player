@@ -25,6 +25,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
 
+import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.VideoPlayer.VideoActivity;
 
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static DocumentFile chosenFile;
     public static Uri chosenUri;
+
+    public static DatabaseHelper dbHelper;
 
     public static SharedPreferences settings;
     public static final String APP_PREFERENCES_NAME = "media_player_settings";
@@ -125,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        dbHelper = new DatabaseHelper(this);
+
         settings = getSharedPreferences(APP_PREFERENCES_NAME, Context.MODE_PRIVATE);
 
         String themeString = settings.getString(THEME_CACHE_NAME, null);
