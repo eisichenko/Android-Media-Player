@@ -16,9 +16,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Day">
         <activity
+            android:name=".MusicPlayer.SongStatsActivity"
+            android:exported="true"
+            android:parentActivityName=".MusicPlayer.StatisticsActivity"/>
+        <activity
             android:name=".MusicPlayer.StatisticsActivity"
-            android:parentActivityName=".MusicPlayer.MusicActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:parentActivityName=".MusicPlayer.MusicActivity" />
         <activity
             android:name=".VideoPlayer.VideoActivity"
             android:exported="true"
@@ -42,7 +46,8 @@
         <receiver android:name=".MusicPlayer.PrevSongNotificationReceiver" />
         <receiver android:name=".MusicPlayer.NextSongNotificationReceiver" />
         <receiver android:name=".MusicPlayer.OpenMusicNotificationReceiver" />
-        <service android:name=".KillNotificationService"/>
+
+        <service android:name=".KillNotificationService" />
     </application>
 
 </manifest>

@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,13 +49,10 @@ public class StatisticsActivity extends AppCompatActivity {
     TextView totalTimeListenedTextView;
     TextView totalLaunchedTimesTextView;
     TextView favoriteSongTextView;
-    TextView noneTextView;
-    RecyclerView statisticsRecyclerView;
+    TextView averageTimeListenedTextView;
+    TextView averageLaunchedTimesTextView;
 
-    ArrayList<Song> statisticsList;
-
-    public static DatabaseHelper.SortType currentSortType = DatabaseHelper.SortType.DESCENDING;
-    public String lastColumnName = DatabaseHelper.PLAYED_TIME_COLUMN;
+    Button songStatsButton;
 
     public final static int REQUEST_CODE_CHOOSE_SAVE_FILE = 0;
     public final static int REQUEST_CODE_CHOOSE_LOAD_FILE = 1;
@@ -73,15 +72,6 @@ public class StatisticsActivity extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.statistics_menu, menu);
 
-        MenuItem orderItem = menu.findItem(R.id.sortOrderMenuItem);
-
-        if (currentSortType == DatabaseHelper.SortType.ASCENDING) {
-            orderItem.setTitle("Order: Ascending");
-        }
-        else {
-            orderItem.setTitle("Order: Descending");
-        }
-
         return true;
     }
 
@@ -89,50 +79,7 @@ public class StatisticsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
 
-        if (itemId == R.id.sortOrderMenuItem) {
-            if (currentSortType == DatabaseHelper.SortType.ASCENDING) {
-                item.setTitle("Order: Descending");
-                currentSortType = DatabaseHelper.SortType.DESCENDING;
-            }
-            else {
-                item.setTitle("Order: Ascending");
-                currentSortType = DatabaseHelper.SortType.ASCENDING;
-            }
-            MainActivity.settings.edit().putString(MainActivity.ORDER_CACHE_NAME, currentSortType.toString()).apply();
-            statisticsList = MusicActivity.dbHelper.selectALl(currentSortType, lastColumnName);
-            setAdapter(statisticsList);
-        }
-        else if (itemId == R.id.sortByNameMenuItem) {
-            if (statisticsList.size() > 0) {
-                lastColumnName = DatabaseHelper.NAME_COLUMN;
-
-                MainActivity.settings.edit().putString(MainActivity.LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
-
-                statisticsList = MusicActivity.dbHelper.selectALl(currentSortType, lastColumnName);
-                setAdapter(statisticsList);
-            }
-        }
-        else if (itemId == R.id.sortByLaunchTimesMenuItem) {
-            if (statisticsList.size() > 0) {
-                lastColumnName = DatabaseHelper.LAUNCHED_TIMES_COLUMN;
-
-                MainActivity.settings.edit().putString(MainActivity.LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
-
-                statisticsList = MusicActivity.dbHelper.selectALl(currentSortType, lastColumnName);
-                setAdapter(statisticsList);
-            }
-        }
-        else if (itemId == R.id.sortByTimeMenuItem) {
-            if (statisticsList.size() > 0) {
-                lastColumnName = DatabaseHelper.PLAYED_TIME_COLUMN;
-
-                MainActivity.settings.edit().putString(MainActivity.LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
-
-                statisticsList = MusicActivity.dbHelper.selectALl(currentSortType, lastColumnName);
-                setAdapter(statisticsList);
-            }
-        }
-        else if (itemId == R.id.clearDatabaseMenuItem) {
+        if (itemId == R.id.clearDatabaseMenuItem) {
             new AlertDialog.Builder(this)
                     .setTitle("Clear database")
                     .setMessage("You will lose all your data, are you sure?")
@@ -166,11 +113,6 @@ public class StatisticsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         String themeString = MainActivity.settings.getString(MainActivity.THEME_CACHE_NAME, null);
 
-        String sortTypeStr = MainActivity.settings.getString(MainActivity.ORDER_CACHE_NAME, DatabaseHelper.SortType.DESCENDING.toString());
-        currentSortType = DatabaseHelper.SortType.valueOf(sortTypeStr);
-
-        lastColumnName = MainActivity.settings.getString(MainActivity.LAST_COLUMN_CACHE_NAME, DatabaseHelper.PLAYED_TIME_COLUMN);
-
         if (themeString != null) {
             if (themeString.equals(ThemeType.DAY.toString())) {
                 MainActivity.currentTheme = ThemeType.DAY;
@@ -191,10 +133,10 @@ public class StatisticsActivity extends AppCompatActivity {
 
         totalTimeListenedTextView = findViewById(R.id.totalTimeListenedTextView);
         totalLaunchedTimesTextView = findViewById(R.id.totalLaunchedTimesTextView);
+        averageTimeListenedTextView = findViewById(R.id.averageTimeListenedTextView);
+        averageLaunchedTimesTextView = findViewById(R.id.averageLaunchedTimesTextView);
         favoriteSongTextView = findViewById(R.id.favoriteSongTextView);
-        statisticsRecyclerView = findViewById(R.id.statisticsRecyclerView);
-        noneTextView = findViewById(R.id.noneTextView);
-        statisticsRecyclerView.setFocusable(false);
+        songStatsButton = findViewById(R.id.songStatsButton);
 
         long start = System.currentTimeMillis();
 
@@ -228,39 +170,27 @@ public class StatisticsActivity extends AppCompatActivity {
 
         System.out.println("TOTAL LAUNCHED: " + (System.currentTimeMillis() - start));
 
-        DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(),
-                DividerItemDecoration.VERTICAL);
-        decoration.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.list_divider)));
-
-        statisticsRecyclerView.addItemDecoration(decoration);
-
-        statisticsList = new ArrayList<>();
-
-        statisticsList = MusicActivity.dbHelper.selectALl(currentSortType, lastColumnName);
-
-        System.out.println("SELECT ALL: " + (System.currentTimeMillis() - start));
-
-        if (statisticsList.size() == 0) {
-            noneTextView.setVisibility(View.VISIBLE);
-            statisticsRecyclerView.setVisibility(View.GONE);
+        try {
+            Long averagePlayedTime = MusicActivity.dbHelper.getAveragePlayTime();
+            averageTimeListenedTextView.setText("Average listened time: " + MusicActivity.convertStatisticsTime(averagePlayedTime));
         }
-        else {
-            noneTextView.setVisibility(View.GONE);
-            statisticsRecyclerView.setVisibility(View.VISIBLE);
+        catch (Exception e) {
+            averageTimeListenedTextView.setText("Average listened time: 0s");
         }
 
-        setAdapter(statisticsList);
+        System.out.println("AVERAGE PLAYED: " + (System.currentTimeMillis() - start));
 
-        System.out.println("SET ADAPTER: " + (System.currentTimeMillis() - start));
-    }
+        try {
+            Integer averageLaunchedTimes = MusicActivity.dbHelper.getAverageLaunchTime();
+            averageLaunchedTimesTextView.setText("Average launched times: " + averageLaunchedTimes);
+        }
+        catch (Exception e) {
+            averageLaunchedTimesTextView.setText("Average launched times: 0");
+        }
 
-    public void setAdapter(ArrayList<Song> songs) {
-        StatisticsRecyclerViewAdapter statisticsAdapter = new StatisticsRecyclerViewAdapter(songs);
-        RecyclerView.LayoutManager statisticsLayoutManager = new LinearLayoutManager(getApplicationContext());
-
-        statisticsRecyclerView.setLayoutManager(statisticsLayoutManager);
-        statisticsRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        statisticsRecyclerView.setAdapter(statisticsAdapter);
+        songStatsButton.setOnClickListener(v -> {
+            startActivity(new Intent(this, SongStatsActivity.class));
+        });
     }
 
     @Override
@@ -270,8 +200,11 @@ public class StatisticsActivity extends AppCompatActivity {
                 case REQUEST_CODE_CHOOSE_SAVE_FILE:
                     Uri saveUri = resultData.getData();
 
+                    ArrayList<Song> listToSave = MainActivity.dbHelper.selectALl(DatabaseHelper.SortType.ASCENDING,
+                            DatabaseHelper.NAME_COLUMN);
+
                     DocumentFile chosenSaveFile = DocumentFile.fromSingleUri(this, saveUri);
-                    String json = new Gson().toJson(statisticsList);
+                    String json = new Gson().toJson(listToSave);
 
                     try {
                         OutputStream outputStream = getContentResolver().openOutputStream(saveUri);
@@ -295,9 +228,9 @@ public class StatisticsActivity extends AppCompatActivity {
                         Scanner s = new Scanner(inputStream).useDelimiter("\\A");
                         String loadedJson = s.hasNext() ? s.next() : "";
                         System.out.println(loadedJson);
-                        statisticsList = new Gson().fromJson(loadedJson, new TypeToken<ArrayList<Song>>(){}.getType());
+                        ArrayList<Song> loadedList = new Gson().fromJson(loadedJson, new TypeToken<ArrayList<Song>>(){}.getType());
 
-                        for (Song song : statisticsList) {
+                        for (Song song : loadedList) {
                             if (song.getName() == null ||
                                 song.getPlayedTime() == null ||
                                 song.getLaunchedTimes() == null) {
@@ -306,7 +239,7 @@ public class StatisticsActivity extends AppCompatActivity {
                         }
 
                         MusicActivity.dbHelper.clearAll();
-                        for (Song song : statisticsList) {
+                        for (Song song : loadedList) {
                             MusicActivity.dbHelper.add(song);
                         }
 

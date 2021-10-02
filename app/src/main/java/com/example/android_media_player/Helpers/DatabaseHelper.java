@@ -228,4 +228,42 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             throw new Exception("No songs");
         }
     }
+
+    public Long getAveragePlayTime() throws Exception {
+        String query = "SELECT AVG(" + PLAYED_TIME_COLUMN + ") FROM " + STATISTICS_TABLE;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            Long res = cursor.getLong(0);
+            cursor.close();
+            db.close();
+            return res;
+        }
+        else {
+            cursor.close();
+            db.close();
+            throw new Exception("No songs");
+        }
+    }
+
+    public Integer getAverageLaunchTime() throws Exception {
+        String query = "SELECT AVG(" + LAUNCHED_TIMES_COLUMN + ") FROM " + STATISTICS_TABLE;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            Integer res = cursor.getInt(0);
+            cursor.close();
+            db.close();
+            return res;
+        }
+        else {
+            cursor.close();
+            db.close();
+            throw new Exception("No songs");
+        }
+    }
 }
