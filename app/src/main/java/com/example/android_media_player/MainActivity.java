@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         openLastFolderButton = findViewById(R.id.openLastFolderButton);
         lastFolderTextView = findViewById(R.id.lastFolderTextView);
 
-        if (chosenUri != null && chosenFile != null && chosenFile.getName() != null) {
+        if (chosenUri != null && chosenFile != null && chosenFile.getName() != null && chosenFile.isDirectory()) {
             lastFolderTextView.setText("Last music folder: " + chosenFile.getName());
         }
 
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         openLastFolderButton.setOnClickListener(v -> {
-            if (chosenUri == null || chosenFile == null || chosenFile.getName() == null) {
+            if (chosenUri == null || chosenFile == null || chosenFile.getName() == null || !chosenFile.isDirectory()) {
                 Toast.makeText(this, "No recent folder", Toast.LENGTH_SHORT).show();
             }
             else {
