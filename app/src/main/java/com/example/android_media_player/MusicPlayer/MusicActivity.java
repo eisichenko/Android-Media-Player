@@ -151,6 +151,8 @@ public class MusicActivity extends AppCompatActivity {
                     songList.set(0, playingSong);
                     songList.set(index, firstSong);
                     selectedPosition = 0;
+
+                    nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
                 }
                 else {
                     selectedPosition = -1;
@@ -213,6 +215,7 @@ public class MusicActivity extends AppCompatActivity {
                 Collections.sort(songList, (song1, song2) -> song1.getName().toLowerCase().compareTo(song2.getName().toLowerCase()));
                 if (wasPlaying){
                     selectedPosition = songList.indexOf(prevSong);
+                    nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
                 }
                 else {
                     selectedPosition = -1;
