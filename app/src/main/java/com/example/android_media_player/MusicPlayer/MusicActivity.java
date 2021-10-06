@@ -130,9 +130,12 @@ public class MusicActivity extends AppCompatActivity {
 
         if (itemId == R.id.shuffleMenuItem) {
             if (songList.size() > 0) {
-                handler.removeCallbacks(runnable);
+                boolean wasPlaying = mediaPlayer.isPlaying();
 
-                Boolean wasPlaying = mediaPlayer.isPlaying();
+                if (!wasPlaying) {
+                    handler.removeCallbacks(runnable);
+                }
+
                 int prevPos = selectedPosition;
                 Song prevSong = null;
 
@@ -140,65 +143,65 @@ public class MusicActivity extends AppCompatActivity {
                     prevSong = songList.get(prevPos);
                 }
 
-                if (prevSong != null) {
-                    System.out.println(prevSong.getName() + " played " + prevSong.getPlayedTime());
-                    dbHelper.modifyPlayedTime(prevSong, prevSong.getPlayedTime());
-                }
-
                 Collections.shuffle(songList);
-                selectedPosition = 0;
-                currentSong = songList.get(selectedPosition);
-
-                if (currentSong != null) {
-                    try {
-                        Song dbSong = dbHelper.findSong(currentSong.getName());
-                        currentSong.setLaunchedTimes(dbSong.getLaunchedTimes() + 1);
-                        currentSong.setPlayedTime(dbSong.getPlayedTime());
-                        System.out.println(currentSong.getName() + " played " + currentSong.getPlayedTime());
-                        dbHelper.modifyLaunchedTimes(currentSong, currentSong.getLaunchedTimes());
-                    }
-                    catch (Exception e) {
-                        currentSong.setLaunchedTimes(1);
-                        dbHelper.add(currentSong);
-                    }
+                if (wasPlaying){
+                    int index = songList.indexOf(prevSong);
+                    Song firstSong = songList.get(0);
+                    Song playingSong = songList.get(index);
+                    songList.set(0, playingSong);
+                    songList.set(index, firstSong);
+                    selectedPosition = 0;
+                }
+                else {
+                    selectedPosition = -1;
+                    currentSong = null;
                 }
 
                 setAdapter(songList);
 
-                try {
-                    MusicActivity.mediaPlayer.reset();
-                    MusicActivity.mediaPlayer.setDataSource(currentSong.getPath());
-                    MusicActivity.mediaPlayer.prepare();
-                    if (wasPlaying) {
-                        playImageView.setImageResource(R.drawable.ic_pause);
-                        mediaPlayer.start();
+                if (!wasPlaying) {
+                    try {
+                        MusicActivity.mediaPlayer.reset();
+
+                        if (currentSong != null){
+                            MusicActivity.mediaPlayer.setDataSource(currentSong.getPath());
+                            MusicActivity.mediaPlayer.prepare();
+                        }
+
+                        playImageView.setImageResource(R.drawable.ic_play);
+                    } catch (Exception e) {
+                        Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
+
+                    musicSeekBar.setProgress(0);
+                    if (currentSong != null) {
+                        musicSeekBar.setMax(MusicActivity.mediaPlayer.getDuration());
+
+                        nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
+
+                        currentTimeTextView.setText("00:00");
+                        totalTimeTextView.setText(MusicActivity.convertMusicTime(MusicActivity.mediaPlayer.getDuration()));
+                        songNameTextView.setText(MusicActivity.currentSong.getName());
                     }
                     else {
-                        playImageView.setImageResource(R.drawable.ic_play);
+                        nowPlayingTextView.setText("Now playing: ");
+
+                        currentTimeTextView.setText("00:00");
+                        totalTimeTextView.setText("00:00");
+                        songNameTextView.setText("None");
                     }
-                } catch (Exception e) {
-                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
                 }
-
-                musicSeekBar.setProgress(0);
-                musicSeekBar.setMax(MusicActivity.mediaPlayer.getDuration());
-
-                nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
-
-                currentTimeTextView.setText("00:00");
-                totalTimeTextView.setText(MusicActivity.convertMusicTime(MusicActivity.mediaPlayer.getDuration()));
-                songNameTextView.setText(MusicActivity.currentSong.getName());
-
-                handler.post(runnable);
             }
             return true;
         }
         else if (itemId == R.id.sortMenuItem) {
             if (songList.size() > 0) {
-                handler.removeCallbacks(runnable);
+                boolean wasPlaying = mediaPlayer.isPlaying();
 
-                Boolean wasPlaying = mediaPlayer.isPlaying();
+                if (!wasPlaying) {
+                    handler.removeCallbacks(runnable);
+                }
 
                 int prevPos = selectedPosition;
                 Song prevSong = null;
@@ -207,57 +210,50 @@ public class MusicActivity extends AppCompatActivity {
                     prevSong = songList.get(prevPos);
                 }
 
-                if (prevSong != null) {
-                    System.out.println(prevSong.getName() + " played " + prevSong.getPlayedTime());
-                    dbHelper.modifyPlayedTime(prevSong, prevSong.getPlayedTime());
+                Collections.sort(songList, (song1, song2) -> song1.getName().toLowerCase().compareTo(song2.getName().toLowerCase()));
+                if (wasPlaying){
+                    selectedPosition = songList.indexOf(prevSong);
                 }
-
-                Collections.sort(songList, (song1, song2) -> song1.getName().compareTo(song2.getName()));
-                selectedPosition = 0;
-                currentSong = songList.get(selectedPosition);
-
-                if (currentSong != null) {
-                    try {
-                        Song dbSong = dbHelper.findSong(currentSong.getName());
-                        currentSong.setLaunchedTimes(dbSong.getLaunchedTimes() + 1);
-                        currentSong.setPlayedTime(dbSong.getPlayedTime());
-                        System.out.println(currentSong.getName() + " played " + currentSong.getPlayedTime());
-                        dbHelper.modifyLaunchedTimes(currentSong, currentSong.getLaunchedTimes());
-                    }
-                    catch (Exception e) {
-                        currentSong.setLaunchedTimes(1);
-                        dbHelper.add(currentSong);
-                    }
+                else {
+                    selectedPosition = -1;
+                    currentSong = null;
                 }
 
                 setAdapter(songList);
 
-                try {
-                    MusicActivity.mediaPlayer.reset();
-                    MusicActivity.mediaPlayer.setDataSource(currentSong.getPath());
-                    MusicActivity.mediaPlayer.prepare();
-                    if (wasPlaying) {
-                        playImageView.setImageResource(R.drawable.ic_pause);
-                        mediaPlayer.start();
+                if (!wasPlaying) {
+                    try {
+                        MusicActivity.mediaPlayer.reset();
+                        if (currentSong != null) {
+                            MusicActivity.mediaPlayer.setDataSource(currentSong.getPath());
+                            MusicActivity.mediaPlayer.prepare();
+                        }
+
+                        playImageView.setImageResource(R.drawable.ic_play);
+                    } catch (Exception e) {
+                        Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
+
+                    musicSeekBar.setProgress(0);
+
+                    if (currentSong != null) {
+                        musicSeekBar.setMax(MusicActivity.mediaPlayer.getDuration());
+
+                        nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
+
+                        currentTimeTextView.setText("00:00");
+                        totalTimeTextView.setText(MusicActivity.convertMusicTime(MusicActivity.mediaPlayer.getDuration()));
+                        songNameTextView.setText(MusicActivity.currentSong.getName());
                     }
                     else {
-                        playImageView.setImageResource(R.drawable.ic_play);
+                        nowPlayingTextView.setText("Now playing: ");
+
+                        currentTimeTextView.setText("00:00");
+                        totalTimeTextView.setText("00:00");
+                        songNameTextView.setText("None");
                     }
-                } catch (Exception e) {
-                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
                 }
-
-                musicSeekBar.setProgress(0);
-                musicSeekBar.setMax(MusicActivity.mediaPlayer.getDuration());
-
-                nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
-
-                currentTimeTextView.setText("00:00");
-                totalTimeTextView.setText(MusicActivity.convertMusicTime(MusicActivity.mediaPlayer.getDuration()));
-                songNameTextView.setText(MusicActivity.currentSong.getName());
-
-                handler.post(runnable);
             }
             return true;
         }
@@ -348,13 +344,22 @@ public class MusicActivity extends AppCompatActivity {
         isActivityPaused = true;
 
         if (currentSong != null) {
-            handler.removeCallbacks(runnable);
-            dbHelper.modifyPlayedTime(currentSong, currentSong.getPlayedTime());
-            if (mediaPlayer.isPlaying()) {
-                handler.post(runnable);
-            }
+            try {
+                handler.removeCallbacks(runnable);
+                Song dbSong = dbHelper.findSong(currentSong.getName());
+                if (currentSong.getPlayedTime() > dbSong.getPlayedTime()) {
+                    dbHelper.modifyPlayedTime(currentSong, currentSong.getPlayedTime());
+                }
 
-            System.out.println(currentSong + " played " + currentSong.getPlayedTime());
+                if (mediaPlayer.isPlaying()) {
+                    handler.post(runnable);
+                }
+
+                System.out.println(currentSong + " played " + currentSong.getPlayedTime());
+            }
+            catch (Exception e) {
+                dbHelper.add(currentSong);
+            }
 
             sendNotification();
         }
@@ -546,6 +551,7 @@ public class MusicActivity extends AppCompatActivity {
 
         if (songList == null) {
             songList = newSongList;
+            Collections.sort(songList, (song1, song2) -> song1.getName().toLowerCase().compareTo(song2.getName().toLowerCase()));
             playedSongs = new Stack<>();
         }
         else {
@@ -553,6 +559,7 @@ public class MusicActivity extends AppCompatActivity {
             HashSet<Song> oldSet = new HashSet<>(songList);
             if (!newSet.equals(oldSet)) {
                 songList = newSongList;
+                Collections.sort(songList, (song1, song2) -> song1.getName().toLowerCase().compareTo(song2.getName().toLowerCase()));
                 playedSongs = new Stack<>();
             }
         }
@@ -570,7 +577,7 @@ public class MusicActivity extends AppCompatActivity {
 
         songsRecyclerView.addItemDecoration(decoration);
 
-        playImageView.setOnClickListener(v -> {;
+        playImageView.setOnClickListener(v -> {
             if (selectedPosition == -1) {
                 Toast.makeText(this, "Nothing to play :(", Toast.LENGTH_SHORT).show();
                 return;
