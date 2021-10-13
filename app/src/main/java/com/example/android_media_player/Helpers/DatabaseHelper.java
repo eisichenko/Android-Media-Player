@@ -62,26 +62,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<Song> selectALl(SortType sortType, String sortColumn) {
         ArrayList<Song> res = new ArrayList<>();
 
-        String query = "";
+        String query = "SELECT * FROM " + STATISTICS_TABLE;
 
-        if (sortType == SortType.NONE) {
-            query = "SELECT * FROM " + STATISTICS_TABLE;
-        }
-        else if (sortType == SortType.ASCENDING) {
-            if (sortColumn.equals(NAME_COLUMN)) {
-                query = "SELECT * FROM " + STATISTICS_TABLE + " ORDER BY LOWER(" + sortColumn + ") ASC";
-            }
-            else {
-                query = "SELECT * FROM " + STATISTICS_TABLE + " ORDER BY " + sortColumn + " ASC";
-            }
+        if (sortColumn.equals(NAME_COLUMN)) {
+            query += " ORDER BY LOWER(" + sortColumn + ")";
         }
         else {
-            if (sortColumn.equals(NAME_COLUMN)) {
-                query = "SELECT * FROM " + STATISTICS_TABLE + " ORDER BY LOWER(" + sortColumn + ") DESC";
-            }
-            else {
-                query = "SELECT * FROM " + STATISTICS_TABLE + " ORDER BY " + sortColumn + " DESC";
-            }
+            query += " ORDER BY " + sortColumn;
+        }
+
+        if (sortType == SortType.ASCENDING) {
+            query += " ASC";
+        }
+        else {
+            query += " DESC";
+        }
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        while (cursor.moveToNext()) {
+            String name = cursor.getString(0);
+            Integer launchedTimes = cursor.getInt(1);
+            Long playedTime = cursor.getLong(2);
+            res.add(new Song(null, name, launchedTimes, playedTime));
+        }
+
+        cursor.close();
+        db.close();
+
+        return res;
+    }
+
+    public ArrayList<Song> getSongsBySubstring(String substring, SortType sortType, String sortColumn) {
+        ArrayList<Song> res = new ArrayList<>();
+
+        String query = "SELECT * FROM " + STATISTICS_TABLE +
+                " WHERE " + NAME_COLUMN + " LIKE '%" + substring.replace("'", "''") + "%' ";
+
+        if (sortColumn.equals(NAME_COLUMN)) {
+            query += " ORDER BY LOWER(" + sortColumn + ")";
+        }
+        else {
+            query += " ORDER BY " + sortColumn;
+        }
+
+        if (sortType == SortType.ASCENDING) {
+            query += " ASC";
+        }
+        else {
+            query += " DESC";
         }
 
         SQLiteDatabase db = this.getReadableDatabase();

@@ -16,4 +16,12 @@
         android:id="@+id/sortByTimeMenuItem"
         android:title="Sort by time" />
 
+    <item android:name="filter_by_substring"
+        android:id="@+id/filterBySubstringMenuItem"
+        android:title="Filter by substring"/>
+
+    <item android:name="reset_filter"
+        android:id="@+id/resetFilterMenuItem"
+        android:title="Reset filter"/>
+
 </menu>
