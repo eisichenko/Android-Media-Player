@@ -279,14 +279,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public Integer getAverageLaunchTime() throws Exception {
+    public Float getAverageLaunchTime() throws Exception {
         String query = "SELECT AVG(" + LAUNCHED_TIMES_COLUMN + ") FROM " + STATISTICS_TABLE;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
-            Integer res = cursor.getInt(0);
+            Float res = cursor.getFloat(0);
             cursor.close();
             db.close();
             return res;

@@ -181,8 +181,8 @@ public class StatisticsActivity extends AppCompatActivity {
         System.out.println("AVERAGE PLAYED: " + (System.currentTimeMillis() - start));
 
         try {
-            Integer averageLaunchedTimes = MusicActivity.dbHelper.getAverageLaunchTime();
-            averageLaunchedTimesTextView.setText("Average launched times: " + averageLaunchedTimes);
+            Float averageLaunchedTimes = MusicActivity.dbHelper.getAverageLaunchTime();
+            averageLaunchedTimesTextView.setText("Average launched times: " + String.format("%.2f", averageLaunchedTimes));
         }
         catch (Exception e) {
             averageLaunchedTimesTextView.setText("Average launched times: 0");
