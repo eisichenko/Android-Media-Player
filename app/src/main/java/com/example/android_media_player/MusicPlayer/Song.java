@@ -1,10 +1,7 @@
 package com.example.android_media_player.MusicPlayer;
 
-import android.net.Uri;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.documentfile.provider.DocumentFile;
 
 public class Song {
     private String name;

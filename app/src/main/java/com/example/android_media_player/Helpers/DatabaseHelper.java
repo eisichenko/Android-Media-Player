@@ -222,6 +222,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public Song getMostUnpopularSong() throws Exception {
+        String query = "SELECT * FROM " + STATISTICS_TABLE +
+                " ORDER BY " + PLAYED_TIME_COLUMN + ", " + LAUNCHED_TIMES_COLUMN + " ASC";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            String curName = cursor.getString(0);
+            Integer highScore = cursor.getInt(1);
+            Long timePlayed = cursor.getLong(2);
+            cursor.close();
+            db.close();
+            return new Song(null, curName, highScore, timePlayed);
+        }
+        else {
+            cursor.close();
+            db.close();
+            throw new Exception("No songs");
+        }
+    }
+
     public Long getTotalPlayedTime() throws Exception {
         String query = "SELECT SUM(" + PLAYED_TIME_COLUMN + ") FROM " + STATISTICS_TABLE;
 

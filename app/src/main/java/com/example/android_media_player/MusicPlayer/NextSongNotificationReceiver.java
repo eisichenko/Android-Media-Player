@@ -10,7 +10,6 @@ import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.example.android_media_player.MainActivity;
 import com.example.android_media_player.R;
 
 public class NextSongNotificationReceiver extends BroadcastReceiver {

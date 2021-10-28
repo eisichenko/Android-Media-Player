@@ -1,30 +1,21 @@
 package com.example.android_media_player.MusicPlayer;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.app.Activity;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.MainActivity;
@@ -36,13 +27,9 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Objects;
 import java.util.Scanner;
-import java.util.Stack;
 
 public class StatisticsActivity extends AppCompatActivity {
 
@@ -51,6 +38,8 @@ public class StatisticsActivity extends AppCompatActivity {
     TextView favoriteSongTextView;
     TextView averageTimeListenedTextView;
     TextView averageLaunchedTimesTextView;
+    TextView playedTimePerLaunchTextView;
+    TextView mostUnpopularSongTextView;
 
     Button songStatsButton;
 
@@ -135,6 +124,8 @@ public class StatisticsActivity extends AppCompatActivity {
         totalLaunchedTimesTextView = findViewById(R.id.totalLaunchedTimesTextView);
         averageTimeListenedTextView = findViewById(R.id.averageTimeListenedTextView);
         averageLaunchedTimesTextView = findViewById(R.id.averageLaunchedTimesTextView);
+        playedTimePerLaunchTextView = findViewById(R.id.playedTimePerLaunchTextView);
+        mostUnpopularSongTextView = findViewById(R.id.mostUnpopularSongTextView);
         favoriteSongTextView = findViewById(R.id.favoriteSongTextView);
         songStatsButton = findViewById(R.id.songStatsButton);
 
@@ -142,16 +133,26 @@ public class StatisticsActivity extends AppCompatActivity {
 
         try {
             Song favoriteSong = MusicActivity.dbHelper.getMostPlayedSong();
-            favoriteSongTextView.setText("Most played song: " + favoriteSong.getName());
+            favoriteSongTextView.setText("The most played song: " + favoriteSong.getName());
         }
         catch (Exception e) {
-            favoriteSongTextView.setText("Most played song: None");
+            favoriteSongTextView.setText("The most played song: None");
         }
 
         System.out.println("MOST PLAYED: " + (System.currentTimeMillis() - start));
 
         try {
-            Long totalPlayedTime = MusicActivity.dbHelper.getTotalPlayedTime();
+            Song mostUnpopularSong = MusicActivity.dbHelper.getMostUnpopularSong();
+            mostUnpopularSongTextView.setText("The most unpopular song: " + mostUnpopularSong.getName());
+        }
+        catch (Exception e) {
+            mostUnpopularSongTextView.setText("The most unpopular song: None");
+        }
+
+        Long totalPlayedTime = 0L;
+
+        try {
+            totalPlayedTime = MusicActivity.dbHelper.getTotalPlayedTime();
             totalTimeListenedTextView.setText("Total listened time: " + MusicActivity.convertStatisticsTime(totalPlayedTime));
         }
         catch (Exception e) {
@@ -160,8 +161,10 @@ public class StatisticsActivity extends AppCompatActivity {
 
         System.out.println("TOTAL PLAYED: " + (System.currentTimeMillis() - start));
 
+        Integer totalLaunchedTimes = 0;
+
         try {
-            Integer totalLaunchedTimes = MusicActivity.dbHelper.getTotalLaunchedTimes();
+            totalLaunchedTimes = MusicActivity.dbHelper.getTotalLaunchedTimes();
             totalLaunchedTimesTextView.setText("Total launched times: " + totalLaunchedTimes);
         }
         catch (Exception e) {
@@ -186,6 +189,14 @@ public class StatisticsActivity extends AppCompatActivity {
         }
         catch (Exception e) {
             averageLaunchedTimesTextView.setText("Average launched times: 0");
+        }
+
+        try {
+            Long playedTimePerLaunch = totalPlayedTime / totalLaunchedTimes;
+            playedTimePerLaunchTextView.setText("Played time per launch: " + MusicActivity.convertStatisticsTime(playedTimePerLaunch));
+        }
+        catch (Exception e) {
+            playedTimePerLaunchTextView.setText("Played time per launch: 0s");
         }
 
         songStatsButton.setOnClickListener(v -> {

@@ -1,17 +1,15 @@
 package com.example.android_media_player.VideoPlayer;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.VideoView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.android_media_player.MainActivity;
 import com.example.android_media_player.R;

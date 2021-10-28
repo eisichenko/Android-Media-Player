@@ -1,80 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="?attr/main_background_color"
     tools:context=".MusicPlayer.StatisticsActivity">
 
-    <TextView
-        android:id="@+id/totalTimeListenedTextView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textAlignment="center"
-        android:text="Total time listened: 12m:32s"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:textSize="22sp"
-        android:textColor="?attr/main_text_color"/>
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/averageTimeListenedTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textAlignment="center"
-        android:text="Average time listened: 12m:32s"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:textSize="22sp"
-        android:textColor="?attr/main_text_color"/>
+        <TextView
+            android:id="@+id/totalTimeListenedTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:text="Total time listened: 12m:32s"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="22sp"
+            android:textColor="?attr/main_text_color"/>
 
-    <TextView
-        android:id="@+id/totalLaunchedTimesTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textAlignment="center"
-        android:text="Total launched times: 123"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:textSize="22sp"
-        android:textColor="?attr/main_text_color"/>
+        <TextView
+            android:id="@+id/averageTimeListenedTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:text="Average time listened: 12m:32s"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="22sp"
+            android:textColor="?attr/main_text_color"/>
 
-    <TextView
-        android:id="@+id/averageLaunchedTimesTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textAlignment="center"
-        android:text="Average launched times: 123"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:textSize="22sp"
-        android:textColor="?attr/main_text_color"/>
+        <TextView
+            android:id="@+id/totalLaunchedTimesTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:text="Total launched times: 123"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="22sp"
+            android:textColor="?attr/main_text_color"/>
 
-    <TextView
-        android:id="@+id/favoriteSongTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textAlignment="center"
-        android:text="Favorite song: Qweqwe"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:textSize="22sp"
-        android:textColor="?attr/main_text_color"/>
+        <TextView
+            android:id="@+id/averageLaunchedTimesTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:text="Average launched times: 123"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="22sp"
+            android:textColor="?attr/main_text_color"/>
 
-    <Button
-        android:id="@+id/songStatsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_gravity="center"
-        android:textColor="#000"
-        android:backgroundTint="#0f0"
-        android:text="Song Stats"/>
+        <TextView
+            android:id="@+id/playedTimePerLaunchTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:text="Played time per launch: 123"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="22sp"
+            android:textColor="?attr/main_text_color"/>
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/favoriteSongTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:text="Favorite song: Qweqwe"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="22sp"
+            android:textColor="?attr/main_text_color"/>
+
+        <TextView
+            android:id="@+id/mostUnpopularSongTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:text="The most unpopular song: Qweqwe"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="22sp"
+            android:textColor="?attr/main_text_color"/>
+
+        <Button
+            android:id="@+id/songStatsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center"
+            android:textColor="#000"
+            android:backgroundTint="#0f0"
+            android:text="Song Stats"/>
+
+    </LinearLayout>
+</ScrollView>
