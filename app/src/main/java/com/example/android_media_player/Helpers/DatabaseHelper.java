@@ -180,24 +180,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public Boolean modifyPlayedTime(Song song, Long newTime) {
-        String query = "UPDATE " + STATISTICS_TABLE +
-                " SET " + PLAYED_TIME_COLUMN + "=" + newTime +
-                " WHERE " + NAME_COLUMN + "='" + song.getName().replace("'", "''") + "'";
+    public void modifyPlayedTime(Song song, Long newTime) {
+        try {
+            Song dbSong = findSong(song.getName());
 
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL(query);
-        return true;
+            if (dbSong.getPlayedTime() < newTime) {
+                String query = "UPDATE " + STATISTICS_TABLE +
+                        " SET " + PLAYED_TIME_COLUMN + "=" + newTime +
+                        " WHERE " + NAME_COLUMN + "='" + song.getName().replace("'", "''") + "'";
+
+                SQLiteDatabase db = this.getWritableDatabase();
+                db.execSQL(query);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public Boolean modifyLaunchedTimes(Song song, Integer launchedTimes) {
-        String query = "UPDATE " + STATISTICS_TABLE +
-                " SET " + LAUNCHED_TIMES_COLUMN + "=" + launchedTimes +
-                " WHERE " + NAME_COLUMN + "='" + song.getName().replace("'", "''") + "'";
+    public void modifyLaunchedTimes(Song song, Integer launchedTimes) {
+        try {
+            Song dbSong = findSong(song.getName());
 
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL(query);
-        return true;
+            if (dbSong.getLaunchedTimes() < launchedTimes) {
+                String query = "UPDATE " + STATISTICS_TABLE +
+                        " SET " + LAUNCHED_TIMES_COLUMN + "=" + launchedTimes +
+                        " WHERE " + NAME_COLUMN + "='" + song.getName().replace("'", "''") + "'";
+
+                SQLiteDatabase db = this.getWritableDatabase();
+                db.execSQL(query);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Song getMostPlayedSong() throws Exception {

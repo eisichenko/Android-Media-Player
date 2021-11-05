@@ -11,6 +11,23 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <Button
+                android:id="@+id/songStatsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:backgroundTint="#0f0"
+                android:text="Song Stats"/>
+        </LinearLayout>
+
         <TextView
             android:id="@+id/totalTimeListenedTextView"
             android:layout_width="wrap_content"
@@ -94,16 +111,6 @@
             android:layout_marginBottom="10dp"
             android:textSize="22sp"
             android:textColor="?attr/main_text_color"/>
-
-        <Button
-            android:id="@+id/songStatsButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:layout_gravity="center"
-            android:textColor="#000"
-            android:backgroundTint="#0f0"
-            android:text="Song Stats"/>
 
     </LinearLayout>
 </ScrollView>
