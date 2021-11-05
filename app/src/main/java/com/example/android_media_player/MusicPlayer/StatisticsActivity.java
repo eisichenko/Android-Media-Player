@@ -40,8 +40,11 @@ public class StatisticsActivity extends AppCompatActivity {
     TextView averageLaunchedTimesTextView;
     TextView playedTimePerLaunchTextView;
     TextView mostUnpopularSongTextView;
+    TextView favoriteArtistTextView;
+    TextView mostUnpopularArtistTextView;
 
     Button songStatsButton;
+    Button artistStatsButton;
 
     public final static int REQUEST_CODE_CHOOSE_SAVE_FILE = 0;
     public final static int REQUEST_CODE_CHOOSE_LOAD_FILE = 1;
@@ -128,6 +131,9 @@ public class StatisticsActivity extends AppCompatActivity {
         mostUnpopularSongTextView = findViewById(R.id.mostUnpopularSongTextView);
         favoriteSongTextView = findViewById(R.id.favoriteSongTextView);
         songStatsButton = findViewById(R.id.songStatsButton);
+        artistStatsButton = findViewById(R.id.artistStatsButton);
+        favoriteArtistTextView = findViewById(R.id.favoriteArtistTextView);
+        mostUnpopularArtistTextView = findViewById(R.id.mostUnpopularArtistTextView);
 
         long start = System.currentTimeMillis();
 
@@ -199,8 +205,28 @@ public class StatisticsActivity extends AppCompatActivity {
             playedTimePerLaunchTextView.setText("Played time per launch: 0s");
         }
 
+        try {
+            String favoriteArtist = MainActivity.dbHelper.getFavoriteArtist();
+            favoriteArtistTextView.setText(String.format("Favorite artist: %s", favoriteArtist));
+        }
+        catch (Exception e) {
+            favoriteArtistTextView.setText(String.format("Favorite artist: %s", "None"));
+        }
+
+        try {
+            String mostUnpopularArtist = MainActivity.dbHelper.getMostUnpopularArtist();
+            mostUnpopularArtistTextView.setText(String.format("The most unpopular artist: %s", mostUnpopularArtist));
+        }
+        catch (Exception e) {
+            mostUnpopularArtistTextView.setText(String.format("The most unpopular artist: %s", "None"));
+        }
+
         songStatsButton.setOnClickListener(v -> {
             startActivity(new Intent(this, SongStatsActivity.class));
+        });
+
+        artistStatsButton.setOnClickListener(v -> {
+            startActivity(new Intent(this, ArtistStatsActivity.class));
         });
     }
 
@@ -211,7 +237,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 case REQUEST_CODE_CHOOSE_SAVE_FILE:
                     Uri saveUri = resultData.getData();
 
-                    ArrayList<Song> listToSave = MainActivity.dbHelper.selectALl(DatabaseHelper.SortType.ASCENDING,
+                    ArrayList<Song> listToSave = MainActivity.dbHelper.selectAllSongs(DatabaseHelper.SortType.ASCENDING,
                             DatabaseHelper.NAME_COLUMN);
 
                     DocumentFile chosenSaveFile = DocumentFile.fromSingleUri(this, saveUri);

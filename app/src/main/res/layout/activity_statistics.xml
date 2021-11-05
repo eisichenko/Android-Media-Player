@@ -26,6 +26,15 @@
                 android:textColor="#000"
                 android:backgroundTint="#0f0"
                 android:text="Song Stats"/>
+
+            <Button
+                android:id="@+id/artistStatsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:backgroundTint="#FF8000"
+                android:text="Artist Stats"/>
+
         </LinearLayout>
 
         <TextView
@@ -107,6 +116,30 @@
             android:layout_gravity="center"
             android:textAlignment="center"
             android:text="The most unpopular song: Qweqwe"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="22sp"
+            android:textColor="?attr/main_text_color"/>
+
+        <TextView
+            android:id="@+id/favoriteArtistTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:text="Favorite artist: Qweqwe"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="22sp"
+            android:textColor="?attr/main_text_color"/>
+
+        <TextView
+            android:id="@+id/mostUnpopularArtistTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:text="The most unpopular artist: Qweqwe"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:textSize="22sp"

@@ -16,9 +16,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Day">
         <activity
+            android:name=".MusicPlayer.ArtistStatsActivity"
+            android:exported="false"
+            android:parentActivityName=".MusicPlayer.StatisticsActivity" />
+        <activity
             android:name=".MusicPlayer.SongStatsActivity"
             android:exported="true"
-            android:parentActivityName=".MusicPlayer.StatisticsActivity"/>
+            android:parentActivityName=".MusicPlayer.StatisticsActivity" />
         <activity
             android:name=".MusicPlayer.StatisticsActivity"
             android:exported="true"
@@ -34,7 +38,7 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
-            android:exported="true"/>
+            android:exported="true" />
         <activity
             android:name=".SplashScreen"
             android:exported="true"

@@ -6,12 +6,14 @@ import androidx.annotation.Nullable;
 public class Song {
     private String name;
     private String path;
+    private String artist;
     private Integer launchedTimes;
     private Long playedTime;
 
-    public Song(String path, String name, Integer launchedTimes, Long playedTime) {
+    public Song(String path, String name, String artist, Integer launchedTimes, Long playedTime) {
         this.path = path;
         this.name = name;
+        this.artist = artist;
         this.launchedTimes = launchedTimes;
         this.playedTime = playedTime;
     }
@@ -54,5 +56,13 @@ public class Song {
 
     public void setPlayedTime(Long playedTime) {
         this.playedTime = playedTime;
+    }
+
+    public String getArtist() {
+        return this.artist;
+    }
+
+    public void setArtist(String value) {
+        this.artist = value;
     }
 }

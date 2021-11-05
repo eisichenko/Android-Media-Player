@@ -526,7 +526,8 @@ public class MusicActivity extends AppCompatActivity {
 
         ArrayList<Song> newSongList = new ArrayList<>();
 
-        String[] projection = { MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DISPLAY_NAME };
+        String[] projection = { MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.ARTIST };
+
         String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0 AND " +
                 MediaStore.Audio.Media.DATA + " LIKE '" + getAbsolutePathStringFromUri(MainActivity.chosenFile.getUri()) + "%'";
 
@@ -537,11 +538,13 @@ public class MusicActivity extends AppCompatActivity {
             while(cursor.moveToNext()) {
                 String path = cursor.getString(0);
                 String name = cursor.getString(1);
+                String artist = cursor.getString(2);
                 System.out.println("================");
                 System.out.println(path);
                 System.out.println(name);
+                System.out.println(artist);
 
-                Song newSong = new Song(path, name, 0, 0L);
+                Song newSong = new Song(path, name, artist, 0, 0L);
 
                 newSongList.add(newSong);
             }
@@ -553,7 +556,6 @@ public class MusicActivity extends AppCompatActivity {
 
         if (songList == null) {
             songList = newSongList;
-            Collections.sort(songList, (song1, song2) -> song1.getName().toLowerCase().compareTo(song2.getName().toLowerCase()));
             playedSongs = new Stack<>();
         }
         else {
@@ -561,7 +563,6 @@ public class MusicActivity extends AppCompatActivity {
             HashSet<Song> oldSet = new HashSet<>(songList);
             if (!newSet.equals(oldSet)) {
                 songList = newSongList;
-                Collections.sort(songList, (song1, song2) -> song1.getName().toLowerCase().compareTo(song2.getName().toLowerCase()));
                 playedSongs = new Stack<>();
             }
         }

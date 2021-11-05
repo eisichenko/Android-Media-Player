@@ -15,11 +15,11 @@ import com.example.android_media_player.R;
 
 import java.util.ArrayList;
 
-public class StatisticsRecyclerViewAdapter extends RecyclerView.Adapter<StatisticsRecyclerViewAdapter.ViewHolder> {
+public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<SongStatisticsRecyclerViewAdapter.ViewHolder> {
     private ArrayList<Song> songList;
     private Context context;
 
-    public StatisticsRecyclerViewAdapter(ArrayList<Song> songList) {
+    public SongStatisticsRecyclerViewAdapter(ArrayList<Song> songList) {
         this.songList = songList;
     }
 
@@ -39,14 +39,14 @@ public class StatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Statisti
 
     @NonNull
     @Override
-    public StatisticsRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public SongStatisticsRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.statistics_recycler_view_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.song_statistics_recycler_view_item, parent, false);
         return new ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull StatisticsRecyclerViewAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SongStatisticsRecyclerViewAdapter.ViewHolder holder, int position) {
         Song song = songList.get(position);
 
         TypedValue typedValue = new TypedValue();
