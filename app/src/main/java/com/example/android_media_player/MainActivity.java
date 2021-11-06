@@ -2,6 +2,7 @@ package com.example.android_media_player;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +15,7 @@ import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -107,6 +109,18 @@ public class MainActivity extends AppCompatActivity {
                 currentTheme = ThemeType.DAY;
             }
             return true;
+        }
+        else if (itemId == R.id.aboutMenuItem) {
+            new AlertDialog.Builder(this)
+                    .setTitle("About")
+                    .setMessage("• Written by Egor Isichenko, 2021\n\n" +
+                            "• Icon of style\n\n" +
+                            "• Icon of minimalism\n\n" +
+                            "• Icon of functionality")
+                    .setPositiveButton("OK", (dialog, whichButton) -> {
+
+                    })
+                    .show();
         }
 
         return super.onOptionsItemSelected(item);
