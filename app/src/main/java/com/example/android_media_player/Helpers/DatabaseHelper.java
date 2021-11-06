@@ -178,7 +178,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Collections.sort(artists, (artist1, artist2) -> artist2.getPlayedTimePerLaunch().compareTo(artist1.getPlayedTimePerLaunch()));
             }
         }
-        else {
+        else if (sortColumn.equals(DatabaseHelper.NUMBER_OF_SONGS_COLUMN)) {
             if (sortType == DatabaseHelper.SortType.ASCENDING) {
                 Collections.sort(artists, (artist1, artist2) -> artist1.getNumberOfSongs().compareTo(artist2.getNumberOfSongs()));
             }
