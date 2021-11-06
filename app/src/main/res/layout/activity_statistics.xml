@@ -32,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#000"
-                android:backgroundTint="#FF8000"
+                android:backgroundTint="#FFFF00"
                 android:text="Artist Stats"/>
 
         </LinearLayout>
