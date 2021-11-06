@@ -82,6 +82,8 @@ public class MusicActivity extends AppCompatActivity {
     static Boolean isRepeatEnabled = false;
     static Boolean isActivityPaused = false;
 
+    MenuItem hideListItem;
+
     static DatabaseHelper dbHelper;
 
     @Override
@@ -104,7 +106,7 @@ public class MusicActivity extends AppCompatActivity {
             autoplayItem.setTitle("Autoplay: OFF");
         }
 
-        MenuItem hideListItem = menu.findItem(R.id.hideListMenuItem);
+        hideListItem = menu.findItem(R.id.hideListMenuItem);
         if (isListHidden) {
             hideListItem.setTitle("Show song list");
         }
@@ -194,6 +196,17 @@ public class MusicActivity extends AppCompatActivity {
                     }
                 }
             }
+
+            isListHidden = true;
+
+            MainActivity.settings.edit().putBoolean(MainActivity.HIDE_LIST_CACHE_NAME, isListHidden).apply();
+
+            hideListItem.setTitle("Show song list");
+            songsRecyclerView.setVisibility(View.INVISIBLE);
+            hiddenTextView.setVisibility(View.VISIBLE);
+
+            Toast.makeText(this, "Songs were shuffled", Toast.LENGTH_SHORT).show();
+
             return true;
         }
         else if (itemId == R.id.sortMenuItem) {
