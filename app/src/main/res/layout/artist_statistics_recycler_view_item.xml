@@ -17,6 +17,17 @@
         android:paddingBottom="5dp"/>
 
     <TextView
+        android:id="@+id/numberOfSongsTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Number of songs: qwe"
+        android:textColor="?attr/main_text_color"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"/>
+
+    <TextView
         android:id="@+id/statsTotalLaunchTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -28,6 +28,7 @@ public class ArtistStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Ar
         TextView statsTotalLaunchTextView;
         TextView totalTimeListenedTextView;
         TextView listenedTimePerLaunchTextView;
+        TextView numberOfSongsTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -36,6 +37,7 @@ public class ArtistStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Ar
             statsTotalLaunchTextView = itemView.findViewById(R.id.statsTotalLaunchTextView);
             totalTimeListenedTextView = itemView.findViewById(R.id.totalTimeListenedTextView);
             listenedTimePerLaunchTextView = itemView.findViewById(R.id.listenedTimePerLaunchTextView);
+            numberOfSongsTextView = itemView.findViewById(R.id.numberOfSongsTextView);
         }
     }
 
@@ -58,6 +60,11 @@ public class ArtistStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Ar
         holder.statsArtistNameTextView.setTextColor(typedValue.data);
         holder.statsArtistNameTextView.setTypeface(Typeface.DEFAULT);
         holder.statsArtistNameTextView.setText("#" + (position + 1) + " Name: " + artist.getArtistName());
+
+        holder.numberOfSongsTextView.setTextColor(typedValue.data);
+        holder.numberOfSongsTextView.setTypeface(Typeface.DEFAULT);
+        holder.numberOfSongsTextView.setText(String.format("Number of songs: %s",
+                artist.getNumberOfSongs()));
 
         holder.statsTotalLaunchTextView.setTextColor(typedValue.data);
         holder.statsTotalLaunchTextView.setTypeface(Typeface.DEFAULT);

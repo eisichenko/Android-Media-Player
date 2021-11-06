@@ -15,6 +15,7 @@ import com.example.android_media_player.MusicPlayer.Song;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -30,6 +31,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String LAUNCHED_TIMES_COLUMN = "LAUNCHED_TIMES";
     public static final String PLAYED_TIME_COLUMN = "PLAYED_TIME";
     public static final String ARTIST_COLUMN = "ARTIST";
+
+    public static final String TIME_PER_LAUNCH_COLUMN = "time_per_launch";
+    public static final String NUMBER_OF_SONGS_COLUMN = "number_of_songs";
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, "statistics.db", null, 1);
@@ -130,10 +134,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<Artist> selectAllArtists(SortType sortType, String sortColumn) {
         ArrayList<Artist> artists = new ArrayList<>();
 
-        String query = String.format("SELECT %s, SUM(%s) as time, SUM(%s) as launches\n" +
+        String query = String.format("SELECT %s, SUM(%s) as time, SUM(%s) as launches, COUNT(%s) as number_of_songs\n" +
                 "FROM %s\n" +
                 "GROUP BY %s\n",
-                ARTIST_COLUMN, PLAYED_TIME_COLUMN, LAUNCHED_TIMES_COLUMN,
+                ARTIST_COLUMN, PLAYED_TIME_COLUMN, LAUNCHED_TIMES_COLUMN, NAME_COLUMN,
                 STATISTICS_TABLE,
                 ARTIST_COLUMN);
 
@@ -162,7 +166,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String artist = cursor.getString(0);
             Long playedTime = cursor.getLong(1);
             Integer launchedTimes = cursor.getInt(2);
-            artists.add(new Artist(artist, playedTime, launchedTimes));
+            Integer numberOfSongs = cursor.getInt(3);
+            artists.add(new Artist(artist, playedTime, launchedTimes, numberOfSongs));
+        }
+
+        if (sortColumn.equals(DatabaseHelper.TIME_PER_LAUNCH_COLUMN)) {
+            if (sortType == DatabaseHelper.SortType.ASCENDING) {
+                Collections.sort(artists, (artist1, artist2) -> artist1.getPlayedTimePerLaunch().compareTo(artist2.getPlayedTimePerLaunch()));
+            }
+            else {
+                Collections.sort(artists, (artist1, artist2) -> artist2.getPlayedTimePerLaunch().compareTo(artist1.getPlayedTimePerLaunch()));
+            }
+        }
+        else {
+            if (sortType == DatabaseHelper.SortType.ASCENDING) {
+                Collections.sort(artists, (artist1, artist2) -> artist1.getNumberOfSongs().compareTo(artist2.getNumberOfSongs()));
+            }
+            else {
+                Collections.sort(artists, (artist1, artist2) -> artist2.getNumberOfSongs().compareTo(artist1.getNumberOfSongs()));
+            }
         }
 
         return artists;

@@ -65,7 +65,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
                 item.setTitle("Order: Ascending");
                 currentSortType = DatabaseHelper.SortType.ASCENDING;
             }
-            MainActivity.settings.edit().putString(MainActivity.ORDER_CACHE_NAME, currentSortType.toString()).apply();
+            MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_ORDER_CACHE_NAME, currentSortType.toString()).apply();
 
             statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
 
@@ -75,7 +75,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
             if (statisticsList.size() > 0) {
                 lastColumnName = DatabaseHelper.ARTIST_COLUMN;
 
-                MainActivity.settings.edit().putString(MainActivity.LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
+                MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
                 statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
 
@@ -86,7 +86,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
             if (statisticsList.size() > 0) {
                 lastColumnName = DatabaseHelper.LAUNCHED_TIMES_COLUMN;
 
-                MainActivity.settings.edit().putString(MainActivity.LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
+                MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
                 statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
 
@@ -97,7 +97,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
             if (statisticsList.size() > 0) {
                 lastColumnName = DatabaseHelper.PLAYED_TIME_COLUMN;
 
-                MainActivity.settings.edit().putString(MainActivity.LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
+                MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
                 statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
 
@@ -106,11 +106,30 @@ public class ArtistStatsActivity extends AppCompatActivity {
         }
         else if (itemId == R.id.sortByPlayedTimePerLaunchMenuItem) {
             if (statisticsList.size() > 0) {
+                lastColumnName = DatabaseHelper.TIME_PER_LAUNCH_COLUMN;
+
+                MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
+
                 if (currentSortType == DatabaseHelper.SortType.DESCENDING) {
                     Collections.sort(statisticsList, (artist1, artist2) -> artist2.getPlayedTimePerLaunch().compareTo(artist1.getPlayedTimePerLaunch()));
                 }
                 else {
                     Collections.sort(statisticsList, (artist1, artist2) -> artist1.getPlayedTimePerLaunch().compareTo(artist2.getPlayedTimePerLaunch()));
+                }
+                setAdapter(statisticsList);
+            }
+        }
+        else if (itemId == R.id.sortByNumberOfSongsMenuItem) {
+            if (statisticsList.size() > 0) {
+                lastColumnName = DatabaseHelper.NUMBER_OF_SONGS_COLUMN;
+
+                MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
+
+                if (currentSortType == DatabaseHelper.SortType.DESCENDING) {
+                    Collections.sort(statisticsList, (artist1, artist2) -> artist2.getNumberOfSongs().compareTo(artist1.getNumberOfSongs()));
+                }
+                else {
+                    Collections.sort(statisticsList, (artist1, artist2) -> artist1.getNumberOfSongs().compareTo(artist2.getNumberOfSongs()));
                 }
                 setAdapter(statisticsList);
             }
@@ -123,10 +142,10 @@ public class ArtistStatsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         String themeString = MainActivity.settings.getString(MainActivity.THEME_CACHE_NAME, null);
 
-        String sortTypeStr = MainActivity.settings.getString(MainActivity.ORDER_CACHE_NAME, DatabaseHelper.SortType.DESCENDING.toString());
+        String sortTypeStr = MainActivity.settings.getString(MainActivity.ARTIST_SORT_ORDER_CACHE_NAME, DatabaseHelper.SortType.DESCENDING.toString());
         currentSortType = DatabaseHelper.SortType.valueOf(sortTypeStr);
 
-        lastColumnName = MainActivity.settings.getString(MainActivity.LAST_COLUMN_CACHE_NAME, DatabaseHelper.PLAYED_TIME_COLUMN);
+        lastColumnName = MainActivity.settings.getString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, DatabaseHelper.PLAYED_TIME_COLUMN);
 
         if (themeString != null) {
             if (themeString.equals(ThemeType.DAY.toString())) {

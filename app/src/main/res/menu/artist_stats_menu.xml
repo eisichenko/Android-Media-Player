@@ -20,4 +20,8 @@
         android:id="@+id/sortByPlayedTimePerLaunchMenuItem"
         android:title="Sort by played time per launch"/>
 
+    <item android:name="sort_by_number_of_songs"
+        android:id="@+id/sortByNumberOfSongsMenuItem"
+        android:title="Sort by number of songs"/>
+
 </menu>
