@@ -65,7 +65,9 @@ public class ArtistStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Ar
 
         holder.totalTimeListenedTextView.setTextColor(typedValue.data);
         holder.totalTimeListenedTextView.setTypeface(Typeface.DEFAULT);
-        holder.totalTimeListenedTextView.setText("Total time listened: " + MusicActivity.convertStatisticsTime(artist.getPlayedTime()));
+        holder.totalTimeListenedTextView.setText(String.format("Total time listened: %s (%.2f%%)",
+                MusicActivity.convertStatisticsTime(artist.getPlayedTime()),
+                artist.getPlayedTime() / (double) StatisticsActivity.totalPlayedTime * 100.0));
 
         holder.listenedTimePerLaunchTextView.setTextColor(typedValue.data);
         holder.listenedTimePerLaunchTextView.setTypeface(Typeface.DEFAULT);

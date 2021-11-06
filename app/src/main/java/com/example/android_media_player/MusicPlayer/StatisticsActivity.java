@@ -49,6 +49,8 @@ public class StatisticsActivity extends AppCompatActivity {
     public final static int REQUEST_CODE_CHOOSE_SAVE_FILE = 0;
     public final static int REQUEST_CODE_CHOOSE_LOAD_FILE = 1;
 
+    public static Long totalPlayedTime = 0L;
+
     public void chooseLoadFileIntent() {
         Intent intent = new Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Choose file"), REQUEST_CODE_CHOOSE_LOAD_FILE);
@@ -155,7 +157,7 @@ public class StatisticsActivity extends AppCompatActivity {
             mostUnpopularSongTextView.setText("The most unpopular song: None");
         }
 
-        Long totalPlayedTime = 0L;
+        totalPlayedTime = 0L;
 
         try {
             totalPlayedTime = MusicActivity.dbHelper.getTotalPlayedTime();
