@@ -9,12 +9,15 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.MainActivity;
@@ -33,6 +36,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
 
     public static DatabaseHelper.SortType currentSortType = DatabaseHelper.SortType.DESCENDING;
     public String lastColumnName = DatabaseHelper.PLAYED_TIME_COLUMN;
+    public String currentFilterSubstring = "";
 
 
     @Override
@@ -67,7 +71,12 @@ public class ArtistStatsActivity extends AppCompatActivity {
             }
             MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_ORDER_CACHE_NAME, currentSortType.toString()).apply();
 
-            statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
+            if (currentFilterSubstring.length() == 0) {
+                statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
+            }
+            else {
+                statisticsList = MusicActivity.dbHelper.getArtistsBySubstring(currentFilterSubstring, currentSortType, lastColumnName);
+            }
 
             setAdapter(statisticsList);
         }
@@ -77,7 +86,12 @@ public class ArtistStatsActivity extends AppCompatActivity {
 
                 MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
-                statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
+                if (currentFilterSubstring.length() == 0) {
+                    statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
+                }
+                else {
+                    statisticsList = MusicActivity.dbHelper.getArtistsBySubstring(currentFilterSubstring, currentSortType, lastColumnName);
+                }
 
                 setAdapter(statisticsList);
             }
@@ -88,8 +102,12 @@ public class ArtistStatsActivity extends AppCompatActivity {
 
                 MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
-                statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
-
+                if (currentFilterSubstring.length() == 0) {
+                    statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
+                }
+                else {
+                    statisticsList = MusicActivity.dbHelper.getArtistsBySubstring(currentFilterSubstring, currentSortType, lastColumnName);
+                }
                 setAdapter(statisticsList);
             }
         }
@@ -99,7 +117,12 @@ public class ArtistStatsActivity extends AppCompatActivity {
 
                 MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
-                statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
+                if (currentFilterSubstring.length() == 0) {
+                    statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
+                }
+                else {
+                    statisticsList = MusicActivity.dbHelper.getArtistsBySubstring(currentFilterSubstring, currentSortType, lastColumnName);
+                }
 
                 setAdapter(statisticsList);
             }
@@ -133,6 +156,59 @@ public class ArtistStatsActivity extends AppCompatActivity {
                 }
                 setAdapter(statisticsList);
             }
+        }
+        else if (itemId == R.id.filterBySubstringMenuItem) {
+            final EditText editText = new EditText(this);
+            editText.setHint("Filter string");
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Filter string")
+                    .setView(editText)
+                    .setPositiveButton("Filter", (dialog, whichButton) -> {
+                        currentFilterSubstring = editText.getText().toString();
+
+                        statisticsList = MusicActivity.dbHelper.getArtistsBySubstring(
+                                currentFilterSubstring,
+                                currentSortType, lastColumnName);
+
+                        if (statisticsList.size() == 0) {
+                            noneTextView.setVisibility(View.VISIBLE);
+                            statisticsRecyclerView.setVisibility(View.GONE);
+                        }
+                        else {
+                            noneTextView.setVisibility(View.GONE);
+                            statisticsRecyclerView.setVisibility(View.VISIBLE);
+                        }
+
+                        setAdapter(statisticsList);
+                        if (currentFilterSubstring.length() == 0) {
+                            Toast.makeText(this, "Empty filter", Toast.LENGTH_SHORT).show();
+                            setTitle("Artist statistics");
+                        }
+                        else {
+                            Toast.makeText(this, "Filter was applied", Toast.LENGTH_SHORT).show();
+                            setTitle("Filtered by \"" + currentFilterSubstring + "\"");
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        }
+        else if (itemId == R.id.resetFilterMenuItem) {
+            currentFilterSubstring = "";
+            statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
+
+            if (statisticsList.size() == 0) {
+                noneTextView.setVisibility(View.VISIBLE);
+                statisticsRecyclerView.setVisibility(View.GONE);
+            }
+            else {
+                noneTextView.setVisibility(View.GONE);
+                statisticsRecyclerView.setVisibility(View.VISIBLE);
+            }
+
+            setAdapter(statisticsList);
+            setTitle("Artist statistics");
+            Toast.makeText(this, "Filter reset was successful", Toast.LENGTH_SHORT).show();
         }
 
         return super.onOptionsItemSelected(item);

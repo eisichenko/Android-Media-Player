@@ -190,6 +190,67 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return artists;
     }
 
+    public ArrayList<Artist> getArtistsBySubstring(String substring, SortType sortType, String sortColumn) {
+        ArrayList<Artist> artists = new ArrayList<>();
+
+        String query = String.format("SELECT %s, SUM(%s) as time, SUM(%s) as launches, COUNT(%s) as number_of_songs\n" +
+                "FROM %s\n" +
+                "WHERE %s LIKE '%%%s%%'\n" +
+                "GROUP BY %s\n",
+                DatabaseHelper.ARTIST_COLUMN, DatabaseHelper.PLAYED_TIME_COLUMN, LAUNCHED_TIMES_COLUMN, NAME_COLUMN,
+                STATISTICS_TABLE,
+                ARTIST_COLUMN, substring.replace("'", "''"),
+                ARTIST_COLUMN);
+
+        if (sortColumn.equals(ARTIST_COLUMN)) {
+            query += " ORDER BY LOWER(" + sortColumn + ") ";
+        }
+        else if (sortColumn.equals(LAUNCHED_TIMES_COLUMN)) {
+            query += " ORDER BY launches ";
+        }
+        else {
+            query += " ORDER BY time ";
+        }
+
+        if (sortType == SortType.ASCENDING) {
+            query += " ASC";
+        }
+        else {
+            query += " DESC";
+        }
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        while (cursor.moveToNext()) {
+            String artist = cursor.getString(0);
+            Long playedTime = cursor.getLong(1);
+            Integer launchedTimes = cursor.getInt(2);
+            Integer numberOfSongs = cursor.getInt(3);
+            artists.add(new Artist(artist, playedTime, launchedTimes, numberOfSongs));
+        }
+
+        if (sortColumn.equals(DatabaseHelper.TIME_PER_LAUNCH_COLUMN)) {
+            if (sortType == DatabaseHelper.SortType.ASCENDING) {
+                Collections.sort(artists, (artist1, artist2) -> artist1.getPlayedTimePerLaunch().compareTo(artist2.getPlayedTimePerLaunch()));
+            }
+            else {
+                Collections.sort(artists, (artist1, artist2) -> artist2.getPlayedTimePerLaunch().compareTo(artist1.getPlayedTimePerLaunch()));
+            }
+        }
+        else if (sortColumn.equals(DatabaseHelper.NUMBER_OF_SONGS_COLUMN)) {
+            if (sortType == DatabaseHelper.SortType.ASCENDING) {
+                Collections.sort(artists, (artist1, artist2) -> artist1.getNumberOfSongs().compareTo(artist2.getNumberOfSongs()));
+            }
+            else {
+                Collections.sort(artists, (artist1, artist2) -> artist2.getNumberOfSongs().compareTo(artist1.getNumberOfSongs()));
+            }
+        }
+
+        return artists;
+    }
+
     public ArrayList<Song> getSongsBySubstring(String substring, SortType sortType, String sortColumn) {
         ArrayList<Song> res = new ArrayList<>();
 

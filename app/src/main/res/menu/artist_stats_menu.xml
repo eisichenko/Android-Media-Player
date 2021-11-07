@@ -24,4 +24,12 @@
         android:id="@+id/sortByNumberOfSongsMenuItem"
         android:title="Sort by number of songs"/>
 
+    <item android:name="filter_by_substring"
+        android:id="@+id/filterBySubstringMenuItem"
+        android:title="Filter by substring"/>
+
+    <item android:name="reset_filter"
+        android:id="@+id/resetFilterMenuItem"
+        android:title="Reset filter"/>
+
 </menu>
