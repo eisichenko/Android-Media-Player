@@ -7,10 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +32,8 @@ import androidx.documentfile.provider.DocumentFile;
 import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.VideoPlayer.VideoActivity;
+
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -154,7 +158,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (uriString != null) {
             chosenUri = Uri.parse(uriString);
-            chosenFile = DocumentFile.fromTreeUri(this, chosenUri);
+            String path = MusicActivity.getAbsolutePathStringFromUri(chosenUri);
+            chosenFile = DocumentFile.fromFile(new File(path));
         }
 
         if (themeString != null) {
