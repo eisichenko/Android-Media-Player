@@ -3,6 +3,8 @@ package com.example.android_media_player;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -62,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
     public static final String ARTIST_SORT_ORDER_CACHE_NAME = "artist_sort_order";
     public static final String SONG_SORT_LAST_COLUMN_CACHE_NAME = "song_last_column";
     public static final String ARTIST_SORT_LAST_COLUMN_CACHE_NAME = "artist_last_column";
+
+    public static final String channelName = "Media Player Channel";
+    public static final String channelDescription = "Cool Media Player";
+    public static final String CHANNEL_ID = "1";
 
     public static ThemeType currentTheme = ThemeType.DAY;
 
@@ -146,6 +152,23 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName, importance);
+            channel.setDescription(channelDescription);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        nMgr.cancelAll();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         dbHelper = new DatabaseHelper(this);
@@ -178,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        startService(new Intent(this, KillNotificationService.class));
+        createNotificationChannel();
 
         setTitle("Media player");
 

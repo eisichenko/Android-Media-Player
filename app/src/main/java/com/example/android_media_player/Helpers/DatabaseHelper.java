@@ -10,19 +10,15 @@ import android.provider.MediaStore;
 import androidx.annotation.Nullable;
 
 import com.example.android_media_player.MusicPlayer.Artist;
-import com.example.android_media_player.MusicPlayer.ArtistStatsActivity;
 import com.example.android_media_player.MusicPlayer.Song;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public enum SortType {
         ASCENDING,
-        DESCENDING,
-        NONE
+        DESCENDING
     }
 
     Context context;
@@ -97,7 +93,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<Song> selectAllSongs(SortType sortType, String sortColumn) {
         ArrayList<Song> res = new ArrayList<>();
 
-        String query = "SELECT * FROM " + STATISTICS_TABLE;
+        String query = String.format("SELECT %s, %s, %s, %s\n" +
+                "FROM %s",
+                NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
+                STATISTICS_TABLE);
 
         if (sortColumn.equals(NAME_COLUMN)) {
             query += " ORDER BY LOWER(" + sortColumn + ")";
@@ -119,9 +118,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         while (cursor.moveToNext()) {
             String name = cursor.getString(0);
-            Integer launchedTimes = cursor.getInt(1);
-            Long playedTime = cursor.getLong(2);
-            String artist = cursor.getString(3);
+            String artist = cursor.getString(1);
+            Integer launchedTimes = cursor.getInt(2);
+            Long playedTime = cursor.getLong(3);
+
             res.add(new Song(null, name, artist, launchedTimes, playedTime));
         }
 
@@ -187,6 +187,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
 
+        cursor.close();
+
         return artists;
     }
 
@@ -248,6 +250,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
 
+        cursor.close();
+
         return artists;
     }
 
@@ -301,11 +305,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    public Boolean clearAll() {
+    public void clearAll() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + STATISTICS_TABLE);
         db.close();
-        return true;
     }
 
     public Boolean deleteItem(Song song) {

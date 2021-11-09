@@ -6,12 +6,11 @@
 
     <uses-permission android:name="android.permission.MANAGE_MEDIA" />
 
-    <uses-permission-sdk-23
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/dollar_icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/dollar_icon"
@@ -20,13 +19,13 @@
         <activity
             android:name=".MusicPlayer.ArtistStatsActivity"
             android:exported="false"
-            android:parentActivityName=".MusicPlayer.StatisticsActivity" />
+            android:parentActivityName=".MusicPlayer.AllStatisticsActivity" />
         <activity
             android:name=".MusicPlayer.SongStatsActivity"
             android:exported="true"
-            android:parentActivityName=".MusicPlayer.StatisticsActivity" />
+            android:parentActivityName=".MusicPlayer.AllStatisticsActivity" />
         <activity
-            android:name=".MusicPlayer.StatisticsActivity"
+            android:name=".MusicPlayer.AllStatisticsActivity"
             android:exported="true"
             android:parentActivityName=".MusicPlayer.MusicActivity" />
         <activity
@@ -44,7 +43,8 @@
         <activity
             android:name=".SplashScreen"
             android:exported="true"
-            android:theme="@style/SplashScreen">
+            android:theme="@style/SplashScreen"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -57,7 +57,6 @@
         <receiver android:name=".MusicPlayer.NextSongNotificationReceiver" />
         <receiver android:name=".MusicPlayer.OpenMusicNotificationReceiver" />
 
-        <service android:name=".KillNotificationService" />
     </application>
 
 </manifest>

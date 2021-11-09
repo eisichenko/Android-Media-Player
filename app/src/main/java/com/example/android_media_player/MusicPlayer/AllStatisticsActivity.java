@@ -31,7 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class StatisticsActivity extends AppCompatActivity {
+public class AllStatisticsActivity extends AppCompatActivity {
 
     TextView totalTimeListenedTextView;
     TextView totalLaunchedTimesTextView;

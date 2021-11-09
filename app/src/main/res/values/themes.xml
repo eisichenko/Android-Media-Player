@@ -34,6 +34,7 @@
         <item name="main_background_color">#000</item>
         <item name="main_text_color">#fff</item>
         <item name="blurred_text_color">#C9C2C2</item>
+
     </style>
 
     <style name="SplashScreen" parent="Theme.MaterialComponents.DayNight.NoActionBar">

@@ -1,8 +1,10 @@
 package com.example.android_media_player.MusicPlayer;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -24,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.NotificationCompat;
@@ -316,28 +319,57 @@ public class MusicActivity extends AppCompatActivity {
             }
         }
         else if (itemId == R.id.statisticsMenuItem) {
-            startActivity(new Intent(this, StatisticsActivity.class));
+            startActivity(new Intent(this, AllStatisticsActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint({"NotificationTrampoline", "UnspecifiedImmutableFlag"})
     void sendNotification() {
         Intent activityIntent = new Intent(this, OpenMusicNotificationReceiver.class);
-        PendingIntent contentIntent = PendingIntent.getBroadcast(this, OPEN_MUSIC_CODE,
-                activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent contentIntent;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            contentIntent = PendingIntent.getBroadcast(this, OPEN_MUSIC_CODE,
+                    activityIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        }
+        else {
+            contentIntent = PendingIntent.getBroadcast(this, OPEN_MUSIC_CODE,
+                    activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
 
         Intent playBroadcastIntent = new Intent(this, PlayNotificationReceiver.class);
-        PendingIntent playIntent = PendingIntent.getBroadcast(this,
-                PLAY_NOTIFICATION_CODE, playBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent playIntent = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            playIntent = PendingIntent.getBroadcast(this,
+                    PLAY_NOTIFICATION_CODE, playBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        }
+        else {
+            playIntent = PendingIntent.getBroadcast(this,
+                    PLAY_NOTIFICATION_CODE, playBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
 
         Intent previousBroadcastIntent = new Intent(this, PrevSongNotificationReceiver.class);
-        PendingIntent previousIntent = PendingIntent.getBroadcast(this,
-                PREV_NOTIFICATION_CODE, previousBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent previousIntent = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            previousIntent = PendingIntent.getBroadcast(this,
+                    PREV_NOTIFICATION_CODE, previousBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        }
+        else {
+            previousIntent = PendingIntent.getBroadcast(this,
+                    PREV_NOTIFICATION_CODE, previousBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
 
         Intent nextBroadcastIntent = new Intent(this, NextSongNotificationReceiver.class);
-        PendingIntent nextIntent = PendingIntent.getBroadcast(this,
-                NEXT_NOTIFICATION_CODE, nextBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent nextIntent = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            nextIntent = PendingIntent.getBroadcast(this,
+                    NEXT_NOTIFICATION_CODE, nextBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        }
+        else {
+            nextIntent = PendingIntent.getBroadcast(this,
+                    NEXT_NOTIFICATION_CODE, nextBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Music notification");
 
@@ -417,6 +449,7 @@ public class MusicActivity extends AppCompatActivity {
         return res.toString();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onResume() {
         isActivityPaused = false;

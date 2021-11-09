@@ -238,6 +238,12 @@ public class SongStatsActivity extends AppCompatActivity {
             statisticsRecyclerView.setVisibility(View.VISIBLE);
         }
 
+        for (Song song : statisticsList) {
+            System.out.println(song.getName());
+            System.out.println(song.getPlayedTime());
+            System.out.println(song.getLaunchedTimes());
+        }
+
         setAdapter(statisticsList);
 
         System.out.println("SET ADAPTER: " + (System.currentTimeMillis() - start));
