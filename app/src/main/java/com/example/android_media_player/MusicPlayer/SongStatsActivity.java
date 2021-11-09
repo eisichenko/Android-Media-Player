@@ -1,6 +1,8 @@
 package com.example.android_media_player.MusicPlayer;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,6 +39,7 @@ public class SongStatsActivity extends AppCompatActivity {
     public String lastColumnName = DatabaseHelper.PLAYED_TIME_COLUMN;
     public String currentFilterSubstring = "";
 
+    public DatabaseHelper dbHelper = new DatabaseHelper(this);
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -71,11 +74,11 @@ public class SongStatsActivity extends AppCompatActivity {
             MainActivity.settings.edit().putString(MainActivity.SONG_SORT_ORDER_CACHE_NAME, currentSortType.toString()).apply();
 
             if (currentFilterSubstring.length() > 0) {
-                statisticsList = MusicActivity.dbHelper.getSongsBySubstring(currentFilterSubstring,
+                statisticsList = dbHelper.getSongsBySubstring(currentFilterSubstring,
                         currentSortType, lastColumnName);
             }
             else {
-                statisticsList = MusicActivity.dbHelper.selectAllSongs(currentSortType, lastColumnName);
+                statisticsList = dbHelper.selectAllSongs(currentSortType, lastColumnName);
             }
             setAdapter(statisticsList);
         }
@@ -86,11 +89,11 @@ public class SongStatsActivity extends AppCompatActivity {
                 MainActivity.settings.edit().putString(MainActivity.SONG_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
                 if (currentFilterSubstring.length() > 0) {
-                    statisticsList = MusicActivity.dbHelper.getSongsBySubstring(currentFilterSubstring,
+                    statisticsList = dbHelper.getSongsBySubstring(currentFilterSubstring,
                             currentSortType, lastColumnName);
                 }
                 else {
-                    statisticsList = MusicActivity.dbHelper.selectAllSongs(currentSortType, lastColumnName);
+                    statisticsList = dbHelper.selectAllSongs(currentSortType, lastColumnName);
                 }
                 setAdapter(statisticsList);
             }
@@ -102,11 +105,11 @@ public class SongStatsActivity extends AppCompatActivity {
                 MainActivity.settings.edit().putString(MainActivity.SONG_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
                 if (currentFilterSubstring.length() > 0) {
-                    statisticsList = MusicActivity.dbHelper.getSongsBySubstring(currentFilterSubstring,
+                    statisticsList = dbHelper.getSongsBySubstring(currentFilterSubstring,
                             currentSortType, lastColumnName);
                 }
                 else {
-                    statisticsList = MusicActivity.dbHelper.selectAllSongs(currentSortType, lastColumnName);
+                    statisticsList = dbHelper.selectAllSongs(currentSortType, lastColumnName);
                 }
                 setAdapter(statisticsList);
             }
@@ -118,11 +121,11 @@ public class SongStatsActivity extends AppCompatActivity {
                 MainActivity.settings.edit().putString(MainActivity.SONG_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
                 if (currentFilterSubstring.length() > 0) {
-                    statisticsList = MusicActivity.dbHelper.getSongsBySubstring(currentFilterSubstring,
+                    statisticsList = dbHelper.getSongsBySubstring(currentFilterSubstring,
                             currentSortType, lastColumnName);
                 }
                 else {
-                    statisticsList = MusicActivity.dbHelper.selectAllSongs(currentSortType, lastColumnName);
+                    statisticsList = dbHelper.selectAllSongs(currentSortType, lastColumnName);
                 }
                 setAdapter(statisticsList);
             }
@@ -137,7 +140,7 @@ public class SongStatsActivity extends AppCompatActivity {
                     .setPositiveButton("Filter", (dialog, whichButton) -> {
                         currentFilterSubstring = editText.getText().toString();
 
-                        statisticsList = MusicActivity.dbHelper.getSongsBySubstring(
+                        statisticsList = dbHelper.getSongsBySubstring(
                                 currentFilterSubstring,
                                 currentSortType, lastColumnName);
 
@@ -165,7 +168,7 @@ public class SongStatsActivity extends AppCompatActivity {
         }
         else if (itemId == R.id.resetFilterMenuItem) {
             currentFilterSubstring = "";
-            statisticsList = MusicActivity.dbHelper.selectAllSongs(currentSortType, lastColumnName);
+            statisticsList = dbHelper.selectAllSongs(currentSortType, lastColumnName);
 
             if (statisticsList.size() == 0) {
                 noneTextView.setVisibility(View.VISIBLE);
@@ -182,6 +185,13 @@ public class SongStatsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        nMgr.cancelAll();
     }
 
     @Override
@@ -225,7 +235,7 @@ public class SongStatsActivity extends AppCompatActivity {
 
         long start = System.currentTimeMillis();
 
-        statisticsList = MusicActivity.dbHelper.selectAllSongs(currentSortType, lastColumnName);
+        statisticsList = dbHelper.selectAllSongs(currentSortType, lastColumnName);
 
         System.out.println("SELECT ALL: " + (System.currentTimeMillis() - start));
 
@@ -236,12 +246,6 @@ public class SongStatsActivity extends AppCompatActivity {
         else {
             noneTextView.setVisibility(View.GONE);
             statisticsRecyclerView.setVisibility(View.VISIBLE);
-        }
-
-        for (Song song : statisticsList) {
-            System.out.println(song.getName());
-            System.out.println(song.getPlayedTime());
-            System.out.println(song.getLaunchedTimes());
         }
 
         setAdapter(statisticsList);

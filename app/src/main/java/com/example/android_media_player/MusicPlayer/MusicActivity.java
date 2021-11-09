@@ -87,7 +87,9 @@ public class MusicActivity extends AppCompatActivity {
 
     MenuItem hideListItem;
 
-    static DatabaseHelper dbHelper;
+    public DatabaseHelper dbHelper = new DatabaseHelper(this);
+
+    public static boolean isBackPressed = false;
 
     @Override
     protected void onStart() {
@@ -132,7 +134,11 @@ public class MusicActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
 
-        if (itemId == R.id.shuffleMenuItem) {
+        if (itemId == android.R.id.home) {
+            isBackPressed = true;
+            return super.onOptionsItemSelected(item);
+        }
+        else if (itemId == R.id.shuffleMenuItem) {
             if (songList.size() > 0) {
                 boolean wasPlaying = mediaPlayer.isPlaying();
 
@@ -472,9 +478,27 @@ public class MusicActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onBackPressed() {
+        isBackPressed = true;
+        super.onBackPressed();
+    }
 
-        dbHelper = MainActivity.dbHelper;
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.out.println("MUSIC DESTROY");
+        System.out.println(isBackPressed);
+        if (!isBackPressed) {
+            NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            nMgr.cancelAll();
+        }
+        else {
+            isBackPressed = false;
+        }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
 
         isAutoplayEnabled = MainActivity.settings.getBoolean(MainActivity.AUTOPLAY_CACHE_NAME, true);
         isRepeatEnabled = MainActivity.settings.getBoolean(MainActivity.REPEAT_CACHE_NAME, false);

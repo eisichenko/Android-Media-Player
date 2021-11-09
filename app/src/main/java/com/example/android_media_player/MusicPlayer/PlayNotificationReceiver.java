@@ -9,30 +9,33 @@ import android.graphics.Color;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.R;
 
 public class PlayNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        DatabaseHelper dbHelper = new DatabaseHelper(context);
+
         if (MusicActivity.currentSong == null) return;
 
         if (MusicActivity.mediaPlayer.isPlaying()) {
             MusicActivity.mediaPlayer.pause();
 
             MusicActivity.handler.removeCallbacks(MusicActivity.runnable);
-            MusicActivity.dbHelper.modifyPlayedTime(MusicActivity.currentSong,
+            dbHelper.modifyPlayedTime(MusicActivity.currentSong,
                     MusicActivity.currentSong.getPlayedTime());
         }
         else {
             MusicActivity.handler.removeCallbacks(MusicActivity.runnable);
             if (MusicActivity.currentSong != null) {
                 try {
-                    Song dbSong = MusicActivity.dbHelper.findSong(MusicActivity.currentSong.getName());
+                    Song dbSong = dbHelper.findSong(MusicActivity.currentSong.getName());
                     MusicActivity.currentSong.setPlayedTime(dbSong.getPlayedTime());
-                    MusicActivity.dbHelper.modifyPlayedTime(MusicActivity.currentSong, MusicActivity.currentSong.getPlayedTime());
+                    dbHelper.modifyPlayedTime(MusicActivity.currentSong, MusicActivity.currentSong.getPlayedTime());
                 }
                 catch (Exception e) {
-                    MusicActivity.dbHelper.add(MusicActivity.currentSong);
+                    dbHelper.add(MusicActivity.currentSong);
                 }
             }
 

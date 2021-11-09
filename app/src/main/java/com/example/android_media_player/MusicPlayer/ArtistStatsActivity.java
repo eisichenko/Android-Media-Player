@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,6 +40,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
     public String lastColumnName = DatabaseHelper.PLAYED_TIME_COLUMN;
     public String currentFilterSubstring = "";
 
+    public DatabaseHelper dbHelper = new DatabaseHelper(this);
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -72,10 +75,10 @@ public class ArtistStatsActivity extends AppCompatActivity {
             MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_ORDER_CACHE_NAME, currentSortType.toString()).apply();
 
             if (currentFilterSubstring.length() == 0) {
-                statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
+                statisticsList = dbHelper.selectAllArtists(currentSortType, lastColumnName);
             }
             else {
-                statisticsList = MusicActivity.dbHelper.getArtistsBySubstring(currentFilterSubstring, currentSortType, lastColumnName);
+                statisticsList = dbHelper.getArtistsBySubstring(currentFilterSubstring, currentSortType, lastColumnName);
             }
 
             setAdapter(statisticsList);
@@ -87,10 +90,10 @@ public class ArtistStatsActivity extends AppCompatActivity {
                 MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
                 if (currentFilterSubstring.length() == 0) {
-                    statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
+                    statisticsList = dbHelper.selectAllArtists(currentSortType, lastColumnName);
                 }
                 else {
-                    statisticsList = MusicActivity.dbHelper.getArtistsBySubstring(currentFilterSubstring, currentSortType, lastColumnName);
+                    statisticsList = dbHelper.getArtistsBySubstring(currentFilterSubstring, currentSortType, lastColumnName);
                 }
 
                 setAdapter(statisticsList);
@@ -103,10 +106,10 @@ public class ArtistStatsActivity extends AppCompatActivity {
                 MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
                 if (currentFilterSubstring.length() == 0) {
-                    statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
+                    statisticsList = dbHelper.selectAllArtists(currentSortType, lastColumnName);
                 }
                 else {
-                    statisticsList = MusicActivity.dbHelper.getArtistsBySubstring(currentFilterSubstring, currentSortType, lastColumnName);
+                    statisticsList = dbHelper.getArtistsBySubstring(currentFilterSubstring, currentSortType, lastColumnName);
                 }
                 setAdapter(statisticsList);
             }
@@ -118,10 +121,10 @@ public class ArtistStatsActivity extends AppCompatActivity {
                 MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
                 if (currentFilterSubstring.length() == 0) {
-                    statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
+                    statisticsList = dbHelper.selectAllArtists(currentSortType, lastColumnName);
                 }
                 else {
-                    statisticsList = MusicActivity.dbHelper.getArtistsBySubstring(currentFilterSubstring, currentSortType, lastColumnName);
+                    statisticsList = dbHelper.getArtistsBySubstring(currentFilterSubstring, currentSortType, lastColumnName);
                 }
 
                 setAdapter(statisticsList);
@@ -167,7 +170,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
                     .setPositiveButton("Filter", (dialog, whichButton) -> {
                         currentFilterSubstring = editText.getText().toString();
 
-                        statisticsList = MusicActivity.dbHelper.getArtistsBySubstring(
+                        statisticsList = dbHelper.getArtistsBySubstring(
                                 currentFilterSubstring,
                                 currentSortType, lastColumnName);
 
@@ -195,7 +198,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
         }
         else if (itemId == R.id.resetFilterMenuItem) {
             currentFilterSubstring = "";
-            statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
+            statisticsList = dbHelper.selectAllArtists(currentSortType, lastColumnName);
 
             if (statisticsList.size() == 0) {
                 noneTextView.setVisibility(View.VISIBLE);
@@ -212,6 +215,13 @@ public class ArtistStatsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        nMgr.cancelAll();
     }
 
     @Override
@@ -255,7 +265,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
 
         long start = System.currentTimeMillis();
 
-        statisticsList = MusicActivity.dbHelper.selectAllArtists(currentSortType, lastColumnName);
+        statisticsList = dbHelper.selectAllArtists(currentSortType, lastColumnName);
 
         System.out.println("SELECT ALL: " + (System.currentTimeMillis() - start));
 

@@ -10,11 +10,14 @@ import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.R;
 
 public class PrevSongNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        DatabaseHelper dbHelper = new DatabaseHelper(context);
+
         if (MusicActivity.currentSong == null) return;
 
         Song prevSong;
@@ -48,19 +51,19 @@ public class PrevSongNotificationReceiver extends BroadcastReceiver {
 
         if (prevSong != null) {
             try {
-                Song dbSong = MusicActivity.dbHelper.findSong(prevSong.getName());
+                Song dbSong = dbHelper.findSong(prevSong.getName());
                 prevSong.setLaunchedTimes(dbSong.getLaunchedTimes() + 1);
                 prevSong.setPlayedTime(dbSong.getPlayedTime());
-                MusicActivity.dbHelper.modifyLaunchedTimes(prevSong, prevSong.getLaunchedTimes());
+                dbHelper.modifyLaunchedTimes(prevSong, prevSong.getLaunchedTimes());
             }
             catch (Exception e) {
                 prevSong.setLaunchedTimes(1);
-                MusicActivity.dbHelper.add(prevSong);
+                dbHelper.add(prevSong);
             }
         }
 
         if (MusicActivity.currentSong != null) {
-            MusicActivity.dbHelper.modifyPlayedTime(MusicActivity.currentSong, MusicActivity.currentSong.getPlayedTime());
+            dbHelper.modifyPlayedTime(MusicActivity.currentSong, MusicActivity.currentSong.getPlayedTime());
         }
 
         MusicActivity.currentSong = prevSong;

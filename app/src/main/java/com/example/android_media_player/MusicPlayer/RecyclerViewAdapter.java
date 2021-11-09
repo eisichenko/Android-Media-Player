@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.R;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             songItemTextView = itemView.findViewById(R.id.songItemTextView);
 
             itemView.setOnClickListener(v -> {
+                DatabaseHelper dbHelper = new DatabaseHelper(v.getContext());
                 MusicActivity.handler.removeCallbacks(MusicActivity.runnable);
 
                 int prevPos = MusicActivity.selectedPosition;
@@ -53,20 +55,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                 if (prevSong != null) {
                     System.out.println(prevSong.getName() + " played " + prevSong.getPlayedTime());
-                    MusicActivity.dbHelper.modifyPlayedTime(prevSong, prevSong.getPlayedTime());
+                    dbHelper.modifyPlayedTime(prevSong, prevSong.getPlayedTime());
                 }
 
                 if (MusicActivity.currentSong != null) {
                     try {
-                        Song dbSong = MusicActivity.dbHelper.findSong(MusicActivity.currentSong.getName());
+                        Song dbSong = dbHelper.findSong(MusicActivity.currentSong.getName());
                         MusicActivity.currentSong.setLaunchedTimes(dbSong.getLaunchedTimes() + 1);
                         MusicActivity.currentSong.setPlayedTime(dbSong.getPlayedTime());
                         System.out.println(MusicActivity.currentSong.getName() + " played " + MusicActivity.currentSong.getPlayedTime());
-                        MusicActivity.dbHelper.modifyLaunchedTimes(MusicActivity.currentSong, MusicActivity.currentSong.getLaunchedTimes());
+                        dbHelper.modifyLaunchedTimes(MusicActivity.currentSong, MusicActivity.currentSong.getLaunchedTimes());
                     }
                     catch (Exception e) {
                         MusicActivity.currentSong.setLaunchedTimes(1);
-                        MusicActivity.dbHelper.add(MusicActivity.currentSong);
+                        dbHelper.add(MusicActivity.currentSong);
                     }
                 }
 

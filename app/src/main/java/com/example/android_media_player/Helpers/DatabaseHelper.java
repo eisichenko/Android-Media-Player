@@ -258,8 +258,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<Song> getSongsBySubstring(String substring, SortType sortType, String sortColumn) {
         ArrayList<Song> res = new ArrayList<>();
 
-        String query = "SELECT * FROM " + STATISTICS_TABLE +
-                " WHERE " + NAME_COLUMN + " LIKE '%" + substring.replace("'", "''") + "%' ";
+        String query = String.format("SELECT %s, %s, %s, %s\n" +
+                "FROM %s\n" +
+                "WHERE %s LIKE '%%%s%%'",
+                NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
+                STATISTICS_TABLE,
+                NAME_COLUMN, substring.replace("'", "''"));
 
         if (sortColumn.equals(NAME_COLUMN)) {
             query += " ORDER BY LOWER(" + sortColumn + ")";
@@ -281,9 +285,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         while (cursor.moveToNext()) {
             String name = cursor.getString(0);
-            Integer launchedTimes = cursor.getInt(1);
-            Long playedTime = cursor.getLong(2);
-            String artist = cursor.getString(3);
+            String artist = cursor.getString(1);
+            Integer launchedTimes = cursor.getInt(2);
+            Long playedTime = cursor.getLong(3);
             res.add(new Song(null, name, artist, launchedTimes, playedTime));
         }
 
@@ -294,8 +298,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Boolean exists(Song song) {
-        String query = "SELECT EXISTS (SELECT * FROM " + STATISTICS_TABLE + " WHERE " + NAME_COLUMN + "='" +
-                song.getName().replace("'", "''") + "')";
+        String query = String.format("SELECT EXISTS(SELECT %s FROM %s WHERE %s = '%s')",
+                NAME_COLUMN, STATISTICS_TABLE, NAME_COLUMN, song.getName().replace("'", "''"));
+
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
@@ -320,19 +325,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Song findSong(String name) throws Exception {
-        String query = "SELECT * FROM " + STATISTICS_TABLE + " WHERE " + NAME_COLUMN + "='" +
-                name.replace("'", "''") + "'";
+        String query = String.format("SELECT %s, %s, %s, %s\n" +
+                "FROM %s\n" +
+                "WHERE %s = '%s'",
+                NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
+                STATISTICS_TABLE,
+                NAME_COLUMN, name.replace("'", "''"));
+
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
             String curName = cursor.getString(0);
-            Integer highScore = cursor.getInt(1);
-            Long timePlayed = cursor.getLong(2);
-            String artist = cursor.getString(3);
+            String artist = cursor.getString(1);
+            Integer launchedTimes = cursor.getInt(2);
+            Long timePlayed = cursor.getLong(3);
             cursor.close();
             db.close();
-            return new Song(null, curName, artist, highScore, timePlayed);
+            return new Song(null, curName, artist, launchedTimes, timePlayed);
         }
         else {
             cursor.close();
@@ -400,17 +410,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Song getMostPlayedSong() throws Exception {
-        String query = "SELECT * FROM " + STATISTICS_TABLE +
-            " WHERE " + PLAYED_TIME_COLUMN + "= (SELECT MAX(" + PLAYED_TIME_COLUMN + ") FROM " + STATISTICS_TABLE + ")";
+        String query = String.format("SELECT %s, %s, %s, %s\n" +
+                "FROM %s\n" +
+                "WHERE %s = (SELECT MAX(%s) FROM %s)",
+                NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
+                STATISTICS_TABLE,
+                PLAYED_TIME_COLUMN, PLAYED_TIME_COLUMN, STATISTICS_TABLE);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
             String curName = cursor.getString(0);
-            Integer highScore = cursor.getInt(1);
-            Long timePlayed = cursor.getLong(2);
-            String artist = cursor.getString(3);
+            String artist = cursor.getString(1);
+            Integer highScore = cursor.getInt(2);
+            Long timePlayed = cursor.getLong(3);
             cursor.close();
             db.close();
             return new Song(null, curName, artist, highScore, timePlayed);
@@ -473,17 +487,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Song getMostUnpopularSong() throws Exception {
-        String query = "SELECT * FROM " + STATISTICS_TABLE +
-                " ORDER BY " + PLAYED_TIME_COLUMN + ", " + LAUNCHED_TIMES_COLUMN + " ASC";
+        String query = String.format("SELECT %s, %s, %s, %s\n" +
+                "FROM %s\n" +
+                "ORDER BY %s, %s ASC",
+                NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
+                STATISTICS_TABLE,
+                PLAYED_TIME_COLUMN, LAUNCHED_TIMES_COLUMN);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
             String curName = cursor.getString(0);
-            Integer highScore = cursor.getInt(1);
-            Long timePlayed = cursor.getLong(2);
-            String artist = cursor.getString(3);
+            String artist = cursor.getString(1);
+            Integer highScore = cursor.getInt(2);
+            Long timePlayed = cursor.getLong(3);
             cursor.close();
             db.close();
             return new Song(null, curName, artist, highScore, timePlayed);

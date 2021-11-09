@@ -1,6 +1,8 @@
 package com.example.android_media_player.MusicPlayer;
 
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -51,6 +53,8 @@ public class AllStatisticsActivity extends AppCompatActivity {
 
     public static Long totalPlayedTime = 0L;
 
+    public DatabaseHelper dbHelper = new DatabaseHelper(this);
+
     public void chooseLoadFileIntent() {
         Intent intent = new Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Choose file"), REQUEST_CODE_CHOOSE_LOAD_FILE);
@@ -78,7 +82,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
                     .setTitle("Clear database")
                     .setMessage("You will lose all your data, are you sure?")
                     .setPositiveButton("Clear", (dialogInterface, i) -> {
-                        MusicActivity.dbHelper.clearAll();
+                        dbHelper.clearAll();
                         Toast.makeText(this, "DB was cleared successfully", Toast.LENGTH_SHORT).show();
 
                         for (Song song : MusicActivity.songList) {
@@ -101,6 +105,13 @@ public class AllStatisticsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        nMgr.cancelAll();
     }
 
     @Override
@@ -140,7 +151,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
         long start = System.currentTimeMillis();
 
         try {
-            Song favoriteSong = MusicActivity.dbHelper.getMostPlayedSong();
+            Song favoriteSong = dbHelper.getMostPlayedSong();
             favoriteSongTextView.setText("The most played song: " + favoriteSong.getName());
         }
         catch (Exception e) {
@@ -150,7 +161,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
         System.out.println("MOST PLAYED: " + (System.currentTimeMillis() - start));
 
         try {
-            Song mostUnpopularSong = MusicActivity.dbHelper.getMostUnpopularSong();
+            Song mostUnpopularSong = dbHelper.getMostUnpopularSong();
             mostUnpopularSongTextView.setText("The most unpopular song: " + mostUnpopularSong.getName());
         }
         catch (Exception e) {
@@ -160,7 +171,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
         totalPlayedTime = 0L;
 
         try {
-            totalPlayedTime = MusicActivity.dbHelper.getTotalPlayedTime();
+            totalPlayedTime = dbHelper.getTotalPlayedTime();
             totalTimeListenedTextView.setText("Total listened time: " + MusicActivity.convertStatisticsTime(totalPlayedTime));
         }
         catch (Exception e) {
@@ -172,7 +183,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
         Integer totalLaunchedTimes = 0;
 
         try {
-            totalLaunchedTimes = MusicActivity.dbHelper.getTotalLaunchedTimes();
+            totalLaunchedTimes = dbHelper.getTotalLaunchedTimes();
             totalLaunchedTimesTextView.setText("Total launched times: " + totalLaunchedTimes);
         }
         catch (Exception e) {
@@ -182,7 +193,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
         System.out.println("TOTAL LAUNCHED: " + (System.currentTimeMillis() - start));
 
         try {
-            Long averagePlayedTime = MusicActivity.dbHelper.getAveragePlayTime();
+            Long averagePlayedTime = dbHelper.getAveragePlayTime();
             averageTimeListenedTextView.setText("Average listened time: " + MusicActivity.convertStatisticsTime(averagePlayedTime));
         }
         catch (Exception e) {
@@ -192,7 +203,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
         System.out.println("AVERAGE PLAYED: " + (System.currentTimeMillis() - start));
 
         try {
-            Float averageLaunchedTimes = MusicActivity.dbHelper.getAverageLaunchTime();
+            Float averageLaunchedTimes = dbHelper.getAverageLaunchTime();
             averageLaunchedTimesTextView.setText("Average launched times: " + String.format("%.2f", averageLaunchedTimes));
         }
         catch (Exception e) {
@@ -208,7 +219,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
         }
 
         try {
-            String favoriteArtist = MainActivity.dbHelper.getFavoriteArtist();
+            String favoriteArtist = dbHelper.getFavoriteArtist();
             favoriteArtistTextView.setText(String.format("Favorite artist: %s", favoriteArtist));
         }
         catch (Exception e) {
@@ -216,7 +227,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
         }
 
         try {
-            String mostUnpopularArtist = MainActivity.dbHelper.getMostUnpopularArtist();
+            String mostUnpopularArtist = dbHelper.getMostUnpopularArtist();
             mostUnpopularArtistTextView.setText(String.format("The most unpopular artist: %s", mostUnpopularArtist));
         }
         catch (Exception e) {
@@ -239,7 +250,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
                 case REQUEST_CODE_CHOOSE_SAVE_FILE:
                     Uri saveUri = resultData.getData();
 
-                    ArrayList<Song> listToSave = MainActivity.dbHelper.selectAllSongs(DatabaseHelper.SortType.ASCENDING,
+                    ArrayList<Song> listToSave = dbHelper.selectAllSongs(DatabaseHelper.SortType.ASCENDING,
                             DatabaseHelper.NAME_COLUMN);
 
                     DocumentFile chosenSaveFile = DocumentFile.fromSingleUri(this, saveUri);
@@ -277,9 +288,9 @@ public class AllStatisticsActivity extends AppCompatActivity {
                             }
                         }
 
-                        MusicActivity.dbHelper.clearAll();
+                        dbHelper.clearAll();
                         for (Song song : loadedList) {
-                            MusicActivity.dbHelper.add(song);
+                            dbHelper.add(song);
                         }
 
                         Toast.makeText(this, "Statistics were loaded from file " + chosenLoadFile.getName(), Toast.LENGTH_SHORT).show();

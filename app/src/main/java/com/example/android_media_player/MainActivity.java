@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
     public static DocumentFile chosenFile;
     public static Uri chosenUri;
 
-    public static DatabaseHelper dbHelper;
-
     public static SharedPreferences settings;
     public static final String APP_PREFERENCES_NAME = "media_player_settings";
     public static final String AUTOPLAY_CACHE_NAME = "autoplay";
@@ -165,14 +163,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        nMgr.cancelAll();
+        System.out.println("MAIN DESTROY");
+        System.out.println(MusicActivity.isBackPressed);
+        if (!MusicActivity.isBackPressed) {
+            NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            nMgr.cancelAll();
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        dbHelper = new DatabaseHelper(this);
-
         settings = getSharedPreferences(APP_PREFERENCES_NAME, Context.MODE_PRIVATE);
 
         String themeString = settings.getString(THEME_CACHE_NAME, null);
