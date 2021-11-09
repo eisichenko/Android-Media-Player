@@ -21,7 +21,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         DESCENDING
     }
 
-    Context context;
+    final Context context;
     public static final String STATISTICS_TABLE = "STATISTICS_TABLE";
     public static final String NAME_COLUMN = "NAME";
     public static final String LAUNCHED_TIMES_COLUMN = "LAUNCHED_TIMES";
@@ -316,12 +316,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public Boolean deleteItem(Song song) {
+    public void deleteItem(Song song) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + STATISTICS_TABLE + " WHERE " + NAME_COLUMN + "='" +
                 song.getName().replace("'", "''") + "'");
         db.close();
-        return true;
     }
 
     public Song findSong(String name) throws Exception {

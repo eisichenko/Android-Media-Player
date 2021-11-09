@@ -20,7 +20,7 @@ import com.example.android_media_player.R;
 import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-    private ArrayList<Song> songList;
+    private final ArrayList<Song> songList;
     private Context context;
     private ImageView playImageView;
     private SeekBar musicSeekBar;
@@ -33,7 +33,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView songItemTextView;
+        private final TextView songItemTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

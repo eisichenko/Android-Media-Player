@@ -53,7 +53,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
 
     public static Long totalPlayedTime = 0L;
 
-    public DatabaseHelper dbHelper = new DatabaseHelper(this);
+    public final DatabaseHelper dbHelper = new DatabaseHelper(this);
 
     public void chooseLoadFileIntent() {
         Intent intent = new Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT);
@@ -211,7 +211,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
         }
 
         try {
-            Long playedTimePerLaunch = totalPlayedTime / totalLaunchedTimes;
+            long playedTimePerLaunch = totalPlayedTime / totalLaunchedTimes;
             playedTimePerLaunchTextView.setText("Played time per launch: " + MusicActivity.convertStatisticsTime(playedTimePerLaunch));
         }
         catch (Exception e) {

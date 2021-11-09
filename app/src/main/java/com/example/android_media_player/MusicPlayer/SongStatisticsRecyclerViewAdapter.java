@@ -16,17 +16,17 @@ import com.example.android_media_player.R;
 import java.util.ArrayList;
 
 public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<SongStatisticsRecyclerViewAdapter.ViewHolder> {
-    private ArrayList<Song> songList;
+    private final ArrayList<Song> songList;
     private Context context;
 
     public SongStatisticsRecyclerViewAdapter(ArrayList<Song> songList) {
         this.songList = songList;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView statsSongNameTextView;
-        TextView statsTotalLaunchTextView;
-        TextView totalTimeListenedTextView;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        final TextView statsSongNameTextView;
+        final TextView statsTotalLaunchTextView;
+        final TextView totalTimeListenedTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

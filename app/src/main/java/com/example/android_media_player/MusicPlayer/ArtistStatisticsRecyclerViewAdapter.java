@@ -16,19 +16,19 @@ import com.example.android_media_player.R;
 import java.util.ArrayList;
 
 public class ArtistStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<ArtistStatisticsRecyclerViewAdapter.ViewHolder> {
-    private ArrayList<Artist> artistList;
+    private final ArrayList<Artist> artistList;
     private Context context;
 
     public ArtistStatisticsRecyclerViewAdapter(ArrayList<Artist> artistList) {
         this.artistList = artistList;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView statsArtistNameTextView;
-        TextView statsTotalLaunchTextView;
-        TextView totalTimeListenedTextView;
-        TextView listenedTimePerLaunchTextView;
-        TextView numberOfSongsTextView;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        final TextView statsArtistNameTextView;
+        final TextView statsTotalLaunchTextView;
+        final TextView totalTimeListenedTextView;
+        final TextView listenedTimePerLaunchTextView;
+        final TextView numberOfSongsTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

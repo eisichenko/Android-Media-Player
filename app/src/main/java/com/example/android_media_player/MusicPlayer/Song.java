@@ -4,8 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class Song {
-    private String name;
-    private String path;
+    private final String name;
+    private final String path;
     private String artist;
     private Integer launchedTimes;
     private Long playedTime;

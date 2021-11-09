@@ -26,7 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.NotificationCompat;
@@ -66,7 +65,7 @@ public class MusicActivity extends AppCompatActivity {
     ImageView nextSongImageView;
 
     static MediaPlayer mediaPlayer;
-    static Handler handler = new Handler();
+    static final Handler handler = new Handler();
     static Runnable runnable;
 
     static ArrayList<Song> songList;
@@ -87,7 +86,7 @@ public class MusicActivity extends AppCompatActivity {
 
     MenuItem hideListItem;
 
-    public DatabaseHelper dbHelper = new DatabaseHelper(this);
+    public final DatabaseHelper dbHelper = new DatabaseHelper(this);
 
     public static boolean isBackPressed = false;
 
@@ -345,7 +344,7 @@ public class MusicActivity extends AppCompatActivity {
         }
 
         Intent playBroadcastIntent = new Intent(this, PlayNotificationReceiver.class);
-        PendingIntent playIntent = null;
+        PendingIntent playIntent;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             playIntent = PendingIntent.getBroadcast(this,
                     PLAY_NOTIFICATION_CODE, playBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -356,7 +355,7 @@ public class MusicActivity extends AppCompatActivity {
         }
 
         Intent previousBroadcastIntent = new Intent(this, PrevSongNotificationReceiver.class);
-        PendingIntent previousIntent = null;
+        PendingIntent previousIntent;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             previousIntent = PendingIntent.getBroadcast(this,
                     PREV_NOTIFICATION_CODE, previousBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -367,7 +366,7 @@ public class MusicActivity extends AppCompatActivity {
         }
 
         Intent nextBroadcastIntent = new Intent(this, NextSongNotificationReceiver.class);
-        PendingIntent nextIntent = null;
+        PendingIntent nextIntent;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             nextIntent = PendingIntent.getBroadcast(this,
                     NEXT_NOTIFICATION_CODE, nextBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);

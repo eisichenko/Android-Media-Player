@@ -34,7 +34,7 @@
 
             <TextView
                 android:id="@+id/songNameTextView"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:ellipsize="middle"
                 android:singleLine="true"
@@ -102,7 +102,7 @@
 
             <SeekBar
                 android:id="@+id/musicSeekBar"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:layout_weight="1"

@@ -39,7 +39,7 @@ public class SongStatsActivity extends AppCompatActivity {
     public String lastColumnName = DatabaseHelper.PLAYED_TIME_COLUMN;
     public String currentFilterSubstring = "";
 
-    public DatabaseHelper dbHelper = new DatabaseHelper(this);
+    public final DatabaseHelper dbHelper = new DatabaseHelper(this);
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

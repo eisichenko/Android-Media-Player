@@ -40,7 +40,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
     public String lastColumnName = DatabaseHelper.PLAYED_TIME_COLUMN;
     public String currentFilterSubstring = "";
 
-    public DatabaseHelper dbHelper = new DatabaseHelper(this);
+    public final DatabaseHelper dbHelper = new DatabaseHelper(this);
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -247,7 +247,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
         }
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_song_stats);
+        setContentView(R.layout.activity_artist_stats);
 
         setTitle("Artist statistics");
 
