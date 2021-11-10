@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -83,12 +84,18 @@ public class MusicActivity extends AppCompatActivity {
     static Boolean isListHidden = false;
     static Boolean isRepeatEnabled = false;
     static Boolean isActivityPaused = false;
+    static Boolean isVolumeMuted = false;
 
     MenuItem hideListItem;
 
     public final DatabaseHelper dbHelper = new DatabaseHelper(this);
 
     public static boolean isBackPressed = false;
+
+    public AudioManager audioManager;
+    public Toast prevToast;
+    public static int volumeBeforeMuting = 0;
+    public MenuItem muteMenuItem;
 
     @Override
     protected void onStart() {
@@ -101,6 +108,15 @@ public class MusicActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.music_menu_layout, menu);
+
+        muteMenuItem = menu.findItem(R.id.volumeMuteMenuItem);
+
+        if (isVolumeMuted) {
+            muteMenuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_unmute));
+        }
+        else {
+            muteMenuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_mute));
+        }
 
         MenuItem autoplayItem = menu.findItem(R.id.autoplayMenuItem);
         if (isAutoplayEnabled) {
@@ -278,6 +294,17 @@ public class MusicActivity extends AppCompatActivity {
                     }
                 }
             }
+
+            isListHidden = false;
+
+            MainActivity.settings.edit().putBoolean(MainActivity.HIDE_LIST_CACHE_NAME, isListHidden).apply();
+
+            hideListItem.setTitle("Hide song list");
+            songsRecyclerView.setVisibility(View.VISIBLE);
+            hiddenTextView.setVisibility(View.GONE);
+
+            Toast.makeText(this, "Songs were sorted", Toast.LENGTH_SHORT).show();
+
             return true;
         }
         else if (itemId == R.id.autoplayMenuItem) {
@@ -325,6 +352,70 @@ public class MusicActivity extends AppCompatActivity {
         }
         else if (itemId == R.id.statisticsMenuItem) {
             startActivity(new Intent(this, AllStatisticsActivity.class));
+        }
+        else if (itemId == R.id.volumeUpMenuItem) {
+            if (isVolumeMuted) {
+                isVolumeMuted = false;
+                muteMenuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_mute));
+            }
+
+            audioManager.adjustVolume(AudioManager.ADJUST_RAISE, 0);
+            int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+
+            if (prevToast != null) {
+                prevToast.cancel();
+            }
+
+            prevToast = Toast.makeText(this,
+                    String.format("Volume up %d%%", Math.round((float) currentVolume / maxVolume * 100.0)),
+                    Toast.LENGTH_SHORT);
+
+            prevToast.show();
+        }
+        else if (itemId == R.id.volumeDownMenuItem) {
+            audioManager.adjustVolume(AudioManager.ADJUST_LOWER, 0);
+            int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+
+            if (prevToast != null) {
+                prevToast.cancel();
+            }
+
+            prevToast = Toast.makeText(this,
+                    String.format("Volume down %d%%", Math.round((float) currentVolume / maxVolume * 100.0)),
+                    Toast.LENGTH_SHORT);
+
+            prevToast.show();
+        }
+        else if (itemId == R.id.volumeMuteMenuItem) {
+            isVolumeMuted = !isVolumeMuted;
+
+            if (isVolumeMuted) {
+                volumeBeforeMuting = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_unmute));
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+                if (prevToast != null) {
+                    prevToast.cancel();
+                }
+
+                prevToast = Toast.makeText(this,
+                        "Muted",
+                        Toast.LENGTH_SHORT);
+
+            }
+            else {
+                item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_mute));
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeBeforeMuting, 0);
+                if (prevToast != null) {
+                    prevToast.cancel();
+                }
+
+                prevToast = Toast.makeText(this,
+                        "Unmuted",
+                        Toast.LENGTH_SHORT);
+            }
+            prevToast.show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -521,6 +612,8 @@ public class MusicActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
 
+        audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+
         setTitle("Playing music");
 
         songNameTextView = findViewById(R.id.songNameTextView);
@@ -608,10 +701,6 @@ public class MusicActivity extends AppCompatActivity {
                 String path = cursor.getString(0);
                 String name = cursor.getString(1);
                 String artist = cursor.getString(2);
-                System.out.println("================");
-                System.out.println(path);
-                System.out.println(name);
-                System.out.println(artist);
 
                 Song newSong = new Song(path, name, artist, 0, 0L);
 

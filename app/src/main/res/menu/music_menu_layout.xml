@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:name="volume_mute"
+        android:id="@+id/volumeMuteMenuItem"
+        android:title="Volume Mute"
+        android:icon="@drawable/ic_volume_mute"
+        app:showAsAction="always"/>
+
+    <item android:name="volume_down"
+        android:id="@+id/volumeDownMenuItem"
+        android:title="Volume Down"
+        android:icon="@drawable/ic_volume_down"
+        app:showAsAction="always"/>
+
+    <item android:name="volume_up"
+        android:id="@+id/volumeUpMenuItem"
+        android:title="Volume Up"
+        android:icon="@drawable/ic_volume_up"
+        app:showAsAction="always"/>
+
     <item android:name="autoplay_menu_item"
         android:id="@+id/autoplayMenuItem"
         android:title="Autoplay"/>
