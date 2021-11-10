@@ -72,7 +72,7 @@ public class MusicActivity extends AppCompatActivity {
     static ArrayList<Song> songList;
     static Stack<Song> playedSongs;
     static Integer selectedPosition;
-    static Song currentSong;
+    public static Song currentSong;
 
     static final int NOTIFICATION_CODE = 0;
     static final int OPEN_MUSIC_CODE = 1;
@@ -89,6 +89,8 @@ public class MusicActivity extends AppCompatActivity {
     MenuItem hideListItem;
 
     public final DatabaseHelper dbHelper = new DatabaseHelper(this);
+    public static final long BACKGROUND_DB_UPDATE_INTERVAL_MS = 15_000L;
+
 
     public static boolean isBackPressed = false;
 
@@ -489,10 +491,8 @@ public class MusicActivity extends AppCompatActivity {
         if (currentSong != null) {
             try {
                 handler.removeCallbacks(runnable);
-                Song dbSong = dbHelper.findSong(currentSong.getName());
-                if (currentSong.getPlayedTime() > dbSong.getPlayedTime()) {
-                    dbHelper.modifyPlayedTime(currentSong, currentSong.getPlayedTime());
-                }
+
+                dbHelper.modifyPlayedTime(currentSong, currentSong.getPlayedTime());
 
                 if (mediaPlayer.isPlaying()) {
                     handler.post(runnable);
@@ -501,7 +501,7 @@ public class MusicActivity extends AppCompatActivity {
                 System.out.println(currentSong + " played " + currentSong.getPlayedTime());
             }
             catch (Exception e) {
-                dbHelper.add(currentSong);
+                e.printStackTrace();
             }
 
             sendNotification();
@@ -576,7 +576,7 @@ public class MusicActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        System.out.println("MUSIC DESTROY");
+
         System.out.println(isBackPressed);
         if (!isBackPressed) {
             NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -920,6 +920,10 @@ public class MusicActivity extends AppCompatActivity {
 
             if (currentSong != null) {
                 currentSong.setPlayedTime(currentSong.getPlayedTime() + 1000);
+
+                if (currentSong.getPlayedTime() - currentSong.dbTime > BACKGROUND_DB_UPDATE_INTERVAL_MS) {
+                    dbHelper.modifyPlayedTime(currentSong, currentSong.getPlayedTime());
+                }
             }
 
             musicSeekBar.setProgress(mediaPlayer.getCurrentPosition());

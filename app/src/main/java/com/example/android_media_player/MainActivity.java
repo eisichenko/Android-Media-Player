@@ -28,6 +28,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
 
+import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.VideoPlayer.VideoActivity;
 
@@ -64,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String CHANNEL_ID = "1";
 
     public static ThemeType currentTheme = ThemeType.DAY;
+
+    public DatabaseHelper dbHelper = new DatabaseHelper(this);
 
     public void chooseMusicFileIntent() {
         Intent intent = new Intent().setAction(Intent.ACTION_OPEN_DOCUMENT_TREE);
@@ -157,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         System.out.println("MAIN DESTROY");
         System.out.println(MusicActivity.isBackPressed);
         if (!MusicActivity.isBackPressed) {

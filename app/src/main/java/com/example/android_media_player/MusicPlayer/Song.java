@@ -9,6 +9,7 @@ public class Song {
     private String artist;
     private Integer launchedTimes;
     private Long playedTime;
+    public Long dbTime;
 
     public Song(String path, String name, String artist, Integer launchedTimes, Long playedTime) {
         this.path = path;
@@ -16,6 +17,7 @@ public class Song {
         this.artist = artist;
         this.launchedTimes = launchedTimes;
         this.playedTime = playedTime;
+        dbTime = 0L;
     }
 
     public String getName() {

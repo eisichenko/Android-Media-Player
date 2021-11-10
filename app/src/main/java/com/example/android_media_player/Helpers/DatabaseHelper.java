@@ -435,20 +435,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void modifyPlayedTime(Song song, Long newTime) {
-        try {
-            Song dbSong = findSong(song.getName());
+        if (song != null) {
+            try {
+                Song dbSong = findSong(song.getName());
 
-            if (dbSong.getPlayedTime() < newTime) {
-                String query = "UPDATE " + STATISTICS_TABLE +
-                        " SET " + PLAYED_TIME_COLUMN + "=" + newTime +
-                        " WHERE " + SONG_NAME_COLUMN + "='" + song.getName().replace("'", "''") + "'";
+                if (dbSong.getPlayedTime() < newTime) {
+                    String query = "UPDATE " + STATISTICS_TABLE +
+                            " SET " + PLAYED_TIME_COLUMN + "=" + newTime +
+                            " WHERE " + SONG_NAME_COLUMN + "='" + song.getName().replace("'", "''") + "'";
 
-                SQLiteDatabase db = this.getWritableDatabase();
-                db.execSQL(query);
+                    song.dbTime = newTime;
+
+                    SQLiteDatabase db = this.getWritableDatabase();
+                    db.execSQL(query);
+                }
             }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+            catch (Exception e) {
+                add(song);
+                e.printStackTrace();
+            }
         }
     }
 
