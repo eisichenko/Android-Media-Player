@@ -694,7 +694,7 @@ public class MusicActivity extends AppCompatActivity {
                 MediaStore.Audio.Media.DATA + " LIKE '" + getAbsolutePathStringFromUri(MainActivity.chosenFile.getUri()) + "%'";
 
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection,
-                selection, null, MediaStore.Audio.Media.DISPLAY_NAME + " ASC");
+                selection, null, MediaStore.Audio.Media.DISPLAY_NAME + " COLLATE NOCASE ASC");
 
         if (cursor != null) {
             while(cursor.moveToNext()) {
@@ -709,7 +709,6 @@ public class MusicActivity extends AppCompatActivity {
             cursor.close();
         }
 
-        System.out.println(songList);
         System.out.println(newSongList);
 
         if (songList == null) {

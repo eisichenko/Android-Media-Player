@@ -76,22 +76,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public Boolean checkPermissions(final Integer requestCode) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-            startActivityForResult(Intent.createChooser(intent, "Check Settings"), requestCode);
-            return false;
-        }
-        else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R &&
-                (ContextCompat.checkSelfPermission( this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                        PackageManager.PERMISSION_GRANTED ||
-                        ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                                PackageManager.PERMISSION_GRANTED)) {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_EXTERNAL_STORAGE},
+                    new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
                     requestCode);
             return false;
         }
+
         return true;
     }
 
@@ -100,18 +92,24 @@ public class MainActivity extends AppCompatActivity {
         int itemId = item.getItemId();
 
         if (itemId == R.id.themeMenuItem) {
+            System.out.println(currentTheme.toString());
             if (currentTheme == ThemeType.DAY) {
+                setTheme(R.style.Theme_Night);
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 settings.edit().putString(THEME_CACHE_NAME, ThemeType.NIGHT.toString()).apply();
                 item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_day));
                 currentTheme = ThemeType.NIGHT;
             }
             else {
+                setTheme(R.style.Theme_Day);
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 settings.edit().putString(THEME_CACHE_NAME, ThemeType.DAY.toString()).apply();
                 item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_night));
                 currentTheme = ThemeType.DAY;
             }
+
+            recreate();
+
             return true;
         }
         else if (itemId == R.id.aboutMenuItem) {
@@ -247,22 +245,6 @@ public class MainActivity extends AppCompatActivity {
                 chosenFile = DocumentFile.fromSingleUri(this, chosenUri);
                 Intent intent = new Intent(this, VideoActivity.class);
                 startActivity(intent);
-            }
-            else if (requestCode == REQUEST_PERMISSIONS) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    if (Environment.isExternalStorageManager()) {
-                        Toast.makeText(this, "Access was given successfully", Toast.LENGTH_SHORT).show();
-                        chooseMusicFileIntent();
-                    }
-                    else {
-                        Toast.makeText(this, "App won't work without access", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                }
-                else {
-                    Toast.makeText(this, "Access was given successfully", Toast.LENGTH_SHORT).show();
-                    chooseMusicFileIntent();
-                }
             }
 
             super.onActivityResult(requestCode, resultCode, resultData);

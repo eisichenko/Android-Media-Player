@@ -23,7 +23,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     final Context context;
-    private SQLiteDatabase db;
     public static final int CURRENT_DB_VERSION = 2;
     public static final String STATISTICS_TABLE = "statistics";
     public static final String SONG_NAME_COLUMN = "song_name";
