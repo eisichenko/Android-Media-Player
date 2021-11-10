@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.MediaStore;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -22,35 +23,119 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     final Context context;
-    public static final String STATISTICS_TABLE = "STATISTICS_TABLE";
-    public static final String NAME_COLUMN = "NAME";
-    public static final String LAUNCHED_TIMES_COLUMN = "LAUNCHED_TIMES";
-    public static final String PLAYED_TIME_COLUMN = "PLAYED_TIME";
-    public static final String ARTIST_COLUMN = "ARTIST";
+    private SQLiteDatabase db;
+    public static final int CURRENT_DB_VERSION = 2;
+    public static final String STATISTICS_TABLE = "statistics";
+    public static final String SONG_NAME_COLUMN = "song_name";
+    public static final String LAUNCHED_TIMES_COLUMN = "launched_times";
+    public static final String PLAYED_TIME_COLUMN = "played_time";
+    public static final String ARTIST_COLUMN = "artist";
 
     public static final String TIME_PER_LAUNCH_COLUMN = "time_per_launch";
     public static final String NUMBER_OF_SONGS_COLUMN = "number_of_songs";
 
     public DatabaseHelper(@Nullable Context context) {
-        super(context, "statistics.db", null, 1);
+        super(context, "statistics.db", null, CURRENT_DB_VERSION);
         this.context = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String statement = "CREATE TABLE " + STATISTICS_TABLE +" (" +
-                NAME_COLUMN + " TEXT UNIQUE, " +
-                ARTIST_COLUMN + " TEXT, " +
-                LAUNCHED_TIMES_COLUMN + " INTEGER, " +
-                PLAYED_TIME_COLUMN + " INTEGER " +
-                ")";
+        String query = String.format("CREATE TABLE %s (\n" +
+                "%s TEXT UNIQUE NOT NULL,\n" +
+                "%s TEXT,\n" +
+                "%s INTEGER NOT NULL,\n" +
+                "%s INTEGER NOT NULL)",
+                STATISTICS_TABLE,
+                SONG_NAME_COLUMN,
+                ARTIST_COLUMN,
+                LAUNCHED_TIMES_COLUMN,
+                PLAYED_TIME_COLUMN);
 
-        db.execSQL(statement);
+        db.execSQL(query);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Toast.makeText(context,
+                String.format("Upgrading database from version %d to %d...", oldVersion, newVersion),
+                Toast.LENGTH_SHORT).show();
 
+        if (oldVersion == 1 && newVersion == 2) {
+            final String OLD_TABLE_NAME = "STATISTICS_TABLE";
+            final String OLD_SONG_NAME_COLUMN = "NAME";
+
+            db.beginTransaction();
+            try {
+                ArrayList<Song> songList = new ArrayList<>();
+
+                String query = String.format("SELECT %s, %s, %s, %s\n" +
+                                "FROM %s\n" +
+                                "ORDER BY LOWER(%s)",
+                        OLD_SONG_NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
+                        OLD_TABLE_NAME,
+                        OLD_SONG_NAME_COLUMN);
+
+                Cursor cursor = db.rawQuery(query, null);
+
+                while (cursor.moveToNext()) {
+                    String name = cursor.getString(0);
+                    String artist = cursor.getString(1);
+                    Integer launchedTimes = cursor.getInt(2);
+                    Long playedTime = cursor.getLong(3);
+
+                    songList.add(new Song(null, name, artist, launchedTimes, playedTime));
+                }
+
+                cursor.close();
+
+                query = String.format("DROP TABLE %s", OLD_TABLE_NAME);
+                db.execSQL(query);
+
+                query = String.format("CREATE TABLE %s (\n" +
+                                "%s TEXT UNIQUE NOT NULL,\n" +
+                                "%s TEXT,\n" +
+                                "%s INTEGER NOT NULL,\n" +
+                                "%s INTEGER NOT NULL)",
+                        STATISTICS_TABLE,
+                        SONG_NAME_COLUMN,
+                        ARTIST_COLUMN,
+                        LAUNCHED_TIMES_COLUMN,
+                        PLAYED_TIME_COLUMN);
+                db.execSQL(query);
+
+                for (Song song : songList) {
+                    ContentValues cv = new ContentValues();
+
+                    fetchSongArtist(song);
+
+                    cv.put(SONG_NAME_COLUMN, song.getName());
+                    cv.put(LAUNCHED_TIMES_COLUMN, song.getLaunchedTimes());
+                    cv.put(PLAYED_TIME_COLUMN, song.getPlayedTime());
+                    cv.put(ARTIST_COLUMN, song.getArtist());
+
+                    db.insert(STATISTICS_TABLE, null, cv);
+                }
+
+                db.setTransactionSuccessful();
+
+                Toast.makeText(context, "Database was upgraded successfully", Toast.LENGTH_SHORT).show();
+            }
+            catch (Exception e) {
+                Toast.makeText(context,
+                        "ERROR: " + e.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+
+                Toast.makeText(context,
+                        "All changes were declined",
+                        Toast.LENGTH_SHORT).show();
+
+                e.printStackTrace();
+            }
+            finally {
+                db.endTransaction();
+            }
+        }
     }
 
     public void fetchSongArtist(Song song) {
@@ -80,7 +165,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         fetchSongArtist(song);
 
-        cv.put(NAME_COLUMN, song.getName());
+        cv.put(SONG_NAME_COLUMN, song.getName());
         cv.put(LAUNCHED_TIMES_COLUMN, song.getLaunchedTimes());
         cv.put(PLAYED_TIME_COLUMN, song.getPlayedTime());
         cv.put(ARTIST_COLUMN, song.getArtist());
@@ -95,10 +180,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String query = String.format("SELECT %s, %s, %s, %s\n" +
                 "FROM %s",
-                NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
+                SONG_NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
                 STATISTICS_TABLE);
 
-        if (sortColumn.equals(NAME_COLUMN)) {
+        if (sortColumn.equals(SONG_NAME_COLUMN)) {
             query += " ORDER BY LOWER(" + sortColumn + ")";
         }
         else {
@@ -137,7 +222,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String query = String.format("SELECT %s, SUM(%s) as time, SUM(%s) as launches, COUNT(%s) as number_of_songs\n" +
                 "FROM %s\n" +
                 "GROUP BY %s\n",
-                ARTIST_COLUMN, PLAYED_TIME_COLUMN, LAUNCHED_TIMES_COLUMN, NAME_COLUMN,
+                ARTIST_COLUMN, PLAYED_TIME_COLUMN, LAUNCHED_TIMES_COLUMN, SONG_NAME_COLUMN,
                 STATISTICS_TABLE,
                 ARTIST_COLUMN);
 
@@ -199,7 +284,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "FROM %s\n" +
                 "WHERE %s LIKE '%%%s%%'\n" +
                 "GROUP BY %s\n",
-                DatabaseHelper.ARTIST_COLUMN, DatabaseHelper.PLAYED_TIME_COLUMN, LAUNCHED_TIMES_COLUMN, NAME_COLUMN,
+                DatabaseHelper.ARTIST_COLUMN, DatabaseHelper.PLAYED_TIME_COLUMN, LAUNCHED_TIMES_COLUMN, SONG_NAME_COLUMN,
                 STATISTICS_TABLE,
                 ARTIST_COLUMN, substring.replace("'", "''"),
                 ARTIST_COLUMN);
@@ -261,11 +346,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String query = String.format("SELECT %s, %s, %s, %s\n" +
                 "FROM %s\n" +
                 "WHERE %s LIKE '%%%s%%'",
-                NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
+                SONG_NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
                 STATISTICS_TABLE,
-                NAME_COLUMN, substring.replace("'", "''"));
+                SONG_NAME_COLUMN, substring.replace("'", "''"));
 
-        if (sortColumn.equals(NAME_COLUMN)) {
+        if (sortColumn.equals(SONG_NAME_COLUMN)) {
             query += " ORDER BY LOWER(" + sortColumn + ")";
         }
         else {
@@ -299,7 +384,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Boolean exists(Song song) {
         String query = String.format("SELECT EXISTS(SELECT %s FROM %s WHERE %s = '%s')",
-                NAME_COLUMN, STATISTICS_TABLE, NAME_COLUMN, song.getName().replace("'", "''"));
+                SONG_NAME_COLUMN, STATISTICS_TABLE, SONG_NAME_COLUMN, song.getName().replace("'", "''"));
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -318,7 +403,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void deleteItem(Song song) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DELETE FROM " + STATISTICS_TABLE + " WHERE " + NAME_COLUMN + "='" +
+        db.execSQL("DELETE FROM " + STATISTICS_TABLE + " WHERE " + SONG_NAME_COLUMN + "='" +
                 song.getName().replace("'", "''") + "'");
         db.close();
     }
@@ -327,9 +412,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String query = String.format("SELECT %s, %s, %s, %s\n" +
                 "FROM %s\n" +
                 "WHERE %s = '%s'",
-                NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
+                SONG_NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
                 STATISTICS_TABLE,
-                NAME_COLUMN, name.replace("'", "''"));
+                SONG_NAME_COLUMN, name.replace("'", "''"));
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -357,7 +442,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (dbSong.getPlayedTime() < newTime) {
                 String query = "UPDATE " + STATISTICS_TABLE +
                         " SET " + PLAYED_TIME_COLUMN + "=" + newTime +
-                        " WHERE " + NAME_COLUMN + "='" + song.getName().replace("'", "''") + "'";
+                        " WHERE " + SONG_NAME_COLUMN + "='" + song.getName().replace("'", "''") + "'";
 
                 SQLiteDatabase db = this.getWritableDatabase();
                 db.execSQL(query);
@@ -379,7 +464,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 "WHERE %s='%s'",
                         STATISTICS_TABLE,
                         ARTIST_COLUMN, song.getArtist(),
-                        NAME_COLUMN, dbSong.getName());
+                        SONG_NAME_COLUMN, dbSong.getName());
 
                 SQLiteDatabase db = this.getWritableDatabase();
                 db.execSQL(query);
@@ -397,7 +482,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (dbSong.getLaunchedTimes() < launchedTimes) {
                 String query = "UPDATE " + STATISTICS_TABLE +
                         " SET " + LAUNCHED_TIMES_COLUMN + "=" + launchedTimes +
-                        " WHERE " + NAME_COLUMN + "='" + song.getName().replace("'", "''") + "'";
+                        " WHERE " + SONG_NAME_COLUMN + "='" + song.getName().replace("'", "''") + "'";
 
                 SQLiteDatabase db = this.getWritableDatabase();
                 db.execSQL(query);
@@ -412,7 +497,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String query = String.format("SELECT %s, %s, %s, %s\n" +
                 "FROM %s\n" +
                 "WHERE %s = (SELECT MAX(%s) FROM %s)",
-                NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
+                SONG_NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
                 STATISTICS_TABLE,
                 PLAYED_TIME_COLUMN, PLAYED_TIME_COLUMN, STATISTICS_TABLE);
 
@@ -489,7 +574,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String query = String.format("SELECT %s, %s, %s, %s\n" +
                 "FROM %s\n" +
                 "ORDER BY %s, %s ASC",
-                NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
+                SONG_NAME_COLUMN, ARTIST_COLUMN, LAUNCHED_TIMES_COLUMN, PLAYED_TIME_COLUMN,
                 STATISTICS_TABLE,
                 PLAYED_TIME_COLUMN, LAUNCHED_TIMES_COLUMN);
 

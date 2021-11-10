@@ -84,7 +84,7 @@ public class SongStatsActivity extends AppCompatActivity {
         }
         else if (itemId == R.id.sortByNameMenuItem) {
             if (statisticsList.size() > 0) {
-                lastColumnName = DatabaseHelper.NAME_COLUMN;
+                lastColumnName = DatabaseHelper.SONG_NAME_COLUMN;
 
                 MainActivity.settings.edit().putString(MainActivity.SONG_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 

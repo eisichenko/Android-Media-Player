@@ -251,7 +251,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
                     Uri saveUri = resultData.getData();
 
                     ArrayList<Song> listToSave = dbHelper.selectAllSongs(DatabaseHelper.SortType.ASCENDING,
-                            DatabaseHelper.NAME_COLUMN);
+                            DatabaseHelper.SONG_NAME_COLUMN);
 
                     DocumentFile chosenSaveFile = DocumentFile.fromSingleUri(this, saveUri);
                     String json = new Gson().toJson(listToSave);
