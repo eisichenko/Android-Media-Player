@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
     public static final String REPEAT_CACHE_NAME = "repeat";
     public static final String THEME_CACHE_NAME = "theme";
     public static final String FOLDER_URI_CACHE_NAME = "folder_uri";
-    public static final String HIDE_LIST_CACHE_NAME = "hide_list";
     public static final String SONG_SORT_ORDER_CACHE_NAME = "song_sort_order";
     public static final String ARTIST_SORT_ORDER_CACHE_NAME = "artist_sort_order";
     public static final String SONG_SORT_LAST_COLUMN_CACHE_NAME = "song_last_column";

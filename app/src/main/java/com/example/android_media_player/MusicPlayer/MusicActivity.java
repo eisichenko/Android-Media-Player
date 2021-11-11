@@ -82,7 +82,7 @@ public class MusicActivity extends AppCompatActivity {
     static final int NEXT_NOTIFICATION_CODE = 4;
 
     static Boolean isAutoplayEnabled = true;
-    static Boolean isListHidden = false;
+    public static Boolean isListHidden = false;
     static Boolean isRepeatEnabled = false;
     static Boolean isActivityPaused = false;
     static Boolean isVolumeMuted = false;
@@ -226,8 +226,6 @@ public class MusicActivity extends AppCompatActivity {
 
             isListHidden = true;
 
-            MainActivity.settings.edit().putBoolean(MainActivity.HIDE_LIST_CACHE_NAME, isListHidden).apply();
-
             hideListItem.setTitle("Show song list");
             songsRecyclerView.setVisibility(View.INVISIBLE);
             hiddenTextView.setVisibility(View.VISIBLE);
@@ -300,8 +298,6 @@ public class MusicActivity extends AppCompatActivity {
 
             isListHidden = false;
 
-            MainActivity.settings.edit().putBoolean(MainActivity.HIDE_LIST_CACHE_NAME, isListHidden).apply();
-
             hideListItem.setTitle("Hide song list");
             songsRecyclerView.setVisibility(View.VISIBLE);
             hiddenTextView.setVisibility(View.GONE);
@@ -339,8 +335,6 @@ public class MusicActivity extends AppCompatActivity {
         }
         else if (itemId == R.id.hideListMenuItem) {
             isListHidden = !isListHidden;
-
-            MainActivity.settings.edit().putBoolean(MainActivity.HIDE_LIST_CACHE_NAME, isListHidden).apply();
 
             if (isListHidden) {
                 item.setTitle("Show song list");
@@ -593,7 +587,6 @@ public class MusicActivity extends AppCompatActivity {
 
         isAutoplayEnabled = MainActivity.settings.getBoolean(MainActivity.AUTOPLAY_CACHE_NAME, true);
         isRepeatEnabled = MainActivity.settings.getBoolean(MainActivity.REPEAT_CACHE_NAME, false);
-        isListHidden = MainActivity.settings.getBoolean(MainActivity.HIDE_LIST_CACHE_NAME, false);
 
         String themeString = MainActivity.settings.getString(MainActivity.THEME_CACHE_NAME, null);
 
