@@ -426,13 +426,16 @@ public class MusicActivity extends AppCompatActivity {
 
     @SuppressLint({"NotificationTrampoline", "UnspecifiedImmutableFlag"})
     void sendNotification() {
-        Intent activityIntent = new Intent(this, MusicActivity.class);
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addNextIntentWithParentStack(activityIntent);
-
-        PendingIntent contentIntent =
-                stackBuilder.getPendingIntent(OPEN_MUSIC_CODE, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent activityIntent = new Intent(this, OpenMusicNotificationReceiver.class);
+        PendingIntent contentIntent;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            contentIntent = PendingIntent.getBroadcast(this, OPEN_MUSIC_CODE,
+                    activityIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        }
+        else {
+            contentIntent = PendingIntent.getBroadcast(this, OPEN_MUSIC_CODE,
+                    activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
 
         Intent playBroadcastIntent = new Intent(this, PlayNotificationReceiver.class);
         PendingIntent playIntent;
@@ -574,7 +577,7 @@ public class MusicActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        System.out.println("MUSIC DESTROY");
         System.out.println(isBackPressed);
         if (!isBackPressed) {
             NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

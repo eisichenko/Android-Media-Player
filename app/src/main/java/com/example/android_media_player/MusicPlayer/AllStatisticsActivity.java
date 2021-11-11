@@ -110,9 +110,13 @@ public class AllStatisticsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        nMgr.cancelAll();
+        System.out.println("ALL STATS DESTROY");
+        System.out.println("ARTISTS BACK PRESSED " + ArtistStatsActivity.isBackPressed);
+        System.out.println("SONGS BACK PRESSED " + SongStatsActivity.isBackPressed);
+        if (!ArtistStatsActivity.isBackPressed && !SongStatsActivity.isBackPressed) {
+            NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            nMgr.cancelAll();
+        }
     }
 
     @Override

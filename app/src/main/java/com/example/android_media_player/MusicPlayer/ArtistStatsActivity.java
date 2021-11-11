@@ -42,6 +42,8 @@ public class ArtistStatsActivity extends AppCompatActivity {
 
     public final DatabaseHelper dbHelper = new DatabaseHelper(this);
 
+    public static boolean isBackPressed = false;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -63,7 +65,11 @@ public class ArtistStatsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
 
-        if (itemId == R.id.sortOrderMenuItem) {
+        if (itemId == android.R.id.home) {
+            isBackPressed = true;
+            return super.onOptionsItemSelected(item);
+        }
+        else if (itemId == R.id.sortOrderMenuItem) {
             if (currentSortType == DatabaseHelper.SortType.ASCENDING) {
                 item.setTitle("Order: Descending");
                 currentSortType = DatabaseHelper.SortType.DESCENDING;
@@ -218,11 +224,24 @@ public class ArtistStatsActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        isBackPressed = true;
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+        System.out.println("ARTIST STATS DESTROY");
+        System.out.println(ArtistStatsActivity.isBackPressed);
 
-        NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        nMgr.cancelAll();
+        if (!isBackPressed) {
+            NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            nMgr.cancelAll();
+        }
+        else {
+            isBackPressed = false;
+        }
     }
 
     @Override

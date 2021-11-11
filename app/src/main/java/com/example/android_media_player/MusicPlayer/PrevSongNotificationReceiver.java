@@ -82,14 +82,16 @@ public class PrevSongNotificationReceiver extends BroadcastReceiver {
         MusicActivity.mediaPlayer.start();
         MusicActivity.handler.post(MusicActivity.runnable);
 
-        Intent activityIntent = new Intent(context, MusicActivity.class);
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addNextIntentWithParentStack(activityIntent);
-
-        PendingIntent contentIntent =
-                stackBuilder.getPendingIntent(MusicActivity.OPEN_MUSIC_CODE, PendingIntent.FLAG_UPDATE_CURRENT);
-
+        Intent activityIntent = new Intent(context, OpenMusicNotificationReceiver.class);
+        PendingIntent contentIntent;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            contentIntent = PendingIntent.getBroadcast(context, MusicActivity.OPEN_MUSIC_CODE,
+                    activityIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        }
+        else {
+            contentIntent = PendingIntent.getBroadcast(context, MusicActivity.OPEN_MUSIC_CODE,
+                    activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
 
         Intent playBroadcastIntent = new Intent(context, PlayNotificationReceiver.class);
         PendingIntent playIntent = PendingIntent.getBroadcast(context,

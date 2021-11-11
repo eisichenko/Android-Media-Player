@@ -53,6 +53,7 @@
         <receiver android:name=".MusicPlayer.PlayNotificationReceiver" />
         <receiver android:name=".MusicPlayer.PrevSongNotificationReceiver" />
         <receiver android:name=".MusicPlayer.NextSongNotificationReceiver" />
+        <receiver android:name=".MusicPlayer.OpenMusicNotificationReceiver" />
 
     </application>
 
