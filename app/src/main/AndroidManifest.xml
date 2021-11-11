@@ -55,6 +55,7 @@
         <receiver android:name=".MusicPlayer.NextSongNotificationReceiver" />
         <receiver android:name=".MusicPlayer.OpenMusicNotificationReceiver" />
 
+        <service android:name=".KillNotificationService" />
     </application>
 
 </manifest>

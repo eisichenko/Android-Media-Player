@@ -201,6 +201,12 @@ public class MainActivity extends AppCompatActivity {
 
         createNotificationChannel();
 
+        System.out.println("SDK INT " + Build.VERSION.SDK_INT);
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            startService(new Intent(this, KillNotificationService.class));
+        }
+
         setTitle("Media player");
 
         openMusicFolderButton = findViewById(R.id.openMusicFolderButton);
