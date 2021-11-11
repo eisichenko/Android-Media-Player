@@ -1,6 +1,7 @@
 package com.example.android_media_player.MusicPlayer;
 
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -61,8 +62,13 @@ public class NextSongNotificationReceiver extends BroadcastReceiver {
         MusicActivity.handler.post(MusicActivity.runnable);
 
         Intent activityIntent = new Intent(context, MusicActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, MusicActivity.OPEN_MUSIC_CODE,
-                activityIntent, 0);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addNextIntentWithParentStack(activityIntent);
+
+        PendingIntent contentIntent =
+                stackBuilder.getPendingIntent(MusicActivity.OPEN_MUSIC_CODE, PendingIntent.FLAG_UPDATE_CURRENT);
+
 
         Intent playBroadcastIntent = new Intent(context, PlayNotificationReceiver.class);
         PendingIntent playIntent = PendingIntent.getBroadcast(context,
