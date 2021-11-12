@@ -17,14 +17,17 @@
         <activity
             android:name=".MusicPlayer.ArtistStatsActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MusicPlayer.AllStatisticsActivity" />
         <activity
             android:name=".MusicPlayer.SongStatsActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MusicPlayer.AllStatisticsActivity" />
         <activity
             android:name=".MusicPlayer.AllStatisticsActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MusicPlayer.MusicActivity" />
         <activity
             android:name=".VideoPlayer.VideoActivity"
@@ -34,13 +37,16 @@
         <activity
             android:name=".MusicPlayer.MusicActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".SplashScreen"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/SplashScreen"
             android:noHistory="true">
             <intent-filter>
