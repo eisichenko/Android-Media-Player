@@ -18,12 +18,25 @@
         android:weightSum="100">
 
         <TextView
+            android:id="@+id/currentVolumeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Volume: 50%"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:textSize="16sp"
+            android:layout_marginBottom="0dp"
+            android:paddingBottom="0dp"
+            android:textColor="?attr/blurred_text_color"
+            android:layout_weight="1"
+            android:gravity="center"/>
+
+        <TextView
             android:id="@+id/nowPlayingTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Now playing:"
             android:layout_gravity="center"
-            android:layout_marginTop="10dp"
             android:textSize="22sp"
             android:textColor="?attr/blurred_text_color"
             android:layout_weight="10"

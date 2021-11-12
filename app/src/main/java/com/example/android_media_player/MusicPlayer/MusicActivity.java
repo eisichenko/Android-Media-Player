@@ -58,6 +58,7 @@ public class MusicActivity extends AppCompatActivity {
     TextView noneTextView;
     TextView nowPlayingTextView;
     TextView hiddenTextView;
+    TextView currentVolumeTextView;
     SeekBar musicSeekBar;
     RecyclerView songsRecyclerView;
     ImageView prevSongImageView;
@@ -96,7 +97,6 @@ public class MusicActivity extends AppCompatActivity {
     public static boolean isBackPressed = false;
 
     public AudioManager audioManager;
-    public Toast prevToast;
     public static int volumeBeforeMuting = 0;
     public MenuItem muteMenuItem;
 
@@ -355,35 +355,21 @@ public class MusicActivity extends AppCompatActivity {
                 isVolumeMuted = false;
                 muteMenuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_mute));
             }
-
-            audioManager.adjustVolume(AudioManager.ADJUST_RAISE, 0);
+            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, 0);
             int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
             int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 
-            if (prevToast != null) {
-                prevToast.cancel();
-            }
+            System.out.println("UP " + currentVolume + " " + maxVolume);
 
-            prevToast = Toast.makeText(this,
-                    String.format("Volume up %d%%", Math.round((float) currentVolume / maxVolume * 100.0)),
-                    Toast.LENGTH_SHORT);
-
-            prevToast.show();
+            currentVolumeTextView.setText(String.format("Volume: %d%%", Math.round((float) currentVolume / maxVolume * 100.0)));
         }
         else if (itemId == R.id.volumeDownMenuItem) {
-            audioManager.adjustVolume(AudioManager.ADJUST_LOWER, 0);
+            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, 0);
             int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
             int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            System.out.println("DOWN " + currentVolume + " " + maxVolume);
 
-            if (prevToast != null) {
-                prevToast.cancel();
-            }
-
-            prevToast = Toast.makeText(this,
-                    String.format("Volume down %d%%", Math.round((float) currentVolume / maxVolume * 100.0)),
-                    Toast.LENGTH_SHORT);
-
-            prevToast.show();
+            currentVolumeTextView.setText(String.format("Volume: %d%%", Math.round((float) currentVolume / maxVolume * 100.0)));
         }
         else if (itemId == R.id.volumeMuteMenuItem) {
             isVolumeMuted = !isVolumeMuted;
@@ -392,27 +378,17 @@ public class MusicActivity extends AppCompatActivity {
                 volumeBeforeMuting = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                 item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_unmute));
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
-                if (prevToast != null) {
-                    prevToast.cancel();
-                }
 
-                prevToast = Toast.makeText(this,
-                        "Muted",
-                        Toast.LENGTH_SHORT);
-
+                currentVolumeTextView.setText(String.format("Volume: Muted"));
             }
             else {
                 item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_mute));
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeBeforeMuting, 0);
-                if (prevToast != null) {
-                    prevToast.cancel();
-                }
 
-                prevToast = Toast.makeText(this,
-                        "Unmuted",
-                        Toast.LENGTH_SHORT);
+                int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                currentVolumeTextView.setText(String.format("Volume: %d%%", Math.round((float) currentVolume / maxVolume * 100.0)));
             }
-            prevToast.show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -615,6 +591,7 @@ public class MusicActivity extends AppCompatActivity {
         prevSongImageView = findViewById(R.id.prevSongImageView);
         noneTextView = findViewById(R.id.noneTextView);
         hiddenTextView = findViewById(R.id.hiddenTextView);
+        currentVolumeTextView = findViewById(R.id.currentVolumeTextView);
         back5ImageView = findViewById(R.id.back5ImageView);
         playImageView = findViewById(R.id.playImageView);
         forward5ImageView = findViewById(R.id.forward5ImageView);
@@ -629,6 +606,16 @@ public class MusicActivity extends AppCompatActivity {
         if (isListHidden) {
             songsRecyclerView.setVisibility(View.INVISIBLE);
             hiddenTextView.setVisibility(View.VISIBLE);
+        }
+
+        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+
+        if (!isVolumeMuted) {
+            currentVolumeTextView.setText(String.format("Volume: %d%%", Math.round((float) currentVolume / maxVolume * 100.0)));
+        }
+        else {
+            currentVolumeTextView.setText(String.format("Volume: Muted"));
         }
 
         songNameTextView.setText("None");
