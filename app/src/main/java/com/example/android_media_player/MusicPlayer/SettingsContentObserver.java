@@ -5,18 +5,25 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.media.AudioManager;
 import android.os.Handler;
+import android.view.MenuItem;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import com.example.android_media_player.R;
 
 public class SettingsContentObserver extends ContentObserver {
-    private AudioManager audioManager;
+    private final AudioManager audioManager;
     TextView currentVolumeTextView;
+    MenuItem muteMenuItem;
+    private final Context context;
 
-    public SettingsContentObserver(Context context, Handler handler) {
+    public SettingsContentObserver(Context context, Handler handler, MenuItem muteMenuItem) {
         super(handler);
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         currentVolumeTextView = ((Activity) context).findViewById(R.id.currentVolumeTextView);
+        this.context = context;
+        this.muteMenuItem = muteMenuItem;
     }
 
     @Override
@@ -29,7 +36,17 @@ public class SettingsContentObserver extends ContentObserver {
         int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 
-        currentVolumeTextView.setText(String.format("Volume: %d%%", Math.round((float) currentVolume / maxVolume * 100.0)));
+        if (MusicActivity.isVolumeMuted && currentVolume > 0) {
+            MusicActivity.isVolumeMuted = false;
+            muteMenuItem.setIcon(ContextCompat.getDrawable(context, R.drawable.ic_volume_mute));
+        }
+
+        if (MusicActivity.isVolumeMuted) {
+            currentVolumeTextView.setText("Volume: Muted");
+        }
+        else {
+            currentVolumeTextView.setText(String.format("Volume: %d%%", Math.round((float) currentVolume / maxVolume * 100.0)));
+        }
 
         System.out.println("Volume now " + currentVolume);
     }

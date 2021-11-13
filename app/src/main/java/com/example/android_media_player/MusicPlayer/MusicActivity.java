@@ -115,6 +115,10 @@ public class MusicActivity extends AppCompatActivity {
         menuInflater.inflate(R.menu.music_menu_layout, menu);
 
         muteMenuItem = menu.findItem(R.id.volumeMuteMenuItem);
+        getApplicationContext().getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true,
+                new SettingsContentObserver(this,
+                        new Handler(),
+                        muteMenuItem));
 
         if (isVolumeMuted) {
             muteMenuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_unmute));
@@ -619,9 +623,6 @@ public class MusicActivity extends AppCompatActivity {
         else {
             currentVolumeTextView.setText(String.format("Volume: Muted"));
         }
-
-        getApplicationContext().getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, new SettingsContentObserver(
-                this, new Handler()));
 
         songNameTextView.setText("None");
 
