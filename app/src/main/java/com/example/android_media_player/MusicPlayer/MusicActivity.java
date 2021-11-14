@@ -541,6 +541,10 @@ public class MusicActivity extends AppCompatActivity {
             playImageView.setImageResource(R.drawable.ic_play);
         }
 
+        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        currentVolumeTextView.setText(String.format("Volume: %d%%", Math.round((float) currentVolume / maxVolume * 100.0)));
+
         super.onResume();
     }
 
