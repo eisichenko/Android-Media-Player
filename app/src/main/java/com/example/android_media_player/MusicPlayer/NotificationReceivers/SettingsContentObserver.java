@@ -1,4 +1,4 @@
-package com.example.android_media_player.MusicPlayer;
+package com.example.android_media_player.MusicPlayer.NotificationReceivers;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
+import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.R;
 
 public class SettingsContentObserver extends ContentObserver {

@@ -10,8 +10,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.example.android_media_player.MusicPlayer.Artist;
-import com.example.android_media_player.MusicPlayer.Song;
+import com.example.android_media_player.MusicPlayer.Models.Artist;
+import com.example.android_media_player.MusicPlayer.Models.Song;
 
 import java.util.ArrayList;
 import java.util.Collections;

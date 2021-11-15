@@ -1,4 +1,4 @@
-package com.example.android_media_player.MusicPlayer;
+package com.example.android_media_player.MusicPlayer.Adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
+import com.example.android_media_player.MusicPlayer.MusicActivity;
+import com.example.android_media_player.MusicPlayer.Models.Song;
 import com.example.android_media_player.R;
 
 import java.util.ArrayList;

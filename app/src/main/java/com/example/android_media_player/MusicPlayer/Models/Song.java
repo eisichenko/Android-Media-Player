@@ -1,4 +1,4 @@
-package com.example.android_media_player.MusicPlayer;
+package com.example.android_media_player.MusicPlayer.Models;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

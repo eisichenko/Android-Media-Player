@@ -23,6 +23,8 @@ import android.widget.Toast;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.MainActivity;
+import com.example.android_media_player.MusicPlayer.Adapters.ArtistStatisticsRecyclerViewAdapter;
+import com.example.android_media_player.MusicPlayer.Models.Artist;
 import com.example.android_media_player.R;
 import com.example.android_media_player.ThemeType;
 

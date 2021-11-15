@@ -1,7 +1,6 @@
-package com.example.android_media_player.MusicPlayer;
+package com.example.android_media_player.MusicPlayer.NotificationReceivers;
 
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +10,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
+import com.example.android_media_player.MusicPlayer.MusicActivity;
+import com.example.android_media_player.MusicPlayer.Models.Song;
 import com.example.android_media_player.R;
 
 public class PlayNotificationReceiver extends BroadcastReceiver {

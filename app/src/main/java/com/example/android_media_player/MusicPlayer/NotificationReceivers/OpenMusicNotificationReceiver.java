@@ -1,10 +1,12 @@
-package com.example.android_media_player.MusicPlayer;
+package com.example.android_media_player.MusicPlayer.NotificationReceivers;
 
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
+
+import com.example.android_media_player.MusicPlayer.MusicActivity;
 
 public class OpenMusicNotificationReceiver extends BroadcastReceiver {
 

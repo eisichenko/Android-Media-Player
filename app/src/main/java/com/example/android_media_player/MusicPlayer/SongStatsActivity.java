@@ -23,6 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.MainActivity;
+import com.example.android_media_player.MusicPlayer.Adapters.SongStatisticsRecyclerViewAdapter;
+import com.example.android_media_player.MusicPlayer.Models.Song;
 import com.example.android_media_player.R;
 import com.example.android_media_player.ThemeType;
 

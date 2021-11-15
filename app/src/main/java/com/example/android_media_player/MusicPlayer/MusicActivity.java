@@ -4,10 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.media.AudioAttributes;
@@ -31,7 +29,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.ContentFrameLayout;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
@@ -42,6 +39,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.MainActivity;
+import com.example.android_media_player.MusicPlayer.Adapters.RecyclerViewAdapter;
+import com.example.android_media_player.MusicPlayer.Models.Song;
+import com.example.android_media_player.MusicPlayer.NotificationReceivers.NextSongNotificationReceiver;
+import com.example.android_media_player.MusicPlayer.NotificationReceivers.OpenMusicNotificationReceiver;
+import com.example.android_media_player.MusicPlayer.NotificationReceivers.PlayNotificationReceiver;
+import com.example.android_media_player.MusicPlayer.NotificationReceivers.PrevSongNotificationReceiver;
+import com.example.android_media_player.MusicPlayer.NotificationReceivers.SettingsContentObserver;
 import com.example.android_media_player.R;
 import com.example.android_media_player.ThemeType;
 
@@ -69,26 +73,26 @@ public class MusicActivity extends AppCompatActivity {
     ImageView forward5ImageView;
     ImageView nextSongImageView;
 
-    static MediaPlayer mediaPlayer;
-    static final Handler handler = new Handler();
-    static Runnable runnable;
+    public static MediaPlayer mediaPlayer;
+    public static final Handler handler = new Handler();
+    public static Runnable runnable;
 
-    static ArrayList<Song> songList;
-    static Stack<Song> playedSongs;
-    static Integer selectedPosition;
+    public static ArrayList<Song> songList;
+    public static Stack<Song> playedSongs;
+    public static Integer selectedPosition;
     public static Song currentSong;
 
-    static final int NOTIFICATION_CODE = 0;
-    static final int OPEN_MUSIC_CODE = 1;
-    static final int PLAY_NOTIFICATION_CODE = 2;
-    static final int PREV_NOTIFICATION_CODE = 3;
-    static final int NEXT_NOTIFICATION_CODE = 4;
+    public static final int NOTIFICATION_CODE = 0;
+    public static final int OPEN_MUSIC_CODE = 1;
+    public static final int PLAY_NOTIFICATION_CODE = 2;
+    public static final int PREV_NOTIFICATION_CODE = 3;
+    public static final int NEXT_NOTIFICATION_CODE = 4;
 
-    static Boolean isAutoplayEnabled = true;
+    public static Boolean isAutoplayEnabled = true;
     public static Boolean isListHidden = false;
-    static Boolean isRepeatEnabled = false;
-    static Boolean isActivityPaused = false;
-    static Boolean isVolumeMuted = false;
+    public static Boolean isRepeatEnabled = false;
+    public static Boolean isActivityPaused = false;
+    public static Boolean isVolumeMuted = false;
 
     MenuItem hideListItem;
 
@@ -488,6 +492,10 @@ public class MusicActivity extends AppCompatActivity {
     }
 
     public static String getAbsolutePathStringFromUri(Uri uri) {
+        if (uri.toString().startsWith("file:///")) {
+            return uri.getPath();
+        }
+
         ArrayList<String> strings = new ArrayList<>(Arrays.asList(uri.toString().split("/")));
 
         String pathString = Uri.decode(strings.get(strings.size() - 1));
@@ -594,7 +602,7 @@ public class MusicActivity extends AppCompatActivity {
 
         audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
-        setTitle("Playing music");
+        setTitle(MainActivity.chosenFile.getName());
 
         songNameTextView = findViewById(R.id.songNameTextView);
         nowPlayingTextView = findViewById(R.id.nowPlayingTextView);
@@ -681,8 +689,13 @@ public class MusicActivity extends AppCompatActivity {
 
         String[] projection = { MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.ARTIST };
 
+        System.out.println("URI " + MainActivity.chosenFile.getUri());
+        String folderPath = getAbsolutePathStringFromUri(MainActivity.chosenFile.getUri());
+
+        System.out.println("MUSIC FOLDER PATH " + folderPath);
+
         String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0 AND " +
-                MediaStore.Audio.Media.DATA + " LIKE '" + getAbsolutePathStringFromUri(MainActivity.chosenFile.getUri()) + "%'";
+                MediaStore.Audio.Media.DATA + " LIKE '" + folderPath + "%'";
 
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection,
                 selection, null, MediaStore.Audio.Media.DISPLAY_NAME + " COLLATE NOCASE ASC");

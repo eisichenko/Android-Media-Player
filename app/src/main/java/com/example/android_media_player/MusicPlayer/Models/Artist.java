@@ -1,4 +1,4 @@
-package com.example.android_media_player.MusicPlayer;
+package com.example.android_media_player.MusicPlayer.Models;
 
 public class Artist {
     private Long playedTime;

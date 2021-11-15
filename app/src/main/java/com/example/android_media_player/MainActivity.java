@@ -12,11 +12,10 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,12 +26,21 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
+import com.example.android_media_player.Helpers.LocalFolder;
 import com.example.android_media_player.MusicPlayer.MusicActivity;
+import com.example.android_media_player.MusicPlayer.Models.Song;
+import com.example.android_media_player.MusicPlayer.Adapters.SongStatisticsRecyclerViewAdapter;
 import com.example.android_media_player.VideoPlayer.VideoActivity;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,10 +48,13 @@ public class MainActivity extends AppCompatActivity {
     Button openVideoFileButton;
     Button openLastFolderButton;
     TextView lastFolderTextView;
+    TextView noneTextView;
+    RecyclerView subfoldersRecyclerView;
 
     public final static int REQUEST_CODE_OPEN_MUSIC_FILE = 0;
     public final static int REQUEST_CODE_OPEN_VIDEO_FILE = 1;
     public final static int REQUEST_PERMISSIONS = 2;
+    public final static int REQUEST_PERMISSIONS_WHEN_OPEN_FOLDER = 3;
 
     public static DocumentFile chosenFile;
     public static Uri chosenUri;
@@ -66,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
     public static ThemeType currentTheme = ThemeType.DAY;
 
     public DatabaseHelper dbHelper = new DatabaseHelper(this);
+
+    public ArrayList<LocalFolder> subfolders;
 
     public void chooseMusicFileIntent() {
         Intent intent = new Intent().setAction(Intent.ACTION_OPEN_DOCUMENT_TREE);
@@ -168,6 +181,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public static ArrayList<LocalFolder> getSubfolders(DocumentFile rootFolder, String currentRootPath) {
+        ArrayList<LocalFolder> res = new ArrayList<>();
+
+        for (DocumentFile file : rootFolder.listFiles()) {
+            if (file.isDirectory()) {
+                ArrayList<String> pathParts = new ArrayList<>();
+                pathParts.add(currentRootPath);
+                pathParts.add(file.getName());
+                String newRootPath = MusicActivity.pathCombine(pathParts);
+                res.add(new LocalFolder(file, newRootPath));
+                res.addAll(getSubfolders(file, newRootPath));
+            }
+        }
+
+        return res;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         settings = getSharedPreferences(APP_PREFERENCES_NAME, Context.MODE_PRIVATE);
@@ -208,17 +238,39 @@ public class MainActivity extends AppCompatActivity {
 
         setTitle("Media player");
 
+        checkPermissions(REQUEST_PERMISSIONS);
+
         openMusicFolderButton = findViewById(R.id.openMusicFolderButton);
         openVideoFileButton = findViewById(R.id.openVideoFileButton);
         openLastFolderButton = findViewById(R.id.openLastFolderButton);
+        noneTextView = findViewById(R.id.noneTextView);
         lastFolderTextView = findViewById(R.id.lastFolderTextView);
+        subfoldersRecyclerView = findViewById(R.id.subfoldersRecyclerView);
+
+        DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(),
+                DividerItemDecoration.VERTICAL);
+        decoration.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.list_divider)));
+
+        subfoldersRecyclerView.addItemDecoration(decoration);
+
+        subfolders = new ArrayList<>();
 
         if (chosenUri != null && chosenFile != null && chosenFile.getName() != null && chosenFile.isDirectory()) {
             lastFolderTextView.setText("Last music folder: " + chosenFile.getName());
+            subfolders = getSubfolders(chosenFile, "");
+        }
+
+        if (subfolders.size() == 0) {
+            noneTextView.setVisibility(View.VISIBLE);
+            subfoldersRecyclerView.setVisibility(View.GONE);
+        }
+        else {
+            noneTextView.setVisibility(View.GONE);
+            subfoldersRecyclerView.setVisibility(View.VISIBLE);
         }
 
         openMusicFolderButton.setOnClickListener(v -> {
-            if (checkPermissions(REQUEST_PERMISSIONS)) {
+            if (checkPermissions(REQUEST_PERMISSIONS_WHEN_OPEN_FOLDER)) {
                 chooseMusicFileIntent();
             }
         });
@@ -232,11 +284,23 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "No recent folder", Toast.LENGTH_SHORT).show();
             }
             else {
-                chosenFile = DocumentFile.fromTreeUri(this, chosenUri);
+                String path = MusicActivity.getAbsolutePathStringFromUri(chosenUri);
+                chosenFile = DocumentFile.fromFile(new File(path));
                 Intent intent = new Intent(this, MusicActivity.class);
                 startActivity(intent);
             }
         });
+
+        setAdapter(subfolders);
+    }
+
+    public void setAdapter(ArrayList<LocalFolder> subfolderList) {
+        SubfoldersRecyclerViewAdapter subfoldersAdapter = new SubfoldersRecyclerViewAdapter(subfolderList);
+        RecyclerView.LayoutManager subfoldersLayoutManager = new LinearLayoutManager(getApplicationContext());
+
+        subfoldersRecyclerView.setLayoutManager(subfoldersLayoutManager);
+        subfoldersRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        subfoldersRecyclerView.setAdapter(subfoldersAdapter);
     }
 
     @Override
@@ -261,11 +325,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_PERMISSIONS) {
+        if (requestCode == REQUEST_PERMISSIONS_WHEN_OPEN_FOLDER) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Access was given successfully", Toast.LENGTH_SHORT).show();
                 chooseMusicFileIntent();
+
+            } else {
+                Toast.makeText(this, "App won't work without access", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+        else if (requestCode == REQUEST_PERMISSIONS) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Access was given successfully", Toast.LENGTH_SHORT).show();
 
             } else {
                 Toast.makeText(this, "App won't work without access", Toast.LENGTH_SHORT).show();
