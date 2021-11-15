@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static DocumentFile chosenFile;
     public static Uri chosenUri;
+    public static String lastChosenSubfolderName = null;
 
     public static SharedPreferences settings;
     public static final String APP_PREFERENCES_NAME = "media_player_settings";
@@ -75,8 +76,6 @@ public class MainActivity extends AppCompatActivity {
     public static final String CHANNEL_ID = "1";
 
     public static ThemeType currentTheme = ThemeType.DAY;
-
-    public DatabaseHelper dbHelper = new DatabaseHelper(this);
 
     public ArrayList<LocalFolder> subfolders;
 

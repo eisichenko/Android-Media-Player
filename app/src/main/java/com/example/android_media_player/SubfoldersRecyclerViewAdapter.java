@@ -35,6 +35,7 @@ public class SubfoldersRecyclerViewAdapter extends RecyclerView.Adapter<Subfolde
             subfolderNameTextView = itemView.findViewById(R.id.subfolderNameTextView);
             subfolderNameTextView.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
+                MainActivity.lastChosenSubfolderName = subfolderList.get(pos).getName();
                 MainActivity.chosenFile = subfolderList.get(pos).getDocumentFile();
                 MainActivity.chosenUri = subfolderList.get(pos).getDocumentFile().getUri();
 
@@ -59,10 +60,17 @@ public class SubfoldersRecyclerViewAdapter extends RecyclerView.Adapter<Subfolde
 
         TypedValue typedValue = new TypedValue();
 
-        context.getTheme().resolveAttribute(R.attr.blurred_text_color, typedValue, true);
+        if (folder.getName().equals(MainActivity.lastChosenSubfolderName)) {
+            context.getTheme().resolveAttribute(R.attr.main_text_color, typedValue, true);
+            holder.subfolderNameTextView.setTextColor(typedValue.data);
+            holder.subfolderNameTextView.setTypeface(Typeface.DEFAULT_BOLD);
+        }
+        else {
+            context.getTheme().resolveAttribute(R.attr.blurred_text_color, typedValue, true);
+            holder.subfolderNameTextView.setTextColor(typedValue.data);
+            holder.subfolderNameTextView.setTypeface(Typeface.DEFAULT);
+        }
 
-        holder.subfolderNameTextView.setTextColor(typedValue.data);
-        holder.subfolderNameTextView.setTypeface(Typeface.DEFAULT);
         holder.subfolderNameTextView.setText(folder.getName());
     }
 
