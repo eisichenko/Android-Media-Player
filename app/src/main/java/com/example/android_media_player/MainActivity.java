@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static DocumentFile chosenFile;
     public static Uri chosenUri;
+
     public static String lastChosenSubfolderName = null;
 
     public static SharedPreferences settings;
@@ -197,6 +199,13 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        subfoldersRecyclerView.getAdapter().notifyDataSetChanged();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         settings = getSharedPreferences(APP_PREFERENCES_NAME, Context.MODE_PRIVATE);
@@ -283,8 +292,18 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "No recent folder", Toast.LENGTH_SHORT).show();
             }
             else {
-                String path = MusicActivity.getAbsolutePathStringFromUri(chosenUri);
-                chosenFile = DocumentFile.fromFile(new File(path));
+                String cachedUri = settings.getString(FOLDER_URI_CACHE_NAME, null);
+
+                if (cachedUri != null) {
+                    chosenUri = Uri.parse(cachedUri);
+                    String path = MusicActivity.getAbsolutePathStringFromUri(chosenUri);
+                    chosenFile = DocumentFile.fromFile(new File(path));
+                    lastChosenSubfolderName = chosenFile.getName();
+                }
+                else {
+                    String path = MusicActivity.getAbsolutePathStringFromUri(chosenUri);
+                    chosenFile = DocumentFile.fromFile(new File(path));
+                }
                 Intent intent = new Intent(this, MusicActivity.class);
                 startActivity(intent);
             }
@@ -310,6 +329,23 @@ public class MainActivity extends AppCompatActivity {
             if (requestCode == REQUEST_CODE_OPEN_MUSIC_FILE) {
                 chosenFile = DocumentFile.fromTreeUri(this, chosenUri);
                 settings.edit().putString(FOLDER_URI_CACHE_NAME, chosenUri.toString()).apply();
+
+                subfolders = new ArrayList<>();
+                if (chosenUri != null && chosenFile != null && chosenFile.getName() != null && chosenFile.isDirectory()) {
+                    lastFolderTextView.setText("Last music folder: " + chosenFile.getName());
+                    subfolders = getSubfolders(chosenFile, "");
+                }
+
+                if (subfolders.size() == 0) {
+                    noneTextView.setVisibility(View.VISIBLE);
+                    subfoldersRecyclerView.setVisibility(View.GONE);
+                }
+                else {
+                    noneTextView.setVisibility(View.GONE);
+                    subfoldersRecyclerView.setVisibility(View.VISIBLE);
+                }
+                setAdapter(subfolders);
+
                 Intent intent = new Intent(this, MusicActivity.class);
                 startActivity(intent);
             }
