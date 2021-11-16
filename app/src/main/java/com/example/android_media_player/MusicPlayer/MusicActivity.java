@@ -533,6 +533,7 @@ public class MusicActivity extends AppCompatActivity {
     @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onResume() {
+        System.out.println("MUSIC RESUME");
         isActivityPaused = false;
         songsRecyclerView.getAdapter().notifyDataSetChanged();
         if (selectedPosition >= 0) {
@@ -599,6 +600,8 @@ public class MusicActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
+
+        System.out.println("MUSIC CREATE");
 
         audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
@@ -691,6 +694,9 @@ public class MusicActivity extends AppCompatActivity {
 
         System.out.println("URI " + MainActivity.chosenFile.getUri());
         String folderPath = getAbsolutePathStringFromUri(MainActivity.chosenFile.getUri());
+        if (!folderPath.endsWith("/")) {
+            folderPath += "/";
+        }
 
         System.out.println("MUSIC FOLDER PATH " + folderPath);
 
