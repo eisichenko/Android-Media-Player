@@ -12,7 +12,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,15 +31,16 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.Helpers.LocalFolder;
-import com.example.android_media_player.MusicPlayer.MusicActivity;
+import com.example.android_media_player.Helpers.MediaStoreHelper;
+import com.example.android_media_player.Helpers.PathHelper;
 import com.example.android_media_player.MusicPlayer.Models.Song;
-import com.example.android_media_player.MusicPlayer.Adapters.SongStatisticsRecyclerViewAdapter;
+import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.VideoPlayer.VideoActivity;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -182,24 +182,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static ArrayList<LocalFolder> getSubfolders(DocumentFile rootFolder, String currentRootPath) {
-        ArrayList<LocalFolder> res = new ArrayList<>();
-
-        for (DocumentFile file : rootFolder.listFiles()) {
-            if (file.isDirectory()) {
-                ArrayList<String> pathParts = new ArrayList<>();
-                pathParts.add(currentRootPath);
-                pathParts.add(file.getName());
-                String newRootPath = MusicActivity.pathCombine(pathParts);
-                res.add(new LocalFolder(file, newRootPath));
-                res.addAll(getSubfolders(file, newRootPath));
-            }
-        }
-
-        return res;
-    }
-
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -216,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (uriString != null) {
             chosenUri = Uri.parse(uriString);
-            String path = MusicActivity.getAbsolutePathStringFromUri(chosenUri);
+            String path = PathHelper.getAbsolutePathStringFromUri(chosenUri);
             chosenFile = DocumentFile.fromFile(new File(path));
         }
 
@@ -265,7 +247,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (chosenUri != null && chosenFile != null && chosenFile.getName() != null && chosenFile.isDirectory()) {
             lastFolderTextView.setText("Last music folder: " + chosenFile.getName());
-            subfolders = getSubfolders(chosenFile, "");
+
+            long startTime = System.currentTimeMillis();
+            subfolders = MediaStoreHelper.getSubfolders(this, chosenUri);
+            System.out.println(String.format("GOT SUBFOLDERS IN %.3fs", (double)(System.currentTimeMillis() - startTime) / 1000.0));
+
+            System.out.println("SUBFOLDERS: " + subfolders);
         }
 
         if (subfolders.size() == 0) {
@@ -296,12 +283,12 @@ public class MainActivity extends AppCompatActivity {
 
                 if (cachedUri != null) {
                     chosenUri = Uri.parse(cachedUri);
-                    String path = MusicActivity.getAbsolutePathStringFromUri(chosenUri);
+                    String path = PathHelper.getAbsolutePathStringFromUri(chosenUri);
                     chosenFile = DocumentFile.fromFile(new File(path));
                     lastChosenSubfolderName = chosenFile.getName();
                 }
                 else {
-                    String path = MusicActivity.getAbsolutePathStringFromUri(chosenUri);
+                    String path = PathHelper.getAbsolutePathStringFromUri(chosenUri);
                     chosenFile = DocumentFile.fromFile(new File(path));
                 }
                 Intent intent = new Intent(this, MusicActivity.class);
@@ -333,7 +320,12 @@ public class MainActivity extends AppCompatActivity {
                 subfolders = new ArrayList<>();
                 if (chosenUri != null && chosenFile != null && chosenFile.getName() != null && chosenFile.isDirectory()) {
                     lastFolderTextView.setText("Last music folder: " + chosenFile.getName());
-                    subfolders = getSubfolders(chosenFile, "");
+
+                    long startTime = System.currentTimeMillis();
+                    subfolders = MediaStoreHelper.getSubfolders(this, chosenUri);
+                    System.out.println(String.format("GOT SUBFOLDERS IN %.5fs", (System.currentTimeMillis() - startTime) / 1000.0));
+
+                    System.out.println("SUBFOLDERS: " + subfolders);
                 }
 
                 if (subfolders.size() == 0) {

@@ -38,6 +38,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
+import com.example.android_media_player.Helpers.MediaStoreHelper;
+import com.example.android_media_player.Helpers.PathHelper;
 import com.example.android_media_player.MainActivity;
 import com.example.android_media_player.MusicPlayer.Adapters.RecyclerViewAdapter;
 import com.example.android_media_player.MusicPlayer.Models.Song;
@@ -491,44 +493,6 @@ public class MusicActivity extends AppCompatActivity {
         super.onPause();
     }
 
-    public static String getAbsolutePathStringFromUri(Uri uri) {
-        if (uri.toString().startsWith("file:///")) {
-            return uri.getPath();
-        }
-
-        ArrayList<String> strings = new ArrayList<>(Arrays.asList(uri.toString().split("/")));
-
-        String pathString = Uri.decode(strings.get(strings.size() - 1));
-
-        ArrayList<String> pathStrings = new ArrayList<>(Arrays.asList(pathString.split(":")));
-
-        if (pathStrings.get(0).equals("primary")) {
-            pathStrings.set(0, Environment.getExternalStorageDirectory().getPath());
-        }
-        else {
-            pathStrings.add(0, "/storage");
-        }
-
-        return pathCombine(pathStrings);
-    }
-
-    public static String pathCombine(ArrayList<String> pathStrings) {
-        StringBuilder res = new StringBuilder();
-
-        for (String str : pathStrings) {
-            if (res.length() == 0) {
-                res.append(str);
-            }
-            else if (res.charAt(res.length() - 1) == '/') {
-                res.append(str);
-            }
-            else {
-                res.append('/').append(str);
-            }
-        }
-
-        return res.toString();
-    }
 
     @SuppressLint("NotifyDataSetChanged")
     @Override
@@ -688,36 +652,13 @@ public class MusicActivity extends AppCompatActivity {
 
         long start = System.currentTimeMillis();
 
-        ArrayList<Song> newSongList = new ArrayList<>();
-
-        String[] projection = { MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.ARTIST };
-
         System.out.println("URI " + MainActivity.chosenFile.getUri());
-        String folderPath = getAbsolutePathStringFromUri(MainActivity.chosenFile.getUri());
-        if (!folderPath.endsWith("/")) {
-            folderPath += "/";
-        }
+        String folderPath = PathHelper.getAbsolutePathStringFromUri(MainActivity.chosenFile.getUri());
+        folderPath = PathHelper.addSlash(folderPath);
 
         System.out.println("MUSIC FOLDER PATH " + folderPath);
 
-        String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0 AND " +
-                MediaStore.Audio.Media.DATA + " LIKE '" + folderPath + "%'";
-
-        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection,
-                selection, null, MediaStore.Audio.Media.DISPLAY_NAME + " COLLATE NOCASE ASC");
-
-        if (cursor != null) {
-            while(cursor.moveToNext()) {
-                String path = cursor.getString(0);
-                String name = cursor.getString(1);
-                String artist = cursor.getString(2);
-
-                Song newSong = new Song(path, name, artist, 0, 0L);
-
-                newSongList.add(newSong);
-            }
-            cursor.close();
-        }
+        ArrayList<Song> newSongList = MediaStoreHelper.getSongList(this, folderPath);
 
         System.out.println(newSongList);
 

@@ -120,7 +120,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         TypedValue typedValue = new TypedValue();
 
-        if (MusicActivity.selectedPosition != null && position == MusicActivity.selectedPosition) {
+        if (MusicActivity.selectedPosition != null
+                && position == MusicActivity.selectedPosition
+                && song.getName().equals(MusicActivity.currentSong.getName())) {
             context.getTheme().resolveAttribute(R.attr.main_text_color, typedValue, true);
 
             holder.songItemTextView.setTextColor(typedValue.data);
