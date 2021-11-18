@@ -518,6 +518,19 @@ public class MusicActivity extends AppCompatActivity {
         int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         currentVolumeTextView.setText(String.format("Volume: %d%%", Math.round((float) currentVolume / maxVolume * 100.0)));
 
+        if (muteMenuItem != null) {
+            if (isVolumeMuted && currentVolume > 0) {
+                isVolumeMuted = false;
+            }
+
+            if (isVolumeMuted) {
+                muteMenuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_unmute));
+            }
+            else {
+                muteMenuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_mute));
+            }
+        }
+
         super.onResume();
     }
 
