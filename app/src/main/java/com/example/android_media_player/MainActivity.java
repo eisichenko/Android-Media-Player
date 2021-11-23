@@ -54,8 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     public final static int REQUEST_CODE_OPEN_MUSIC_FILE = 0;
     public final static int REQUEST_CODE_OPEN_VIDEO_FILE = 1;
-    public final static int REQUEST_PERMISSIONS = 2;
-    public final static int REQUEST_PERMISSIONS_WHEN_OPEN_FOLDER = 3;
+    public final static int REQUEST_PERMISSIONS_WHEN_OPEN_FOLDER = 2;
 
     public static DocumentFile chosenFile;
     public static Uri chosenUri;
@@ -228,8 +227,6 @@ public class MainActivity extends AppCompatActivity {
 
         setTitle("Media player");
 
-        checkPermissions(REQUEST_PERMISSIONS);
-
         openMusicFolderButton = findViewById(R.id.openMusicFolderButton);
         openVideoFileButton = findViewById(R.id.openVideoFileButton);
         openLastFolderButton = findViewById(R.id.openLastFolderButton);
@@ -357,16 +354,6 @@ public class MainActivity extends AppCompatActivity {
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Access was given successfully", Toast.LENGTH_SHORT).show();
                 chooseMusicFileIntent();
-
-            } else {
-                Toast.makeText(this, "App won't work without access", Toast.LENGTH_SHORT).show();
-            }
-            return;
-        }
-        else if (requestCode == REQUEST_PERMISSIONS) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Access was given successfully", Toast.LENGTH_SHORT).show();
 
             } else {
                 Toast.makeText(this, "App won't work without access", Toast.LENGTH_SHORT).show();

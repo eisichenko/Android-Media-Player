@@ -500,8 +500,13 @@ public class MusicActivity extends AppCompatActivity {
         System.out.println("MUSIC RESUME");
         isActivityPaused = false;
         songsRecyclerView.getAdapter().notifyDataSetChanged();
-        if (selectedPosition >= 0) {
+
+        if (selectedPosition >= 0 && selectedPosition < songList.size()) {
             nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
+            Song selectedSong = songList.get(selectedPosition);
+            if (selectedSong.getName().equals(currentSong.getName())) {
+                songNameTextView.setText(currentSong.getName());
+            }
         }
         else {
             nowPlayingTextView.setText("Now playing: ");
