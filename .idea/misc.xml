@@ -26,6 +26,7 @@
         <entry key="app/src/main/res/layout/statistics_recycler_view_item.xml" value="0.30745658835546474" />
         <entry key="app/src/main/res/layout/subfolders_recycler_view_item.xml" value="0.31354166666666666" />
         <entry key="app/src/main/res/menu/artist_stats_menu.xml" value="0.31354166666666666" />
+        <entry key="app/src/main/res/menu/db_popup_menu.xml" value="0.31354166666666666" />
         <entry key="app/src/main/res/menu/main_menu.xml" value="0.30745658835546474" />
         <entry key="app/src/main/res/menu/music_menu.xml" value="0.31354166666666666" />
         <entry key="app/src/main/res/menu/music_menu_layout.xml" value="0.31354166666666666" />

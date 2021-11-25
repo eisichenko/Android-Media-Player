@@ -381,9 +381,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    public Boolean exists(Song song) {
+    public Boolean exists(String songName) {
         String query = String.format("SELECT EXISTS(SELECT %s FROM %s WHERE %s = '%s')",
-                SONG_NAME_COLUMN, STATISTICS_TABLE, SONG_NAME_COLUMN, song.getName().replace("'", "''"));
+                SONG_NAME_COLUMN, STATISTICS_TABLE, SONG_NAME_COLUMN, songName.replace("'", "''"));
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -400,10 +400,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void deleteItem(Song song) {
+    public void delete(Song song) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + STATISTICS_TABLE + " WHERE " + SONG_NAME_COLUMN + "='" +
                 song.getName().replace("'", "''") + "'");
+        db.close();
+    }
+
+    public void rename(Song song, String newName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = String.format("UPDATE %s\n" +
+                "SET %s='%s'\n" +
+                "WHERE %s='%s'",
+                STATISTICS_TABLE, SONG_NAME_COLUMN, newName.replace("'", "''"),
+                SONG_NAME_COLUMN, song.getName().replace("'", "''"));
+        db.execSQL(query);
         db.close();
     }
 

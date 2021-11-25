@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class Song {
-    private final String name;
+    private String name;
     private final String path;
     private String artist;
     private Integer launchedTimes;
@@ -22,6 +22,10 @@ public class Song {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPath() {
