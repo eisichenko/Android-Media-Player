@@ -8,7 +8,7 @@
 
 - You can control your playlist using notifications
 
-- Added `statistics` of your music listening which you can `sort` in any order by `song name`, `lauch times` and `played time`
+- Added `statistics` of your music listening which you can `sort` in any order by `song name`, `launch times` and `played time`
 
 - Statistics can be `filtered` by substring
 
