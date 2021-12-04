@@ -20,6 +20,10 @@
         android:id="@+id/filterBySubstringMenuItem"
         android:title="Filter by substring"/>
 
+    <item android:name="non_local_filter"
+        android:id="@+id/nonLocalFilterMenuItem"
+        android:title="Filter non local songs" />
+
     <item android:name="reset_filter"
         android:id="@+id/resetFilterMenuItem"
         android:title="Reset filter"/>

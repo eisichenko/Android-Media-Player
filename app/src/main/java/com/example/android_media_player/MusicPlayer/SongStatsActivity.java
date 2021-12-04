@@ -29,6 +29,7 @@ import com.example.android_media_player.R;
 import com.example.android_media_player.ThemeType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Objects;
 
 public class SongStatsActivity extends AppCompatActivity {
@@ -86,6 +87,7 @@ public class SongStatsActivity extends AppCompatActivity {
                         currentSortType, lastColumnName);
             }
             else {
+                setTitle("Song statistics");
                 statisticsList = dbHelper.selectAllSongs(currentSortType, lastColumnName);
             }
             setAdapter(statisticsList);
@@ -101,6 +103,7 @@ public class SongStatsActivity extends AppCompatActivity {
                             currentSortType, lastColumnName);
                 }
                 else {
+                    setTitle("Song statistics");
                     statisticsList = dbHelper.selectAllSongs(currentSortType, lastColumnName);
                 }
                 setAdapter(statisticsList);
@@ -117,6 +120,7 @@ public class SongStatsActivity extends AppCompatActivity {
                             currentSortType, lastColumnName);
                 }
                 else {
+                    setTitle("Song statistics");
                     statisticsList = dbHelper.selectAllSongs(currentSortType, lastColumnName);
                 }
                 setAdapter(statisticsList);
@@ -133,6 +137,7 @@ public class SongStatsActivity extends AppCompatActivity {
                             currentSortType, lastColumnName);
                 }
                 else {
+                    setTitle("Song statistics");
                     statisticsList = dbHelper.selectAllSongs(currentSortType, lastColumnName);
                 }
                 setAdapter(statisticsList);
@@ -173,6 +178,30 @@ public class SongStatsActivity extends AppCompatActivity {
                     })
                     .setNegativeButton("Cancel", null)
                     .show();
+        }
+        else if (itemId == R.id.nonLocalFilterMenuItem) {
+            setTitle("Non local songs");
+            HashSet<Song> localSongs = new HashSet<>(MusicActivity.songList);
+            ArrayList<Song> dbSongs = dbHelper.selectAllSongs(currentSortType, lastColumnName);
+
+            statisticsList = new ArrayList<>();
+
+            for (Song song : dbSongs) {
+                if (!localSongs.contains(song)) {
+                    statisticsList.add(song);
+                }
+            }
+
+            if (statisticsList.size() == 0) {
+                noneTextView.setVisibility(View.VISIBLE);
+                statisticsRecyclerView.setVisibility(View.GONE);
+            }
+            else {
+                noneTextView.setVisibility(View.GONE);
+                statisticsRecyclerView.setVisibility(View.VISIBLE);
+            }
+
+            setAdapter(statisticsList);
         }
         else if (itemId == R.id.resetFilterMenuItem) {
             currentFilterSubstring = "";

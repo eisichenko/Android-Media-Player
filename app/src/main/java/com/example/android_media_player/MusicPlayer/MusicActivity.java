@@ -623,6 +623,31 @@ public class MusicActivity extends AppCompatActivity {
 
         songNameTextView.setText("None");
 
+        long start = System.currentTimeMillis();
+
+        System.out.println("URI " + MainActivity.chosenFile.getUri());
+        String folderPath = PathHelper.getAbsolutePathStringFromUri(MainActivity.chosenFile.getUri());
+        folderPath = PathHelper.addSlash(folderPath);
+
+        System.out.println("MUSIC FOLDER PATH " + folderPath);
+
+        ArrayList<Song> newSongList = MediaStoreHelper.getSongList(this, folderPath);
+
+        System.out.println(newSongList);
+
+        if (songList == null) {
+            songList = newSongList;
+            playedSongs = new Stack<>();
+        }
+        else {
+            HashSet<Song> newSet = new HashSet<>(newSongList);
+            HashSet<Song> oldSet = new HashSet<>(songList);
+            if (!newSet.equals(oldSet)) {
+                songList = newSongList;
+                playedSongs = new Stack<>();
+            }
+        }
+
         if (mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
@@ -653,6 +678,12 @@ public class MusicActivity extends AppCompatActivity {
             else {
                 handler.removeCallbacks(runnable);
                 songNameTextView.setText(currentSong.getName());
+
+                selectedPosition = songList.indexOf(currentSong);
+                if (selectedPosition >= 0 && selectedPosition < songList.size()) {
+                    nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
+                }
+
                 musicSeekBar.setMax(mediaPlayer.getDuration());
                 musicSeekBar.setProgress(mediaPlayer.getCurrentPosition());
 
@@ -665,31 +696,6 @@ public class MusicActivity extends AppCompatActivity {
                 NotificationChannel channel = new NotificationChannel("Music notification", "Music notification", NotificationManager.IMPORTANCE_DEFAULT);
                 NotificationManager manager = getSystemService(NotificationManager.class);
                 manager.createNotificationChannel(channel);
-            }
-        }
-
-        long start = System.currentTimeMillis();
-
-        System.out.println("URI " + MainActivity.chosenFile.getUri());
-        String folderPath = PathHelper.getAbsolutePathStringFromUri(MainActivity.chosenFile.getUri());
-        folderPath = PathHelper.addSlash(folderPath);
-
-        System.out.println("MUSIC FOLDER PATH " + folderPath);
-
-        ArrayList<Song> newSongList = MediaStoreHelper.getSongList(this, folderPath);
-
-        System.out.println(newSongList);
-
-        if (songList == null) {
-            songList = newSongList;
-            playedSongs = new Stack<>();
-        }
-        else {
-            HashSet<Song> newSet = new HashSet<>(newSongList);
-            HashSet<Song> oldSet = new HashSet<>(songList);
-            if (!newSet.equals(oldSet)) {
-                songList = newSongList;
-                playedSongs = new Stack<>();
             }
         }
 
