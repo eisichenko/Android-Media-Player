@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.media.AudioAttributes;
@@ -43,6 +44,7 @@ import com.example.android_media_player.Helpers.PathHelper;
 import com.example.android_media_player.MainActivity;
 import com.example.android_media_player.MusicPlayer.Adapters.RecyclerViewAdapter;
 import com.example.android_media_player.MusicPlayer.Models.Song;
+import com.example.android_media_player.MusicPlayer.NotificationReceivers.HeadSetBroadcastReceiver;
 import com.example.android_media_player.MusicPlayer.NotificationReceivers.NextSongNotificationReceiver;
 import com.example.android_media_player.MusicPlayer.NotificationReceivers.OpenMusicNotificationReceiver;
 import com.example.android_media_player.MusicPlayer.NotificationReceivers.PlayNotificationReceiver;
@@ -121,10 +123,15 @@ public class MusicActivity extends AppCompatActivity {
         menuInflater.inflate(R.menu.music_menu_layout, menu);
 
         muteMenuItem = menu.findItem(R.id.volumeMuteMenuItem);
+
         getApplicationContext().getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true,
                 new SettingsContentObserver(this,
                         new Handler(),
                         muteMenuItem));
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
+        HeadSetBroadcastReceiver headsetReceiver = new HeadSetBroadcastReceiver();
+        registerReceiver(headsetReceiver, filter);
 
         if (isVolumeMuted) {
             muteMenuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_unmute));
@@ -184,15 +191,21 @@ public class MusicActivity extends AppCompatActivity {
                 }
 
                 Collections.shuffle(songList);
-                if (wasPlaying){
-                    int index = songList.indexOf(prevSong);
-                    Song firstSong = songList.get(0);
-                    Song playingSong = songList.get(index);
-                    songList.set(0, playingSong);
-                    songList.set(index, firstSong);
-                    selectedPosition = 0;
 
-                    nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
+                if (wasPlaying){
+                    if (prevSong != null) {
+                        int index = songList.indexOf(prevSong);
+                        Song firstSong = songList.get(0);
+                        Song playingSong = songList.get(index);
+                        songList.set(0, playingSong);
+                        songList.set(index, firstSong);
+                        selectedPosition = 0;
+
+                        nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
+                    }
+                    else {
+                        selectedPosition = -1;
+                    }
                 }
                 else {
                     selectedPosition = -1;
@@ -262,9 +275,15 @@ public class MusicActivity extends AppCompatActivity {
                 }
 
                 Collections.sort(songList, (song1, song2) -> song1.getName().toLowerCase().compareTo(song2.getName().toLowerCase()));
+
                 if (wasPlaying){
-                    selectedPosition = songList.indexOf(prevSong);
-                    nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
+                    if (prevSong != null) {
+                        selectedPosition = songList.indexOf(prevSong);
+                        nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
+                    }
+                    else {
+                        selectedPosition = -1;
+                    }
                 }
                 else {
                     selectedPosition = -1;
@@ -455,7 +474,12 @@ public class MusicActivity extends AppCompatActivity {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Music notification");
 
         builder.setContentTitle("Music");
-        builder.setContentText(currentSong.getName() + " (" + (selectedPosition + 1) + "/" + songList.size() + ")");
+        if (selectedPosition >= 0 && selectedPosition < songList.size()) {
+            builder.setContentText(currentSong.getName() + " (" + (selectedPosition + 1) + "/" + songList.size() + ")");
+        }
+        else {
+            builder.setContentText(currentSong.getName());
+        }
         builder.setColor(Color.parseColor("#0000ff"));
         builder.setSmallIcon(R.drawable.ic_notification);
         builder.addAction(R.mipmap.ic_launcher, "Previous", previousIntent);
@@ -521,19 +545,25 @@ public class MusicActivity extends AppCompatActivity {
 
         int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        currentVolumeTextView.setText(String.format("Volume: %d%%", Math.round((float) currentVolume / maxVolume * 100.0)));
+
+        if (isVolumeMuted && currentVolume > 0) {
+            isVolumeMuted = false;
+        }
 
         if (muteMenuItem != null) {
-            if (isVolumeMuted && currentVolume > 0) {
-                isVolumeMuted = false;
-            }
-
             if (isVolumeMuted) {
                 muteMenuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_unmute));
             }
             else {
                 muteMenuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_mute));
             }
+        }
+
+        if (!isVolumeMuted) {
+            currentVolumeTextView.setText(String.format("Volume: %d%%", Math.round((float) currentVolume / maxVolume * 100.0)));
+        }
+        else {
+            currentVolumeTextView.setText("Volume: Muted");
         }
 
         super.onResume();
@@ -561,7 +591,6 @@ public class MusicActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         isAutoplayEnabled = MainActivity.settings.getBoolean(MainActivity.AUTOPLAY_CACHE_NAME, true);
         isRepeatEnabled = MainActivity.settings.getBoolean(MainActivity.REPEAT_CACHE_NAME, false);
 
@@ -750,7 +779,9 @@ public class MusicActivity extends AppCompatActivity {
 
             if (songList.size() == 0) return;
 
-            MusicActivity.handler.removeCallbacks(MusicActivity.runnable);
+            handler.removeCallbacks(runnable);
+
+            System.out.println(playedSongs);
 
             if (playedSongs.size() == 0) {
                 selectedPosition--;
@@ -998,7 +1029,10 @@ public class MusicActivity extends AppCompatActivity {
     }
 
     public static String convertMusicTime(int time) {
-        return String.format("%02d:%02d", time / 60_000, (time / 1000) % 60);
+        System.out.println(time);
+        int minutes = (int) Math.round(time / 1000.0) / 60;
+        int seconds = (int) (Math.round(time / 1000.0) % 60);
+        return String.format("%02d:%02d", minutes, seconds);
     }
 
     public static String convertStatisticsTime(long time) {

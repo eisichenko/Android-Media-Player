@@ -88,7 +88,12 @@ public class NextSongNotificationReceiver extends BroadcastReceiver {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "Music notification");
 
         builder.setContentTitle("Music");
-        builder.setContentText(MusicActivity.currentSong.getName() + " (" + (MusicActivity.selectedPosition + 1) + "/" + MusicActivity.songList.size() + ")");
+        if (MusicActivity.selectedPosition >= 0 && MusicActivity.selectedPosition < MusicActivity.songList.size()) {
+            builder.setContentText(MusicActivity.currentSong.getName() + " (" + (MusicActivity.selectedPosition + 1) + "/" + MusicActivity.songList.size() + ")");
+        }
+        else {
+            builder.setContentText(MusicActivity.currentSong.getName());
+        }
         builder.setColor(Color.parseColor("#0000ff"));
         builder.setSmallIcon(R.drawable.ic_notification);
         builder.addAction(R.mipmap.ic_launcher, "Previous", previousIntent);
