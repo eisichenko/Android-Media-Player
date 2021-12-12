@@ -3,10 +3,8 @@ package com.example.android_media_player.Helpers;
 import android.net.Uri;
 import android.os.Environment;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class PathHelper {
     public static String getAbsolutePathStringFromUri(Uri uri) {

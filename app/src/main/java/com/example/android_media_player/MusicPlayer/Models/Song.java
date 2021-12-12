@@ -39,6 +39,10 @@ public class Song {
 
     @Override
     public boolean equals(@Nullable Object obj) {
+        if (!(obj instanceof Song)) {
+            return false;
+        }
+
         return name.equals(((Song)obj).getName());
     }
 

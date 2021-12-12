@@ -7,17 +7,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -54,7 +50,6 @@ import com.example.android_media_player.R;
 import com.example.android_media_player.ThemeType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -410,7 +405,7 @@ public class MusicActivity extends AppCompatActivity {
                 item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_unmute));
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
 
-                currentVolumeTextView.setText(String.format("Volume: Muted"));
+                currentVolumeTextView.setText("Volume: Muted");
             }
             else {
                 item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_volume_mute));
@@ -523,7 +518,7 @@ public class MusicActivity extends AppCompatActivity {
     protected void onResume() {
         System.out.println("MUSIC RESUME");
         isActivityPaused = false;
-        songsRecyclerView.getAdapter().notifyDataSetChanged();
+        Objects.requireNonNull(songsRecyclerView.getAdapter()).notifyDataSetChanged();
 
         if (selectedPosition >= 0 && selectedPosition < songList.size()) {
             nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
@@ -647,7 +642,7 @@ public class MusicActivity extends AppCompatActivity {
             currentVolumeTextView.setText(String.format("Volume: %d%%", Math.round((float) currentVolume / maxVolume * 100.0)));
         }
         else {
-            currentVolumeTextView.setText(String.format("Volume: Muted"));
+            currentVolumeTextView.setText("Volume: Muted");
         }
 
         songNameTextView.setText("None");
@@ -843,9 +838,9 @@ public class MusicActivity extends AppCompatActivity {
             songNameTextView.setText(prevSong.getName());
 
             if (prevPos >= 0) {
-                songsRecyclerView.getAdapter().notifyItemChanged(prevPos);
+                Objects.requireNonNull(songsRecyclerView.getAdapter()).notifyItemChanged(prevPos);
             }
-            songsRecyclerView.getAdapter().notifyItemChanged(selectedPosition);
+            Objects.requireNonNull(songsRecyclerView.getAdapter()).notifyItemChanged(selectedPosition);
 
             MusicActivity.mediaPlayer.start();
             MusicActivity.handler.post(MusicActivity.runnable);
@@ -900,9 +895,9 @@ public class MusicActivity extends AppCompatActivity {
             songNameTextView.setText(nextSong.getName());
 
             if (prevPos >= 0) {
-                songsRecyclerView.getAdapter().notifyItemChanged(prevPos);
+                Objects.requireNonNull(songsRecyclerView.getAdapter()).notifyItemChanged(prevPos);
             }
-            songsRecyclerView.getAdapter().notifyItemChanged(selectedPosition);
+            Objects.requireNonNull(songsRecyclerView.getAdapter()).notifyItemChanged(selectedPosition);
 
             MusicActivity.mediaPlayer.start();
             MusicActivity.handler.post(MusicActivity.runnable);

@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
+import com.example.android_media_player.Helpers.MediaStoreHelper;
 import com.example.android_media_player.MainActivity;
 import com.example.android_media_player.MusicPlayer.Adapters.SongStatisticsRecyclerViewAdapter;
 import com.example.android_media_player.MusicPlayer.Models.Song;
@@ -181,13 +182,13 @@ public class SongStatsActivity extends AppCompatActivity {
         }
         else if (itemId == R.id.nonLocalFilterMenuItem) {
             setTitle("Non local songs");
-            HashSet<Song> localSongs = new HashSet<>(MusicActivity.songList);
+            HashSet<Song> allLocalSongs = new HashSet<>(MediaStoreHelper.getSongList(this, ""));
             ArrayList<Song> dbSongs = dbHelper.selectAllSongs(currentSortType, lastColumnName);
 
             statisticsList = new ArrayList<>();
 
             for (Song song : dbSongs) {
-                if (!localSongs.contains(song)) {
+                if (!allLocalSongs.contains(song)) {
                     statisticsList.add(song);
                 }
             }
@@ -202,6 +203,8 @@ public class SongStatsActivity extends AppCompatActivity {
             }
 
             setAdapter(statisticsList);
+
+            Toast.makeText(this, "DB songs that are not on the device", Toast.LENGTH_LONG).show();
         }
         else if (itemId == R.id.resetFilterMenuItem) {
             currentFilterSubstring = "";

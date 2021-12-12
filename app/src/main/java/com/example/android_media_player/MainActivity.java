@@ -34,13 +34,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.android_media_player.Helpers.LocalFolder;
 import com.example.android_media_player.Helpers.MediaStoreHelper;
 import com.example.android_media_player.Helpers.PathHelper;
-import com.example.android_media_player.MusicPlayer.Models.Song;
 import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.VideoPlayer.VideoActivity;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -184,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        subfoldersRecyclerView.getAdapter().notifyDataSetChanged();
+        Objects.requireNonNull(subfoldersRecyclerView.getAdapter()).notifyDataSetChanged();
     }
 
     @Override
@@ -247,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
 
             long startTime = System.currentTimeMillis();
             subfolders = MediaStoreHelper.getSubfolders(this, chosenUri);
-            System.out.println(String.format("GOT SUBFOLDERS IN %.3fs", (double)(System.currentTimeMillis() - startTime) / 1000.0));
+            System.out.printf("GOT SUBFOLDERS IN %.3fs%n", (double)(System.currentTimeMillis() - startTime) / 1000.0);
 
             System.out.println("SUBFOLDERS: " + subfolders);
         }
@@ -267,9 +265,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        openVideoFileButton.setOnClickListener(v -> {
-            chooseVideoFileIntent();
-        });
+        openVideoFileButton.setOnClickListener(v -> chooseVideoFileIntent());
 
         openLastFolderButton.setOnClickListener(v -> {
             if (chosenUri == null || chosenFile == null || chosenFile.getName() == null || !chosenFile.isDirectory()) {
@@ -320,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
                     long startTime = System.currentTimeMillis();
                     subfolders = MediaStoreHelper.getSubfolders(this, chosenUri);
-                    System.out.println(String.format("GOT SUBFOLDERS IN %.5fs", (System.currentTimeMillis() - startTime) / 1000.0));
+                    System.out.printf("GOT SUBFOLDERS IN %.5fs%n", (System.currentTimeMillis() - startTime) / 1000.0);
 
                     System.out.println("SUBFOLDERS: " + subfolders);
                 }

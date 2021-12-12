@@ -45,7 +45,7 @@ public class HeadSetBroadcastReceiver extends BroadcastReceiver {
                 currentVolumeTextView.setText(String.format("Volume: %d%%", Math.round((float) currentVolume / maxVolume * 100.0)));
             }
             else {
-                currentVolumeTextView.setText(String.format("Volume: Muted"));
+                currentVolumeTextView.setText("Volume: Muted");
             }
         }
     }

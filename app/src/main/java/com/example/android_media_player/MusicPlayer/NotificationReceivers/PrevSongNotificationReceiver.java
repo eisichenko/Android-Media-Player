@@ -11,8 +11,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
-import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.MusicPlayer.Models.Song;
+import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.R;
 
 public class PrevSongNotificationReceiver extends BroadcastReceiver {

@@ -16,10 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
-import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.MusicPlayer.Models.Song;
+import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.R;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -90,7 +89,7 @@ public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Song
 
                                 dbHelper.delete(selectedSong);
 
-                                notifyDataSetChanged();
+                                notifyItemChanged(getAdapterPosition());
 
                                 TextView noneTextView = itemView.getRootView().findViewById(R.id.noneTextView);
                                 RecyclerView statisticsRecyclerView = itemView.getRootView().findViewById(R.id.statisticsRecyclerView);
@@ -154,7 +153,7 @@ public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Song
                                             dbHelper.rename(selectedSong, newName);
                                             selectedSong.setName(newName);
 
-                                            notifyDataSetChanged();
+                                            notifyItemChanged(getAdapterPosition());
 
                                             Toast.makeText(context, "Renamed successfully", Toast.LENGTH_SHORT).show();
                                         })

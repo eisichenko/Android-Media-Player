@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,6 +21,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.documentfile.provider.DocumentFile;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
+import com.example.android_media_player.Helpers.PathHelper;
 import com.example.android_media_player.MainActivity;
 import com.example.android_media_player.MusicPlayer.Models.Song;
 import com.example.android_media_player.R;
@@ -27,9 +29,14 @@ import com.example.android_media_player.ThemeType;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -240,13 +247,9 @@ public class AllStatisticsActivity extends AppCompatActivity {
             mostUnpopularArtistTextView.setText(String.format("The most unpopular artist: %s", "None"));
         }
 
-        songStatsButton.setOnClickListener(v -> {
-            startActivity(new Intent(this, SongStatsActivity.class));
-        });
+        songStatsButton.setOnClickListener(v -> startActivity(new Intent(this, SongStatsActivity.class)));
 
-        artistStatsButton.setOnClickListener(v -> {
-            startActivity(new Intent(this, ArtistStatsActivity.class));
-        });
+        artistStatsButton.setOnClickListener(v -> startActivity(new Intent(this, ArtistStatsActivity.class)));
     }
 
     @Override
@@ -262,13 +265,19 @@ public class AllStatisticsActivity extends AppCompatActivity {
                     DocumentFile chosenSaveFile = DocumentFile.fromSingleUri(this, saveUri);
                     String json = new Gson().toJson(listToSave);
 
+                    OutputStream outputStream;
+
                     try {
-                        OutputStream outputStream = getContentResolver().openOutputStream(saveUri);
+                        if (chosenSaveFile == null) {
+                            throw new Exception("ERROR: Couldn't get file to save");
+                        }
+
+                        outputStream = getContentResolver().openOutputStream(saveUri, "wt");
                         outputStream.write(json.getBytes(StandardCharsets.UTF_8));
                         outputStream.close();
 
                         Toast.makeText(this, "Statistics were saved to file " + chosenSaveFile.getName(), Toast.LENGTH_SHORT).show();
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                     }
@@ -280,6 +289,10 @@ public class AllStatisticsActivity extends AppCompatActivity {
                     DocumentFile chosenLoadFile = DocumentFile.fromSingleUri(this, loadUri);
 
                     try {
+                        if (chosenLoadFile == null) {
+                            throw new Exception("Couldn't get load file");
+                        }
+
                         InputStream inputStream = getContentResolver().openInputStream(loadUri);
                         Scanner s = new Scanner(inputStream).useDelimiter("\\A");
                         String loadedJson = s.hasNext() ? s.next() : "";
