@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -62,6 +63,8 @@ public class AllStatisticsActivity extends AppCompatActivity {
     public static Long totalPlayedTime = 0L;
 
     public final DatabaseHelper dbHelper = new DatabaseHelper(this);
+
+    public SharedPreferences settings;
 
     public void chooseLoadFileIntent() {
         Intent intent = new Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT);
@@ -129,7 +132,8 @@ public class AllStatisticsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        String themeString = MainActivity.settings.getString(MainActivity.THEME_CACHE_NAME, null);
+        settings = getSharedPreferences(MainActivity.APP_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String themeString = settings.getString(MainActivity.THEME_CACHE_NAME, null);
 
         if (themeString != null) {
             if (themeString.equals(ThemeType.DAY.toString())) {

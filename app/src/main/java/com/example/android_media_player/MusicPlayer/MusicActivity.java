@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -104,6 +105,8 @@ public class MusicActivity extends AppCompatActivity {
     public AudioManager audioManager;
     public static int volumeBeforeMuting = 0;
     public MenuItem muteMenuItem;
+
+    public SharedPreferences settings;
 
     @Override
     protected void onStart() {
@@ -334,7 +337,7 @@ public class MusicActivity extends AppCompatActivity {
         }
         else if (itemId == R.id.autoplayMenuItem) {
             isAutoplayEnabled = !isAutoplayEnabled;
-            MainActivity.settings.edit().putBoolean(MainActivity.AUTOPLAY_CACHE_NAME, isAutoplayEnabled).apply();
+            settings.edit().putBoolean(MainActivity.AUTOPLAY_CACHE_NAME, isAutoplayEnabled).apply();
 
             if (isAutoplayEnabled) {
                 item.setTitle("Autoplay: ON");
@@ -348,7 +351,7 @@ public class MusicActivity extends AppCompatActivity {
         }
         else if (itemId == R.id.repeatMenuItem) {
             isRepeatEnabled = !isRepeatEnabled;
-            MainActivity.settings.edit().putBoolean(MainActivity.REPEAT_CACHE_NAME, isRepeatEnabled).apply();
+            settings.edit().putBoolean(MainActivity.REPEAT_CACHE_NAME, isRepeatEnabled).apply();
 
             if (isRepeatEnabled) {
                 item.setTitle("Repeat: ON");
@@ -586,10 +589,11 @@ public class MusicActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        isAutoplayEnabled = MainActivity.settings.getBoolean(MainActivity.AUTOPLAY_CACHE_NAME, true);
-        isRepeatEnabled = MainActivity.settings.getBoolean(MainActivity.REPEAT_CACHE_NAME, false);
+        settings = getSharedPreferences(MainActivity.APP_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        isAutoplayEnabled = settings.getBoolean(MainActivity.AUTOPLAY_CACHE_NAME, true);
+        isRepeatEnabled = settings.getBoolean(MainActivity.REPEAT_CACHE_NAME, false);
 
-        String themeString = MainActivity.settings.getString(MainActivity.THEME_CACHE_NAME, null);
+        String themeString = settings.getString(MainActivity.THEME_CACHE_NAME, null);
 
         if (themeString != null) {
             if (themeString.equals(ThemeType.DAY.toString())) {

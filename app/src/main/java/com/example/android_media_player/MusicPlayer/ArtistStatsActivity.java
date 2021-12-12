@@ -3,6 +3,7 @@ package com.example.android_media_player.MusicPlayer;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,6 +47,8 @@ public class ArtistStatsActivity extends AppCompatActivity {
 
     public static boolean isBackPressed = false;
 
+    public SharedPreferences settings;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -80,7 +83,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
                 item.setTitle("Order: Ascending");
                 currentSortType = DatabaseHelper.SortType.ASCENDING;
             }
-            MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_ORDER_CACHE_NAME, currentSortType.toString()).apply();
+            settings.edit().putString(MainActivity.ARTIST_SORT_ORDER_CACHE_NAME, currentSortType.toString()).apply();
 
             if (currentFilterSubstring.length() == 0) {
                 statisticsList = dbHelper.selectAllArtists(currentSortType, lastColumnName);
@@ -95,7 +98,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
             if (statisticsList.size() > 0) {
                 lastColumnName = DatabaseHelper.ARTIST_COLUMN;
 
-                MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
+                settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
                 if (currentFilterSubstring.length() == 0) {
                     statisticsList = dbHelper.selectAllArtists(currentSortType, lastColumnName);
@@ -111,7 +114,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
             if (statisticsList.size() > 0) {
                 lastColumnName = DatabaseHelper.LAUNCHED_TIMES_COLUMN;
 
-                MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
+                settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
                 if (currentFilterSubstring.length() == 0) {
                     statisticsList = dbHelper.selectAllArtists(currentSortType, lastColumnName);
@@ -126,7 +129,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
             if (statisticsList.size() > 0) {
                 lastColumnName = DatabaseHelper.PLAYED_TIME_COLUMN;
 
-                MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
+                settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
                 if (currentFilterSubstring.length() == 0) {
                     statisticsList = dbHelper.selectAllArtists(currentSortType, lastColumnName);
@@ -142,7 +145,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
             if (statisticsList.size() > 0) {
                 lastColumnName = DatabaseHelper.TIME_PER_LAUNCH_COLUMN;
 
-                MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
+                settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
                 if (currentSortType == DatabaseHelper.SortType.DESCENDING) {
                     Collections.sort(statisticsList, (artist1, artist2) -> artist2.getPlayedTimePerLaunch().compareTo(artist1.getPlayedTimePerLaunch()));
@@ -157,7 +160,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
             if (statisticsList.size() > 0) {
                 lastColumnName = DatabaseHelper.NUMBER_OF_SONGS_COLUMN;
 
-                MainActivity.settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
+                settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
                 if (currentSortType == DatabaseHelper.SortType.DESCENDING) {
                     Collections.sort(statisticsList, (artist1, artist2) -> artist2.getNumberOfSongs().compareTo(artist1.getNumberOfSongs()));
@@ -248,12 +251,13 @@ public class ArtistStatsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        String themeString = MainActivity.settings.getString(MainActivity.THEME_CACHE_NAME, null);
+        settings = getSharedPreferences(MainActivity.APP_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String themeString = settings.getString(MainActivity.THEME_CACHE_NAME, null);
 
-        String sortTypeStr = MainActivity.settings.getString(MainActivity.ARTIST_SORT_ORDER_CACHE_NAME, DatabaseHelper.SortType.DESCENDING.toString());
+        String sortTypeStr = settings.getString(MainActivity.ARTIST_SORT_ORDER_CACHE_NAME, DatabaseHelper.SortType.DESCENDING.toString());
         currentSortType = DatabaseHelper.SortType.valueOf(sortTypeStr);
 
-        lastColumnName = MainActivity.settings.getString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, DatabaseHelper.PLAYED_TIME_COLUMN);
+        lastColumnName = settings.getString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, DatabaseHelper.PLAYED_TIME_COLUMN);
 
         if (themeString != null) {
             if (themeString.equals(ThemeType.DAY.toString())) {

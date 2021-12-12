@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static String lastChosenSubfolderName = null;
 
-    public static SharedPreferences settings;
+    public SharedPreferences settings;
     public static final String APP_PREFERENCES_NAME = "media_player_settings";
     public static final String AUTOPLAY_CACHE_NAME = "autoplay";
     public static final String REPEAT_CACHE_NAME = "repeat";
