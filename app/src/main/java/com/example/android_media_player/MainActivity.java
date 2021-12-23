@@ -127,12 +127,18 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         else if (itemId == R.id.aboutMenuItem) {
+            String versionName = "";
+            try {
+                versionName = getPackageManager()
+                        .getPackageInfo(getPackageName(), 0).versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+
             new AlertDialog.Builder(this)
                     .setTitle("About")
                     .setMessage("• Written by Egor Isichenko, 2021\n\n" +
-                            "• Icon of style\n\n" +
-                            "• Icon of minimalism\n\n" +
-                            "• Icon of functionality")
+                            String.format("• Version %s", versionName))
                     .setPositiveButton("OK", (dialog, whichButton) -> {
 
                     })
