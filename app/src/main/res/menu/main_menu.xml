@@ -8,6 +8,12 @@
         android:icon="@drawable/ic_night"
         app:showAsAction="always"/>
 
+    <item android:name="statsMenuItem"
+        android:title="Stats"
+        android:id="@+id/statsMenuItem"
+        android:icon="@drawable/ic_stats"
+        app:showAsAction="always" />
+
     <item android:name="aboutMenuItem"
         android:title="About"
         android:id="@+id/aboutMenuItem"

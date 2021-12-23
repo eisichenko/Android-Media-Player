@@ -66,6 +66,8 @@ public class AllStatisticsActivity extends AppCompatActivity {
 
     public SharedPreferences settings;
 
+    public static boolean isBackPressed = false;
+
     public void chooseLoadFileIntent() {
         Intent intent = new Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Choose file"), REQUEST_CODE_CHOOSE_LOAD_FILE);
@@ -88,7 +90,11 @@ public class AllStatisticsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
 
-        if (itemId == R.id.clearDatabaseMenuItem) {
+        if (itemId == android.R.id.home) {
+            isBackPressed = true;
+            return super.onOptionsItemSelected(item);
+        }
+        else if (itemId == R.id.clearDatabaseMenuItem) {
             new AlertDialog.Builder(this)
                     .setTitle("Clear database")
                     .setMessage("You will lose all your data, are you sure?")
@@ -121,12 +127,19 @@ public class AllStatisticsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         System.out.println("ALL STATS DESTROY");
         System.out.println("ARTISTS BACK PRESSED " + ArtistStatsActivity.isBackPressed);
         System.out.println("SONGS BACK PRESSED " + SongStatsActivity.isBackPressed);
-        if (!ArtistStatsActivity.isBackPressed && !SongStatsActivity.isBackPressed) {
+        System.out.println("ALL STATS BACK PRESSED " + isBackPressed);
+
+        if (!ArtistStatsActivity.isBackPressed && !SongStatsActivity.isBackPressed && !isBackPressed) {
             NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             nMgr.cancelAll();
+        }
+
+        if (isBackPressed) {
+            isBackPressed = false;
         }
     }
 

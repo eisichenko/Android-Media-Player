@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.android_media_player.Helpers.LocalFolder;
 import com.example.android_media_player.Helpers.MediaStoreHelper;
 import com.example.android_media_player.Helpers.PathHelper;
+import com.example.android_media_player.MusicPlayer.AllStatisticsActivity;
 import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.VideoPlayer.VideoActivity;
 
@@ -136,6 +137,9 @@ public class MainActivity extends AppCompatActivity {
 
                     })
                     .show();
+        }
+        else if (itemId == R.id.statsMenuItem) {
+            startActivity(new Intent(this, AllStatisticsActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
