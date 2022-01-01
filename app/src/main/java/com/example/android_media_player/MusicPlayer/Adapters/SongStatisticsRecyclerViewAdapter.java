@@ -1,5 +1,6 @@
 package com.example.android_media_player.MusicPlayer.Adapters;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -16,20 +17,23 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
+import com.example.android_media_player.Helpers.MediaStoreHelper;
 import com.example.android_media_player.MusicPlayer.Models.Song;
 import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.R;
+import com.google.gson.internal.bind.util.ISO8601Utils;
 
 import java.util.ArrayList;
 
 public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<SongStatisticsRecyclerViewAdapter.ViewHolder> {
-    private final ArrayList<Song> songList;
+    private final ArrayList<Song> songStatsList;
+    private ArrayList<Song> allSongsList;
     private Context context;
 
     public DatabaseHelper dbHelper;
 
-    public SongStatisticsRecyclerViewAdapter(ArrayList<Song> songList) {
-        this.songList = songList;
+    public SongStatisticsRecyclerViewAdapter(ArrayList<Song> songStatsList) {
+        this.songStatsList = songStatsList;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -53,11 +57,11 @@ public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Song
         private void showPopupMenu(View v) {
             PopupMenu popupMenu = new PopupMenu(v.getContext(), v);
             popupMenu.inflate(R.menu.db_popup_menu);
-            Song selectedSong = songList.get(getAdapterPosition());
+            Song selectedSong = songStatsList.get(getAdapterPosition());
 
             boolean songFileExists = false;
 
-            for (Song song : MusicActivity.songList) {
+            for (Song song : allSongsList) {
                 if (song.getName().equals(selectedSong.getName())) {
                     songFileExists = true;
                     break;
@@ -85,17 +89,17 @@ public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Song
                             .setMessage(deleteMsg)
                             .setPositiveButton("Delete", (dialogInterface, i) -> {
                                 int position = getAdapterPosition();
-                                songList.remove(position);
+                                songStatsList.remove(position);
 
                                 dbHelper.delete(selectedSong);
 
-                                notifyItemChanged(getAdapterPosition());
+                                notifyDataSetChanged();
 
                                 TextView noneTextView = itemView.getRootView().findViewById(R.id.noneTextView);
                                 RecyclerView statisticsRecyclerView = itemView.getRootView().findViewById(R.id.statisticsRecyclerView);
 
                                 if (statisticsRecyclerView != null && noneTextView != null) {
-                                    if (songList.size() == 0) {
+                                    if (songStatsList.size() == 0) {
                                         noneTextView.setVisibility(View.VISIBLE);
                                         statisticsRecyclerView.setVisibility(View.GONE);
                                     }
@@ -130,7 +134,7 @@ public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Song
 
                                 boolean existsNewName = false;
 
-                                for (Song song : MusicActivity.songList) {
+                                for (Song song : allSongsList) {
                                     if (song.getName().equals(newName)) {
                                         existsNewName = true;
                                         break;
@@ -176,13 +180,14 @@ public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Song
     public SongStatisticsRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
         dbHelper = new DatabaseHelper(context);
+        allSongsList = MediaStoreHelper.getAllSongs((Activity) context);
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.song_statistics_recycler_view_item, parent, false);
         return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull SongStatisticsRecyclerViewAdapter.ViewHolder holder, int position) {
-        Song song = songList.get(position);
+        Song song = songStatsList.get(position);
 
         TypedValue typedValue = new TypedValue();
 
@@ -203,6 +208,6 @@ public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Song
 
     @Override
     public int getItemCount() {
-        return songList.size();
+        return songStatsList.size();
     }
 }

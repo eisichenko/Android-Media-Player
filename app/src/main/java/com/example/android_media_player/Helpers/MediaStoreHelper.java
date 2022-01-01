@@ -15,6 +15,10 @@ import java.util.Collections;
 import java.util.HashSet;
 
 public class MediaStoreHelper {
+    public static ArrayList<Song> getAllSongs(Activity activity) {
+        return getSongList(activity, "");
+    }
+
     public static ArrayList<Song> getSongList(Activity activity, String rootFolderPath) {
         ArrayList<Song> newSongList = new ArrayList<>();
 
