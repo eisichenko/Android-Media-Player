@@ -68,11 +68,11 @@ public class Song {
         this.playedTime = playedTime;
     }
 
-    public String getArtist() {
+    public String getArtistName() {
         return this.artist;
     }
 
-    public void setArtist(String value) {
+    public void setArtistName(String value) {
         this.artist = value;
     }
 }

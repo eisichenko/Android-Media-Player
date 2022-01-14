@@ -23,14 +23,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
+import com.example.android_media_player.Helpers.MediaStoreHelper;
 import com.example.android_media_player.MainActivity;
 import com.example.android_media_player.MusicPlayer.Adapters.ArtistStatisticsRecyclerViewAdapter;
 import com.example.android_media_player.MusicPlayer.Models.Artist;
+import com.example.android_media_player.MusicPlayer.Models.Song;
 import com.example.android_media_player.R;
 import com.example.android_media_player.ThemeType;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 
 public class ArtistStatsActivity extends AppCompatActivity {
@@ -96,7 +100,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
         }
         else if (itemId == R.id.sortByNameMenuItem) {
             if (statisticsList.size() > 0) {
-                lastColumnName = DatabaseHelper.ARTIST_COLUMN;
+                lastColumnName = DatabaseHelper.ARTIST_NAME_COLUMN;
 
                 settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
 
@@ -290,6 +294,32 @@ public class ArtistStatsActivity extends AppCompatActivity {
         statisticsList = new ArrayList<>();
 
         long start = System.currentTimeMillis();
+
+        ArrayList<Song> dbSongs = dbHelper.selectAllSongs(DatabaseHelper.SortType.DESCENDING, DatabaseHelper.PLAYED_TIME_COLUMN);
+
+        ArrayList<Song> localSongs = MediaStoreHelper.getAllSongs(this);
+
+        HashMap<Song, String> dbSongsWithNames = new HashMap<>();
+
+        for (Song dbSong : dbSongs) {
+            dbSongsWithNames.put(dbSong, dbSong.getArtistName());
+        }
+
+        boolean showWarningToast = false;
+
+        for (Song localSong : localSongs) {
+            if (localSong.getArtistName() != null
+                    && dbSongsWithNames.containsKey(localSong)
+                    && !Objects.equals(dbSongsWithNames.get(localSong), localSong.getArtistName())) {
+                dbHelper.modifyArtist(localSong, localSong.getArtistName());
+                if (!showWarningToast) {
+                    Toast.makeText(this, "Syncing artists. It may take some time...", Toast.LENGTH_LONG).show();
+                    showWarningToast = true;
+                }
+            }
+        }
+
+        System.out.println("CHECK ARTIST: " + (System.currentTimeMillis() - start));
 
         statisticsList = dbHelper.selectAllArtists(currentSortType, lastColumnName);
 
