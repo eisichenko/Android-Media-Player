@@ -25,7 +25,7 @@ public class MediaStoreHelper {
         String[] projection = { MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.ARTIST };
 
         String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0 AND " +
-                MediaStore.Audio.Media.DATA + " LIKE '" + rootFolderPath + "%'";
+                MediaStore.Audio.Media.DATA + " LIKE '" + rootFolderPath.replace("'", "''") + "%'";
 
         Cursor cursor = activity.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection,
                 selection, null, MediaStore.Audio.Media.DISPLAY_NAME + " COLLATE NOCASE ASC");
