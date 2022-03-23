@@ -710,6 +710,8 @@ public class MusicActivity extends AppCompatActivity {
                 selectedPosition = songList.indexOf(currentSong);
                 if (selectedPosition >= 0 && selectedPosition < songList.size()) {
                     nowPlayingTextView.setText("Now playing (" + (selectedPosition + 1) + "/" + songList.size() + "):");
+
+                    songsRecyclerView.post(() -> songsRecyclerView.scrollToPosition(selectedPosition));
                 }
 
                 musicSeekBar.setMax(mediaPlayer.getDuration());
