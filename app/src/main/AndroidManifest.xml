@@ -59,7 +59,6 @@
         <receiver android:name=".MusicPlayer.NotificationReceivers.PlayNotificationReceiver" />
         <receiver android:name=".MusicPlayer.NotificationReceivers.PrevSongNotificationReceiver" />
         <receiver android:name=".MusicPlayer.NotificationReceivers.NextSongNotificationReceiver" />
-        <receiver android:name=".MusicPlayer.NotificationReceivers.OpenMusicNotificationReceiver" />
 
         <service android:name=".KillNotificationService" />
     </application>

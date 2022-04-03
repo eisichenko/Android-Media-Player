@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -45,28 +46,40 @@ public class PlayNotificationReceiver extends BroadcastReceiver {
             MusicActivity.handler.post(MusicActivity.runnable);
         }
 
-        Intent activityIntent = new Intent(context, OpenMusicNotificationReceiver.class);
-        PendingIntent contentIntent;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            contentIntent = PendingIntent.getBroadcast(context, MusicActivity.OPEN_MUSIC_CODE,
-                    activityIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        Intent playBroadcastIntent = new Intent(context, PlayNotificationReceiver.class);
+        PendingIntent playIntent;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            playIntent = PendingIntent.getBroadcast(context,
+                    MusicActivity.PLAY_NOTIFICATION_CODE, playBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
         }
         else {
-            contentIntent = PendingIntent.getBroadcast(context, MusicActivity.OPEN_MUSIC_CODE,
-                    activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            playIntent = PendingIntent.getBroadcast(context,
+                    MusicActivity.PLAY_NOTIFICATION_CODE, playBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
-        Intent playBroadcastIntent = new Intent(context, PlayNotificationReceiver.class);
-        PendingIntent playIntent = PendingIntent.getBroadcast(context,
-                MusicActivity.PLAY_NOTIFICATION_CODE, playBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
         Intent previousBroadcastIntent = new Intent(context, PrevSongNotificationReceiver.class);
-        PendingIntent previousIntent = PendingIntent.getBroadcast(context,
-                MusicActivity.PREV_NOTIFICATION_CODE, previousBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        PendingIntent previousIntent;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            previousIntent = PendingIntent.getBroadcast(context,
+                    MusicActivity.PREV_NOTIFICATION_CODE, previousBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+        }
+        else {
+            previousIntent = PendingIntent.getBroadcast(context,
+                    MusicActivity.PREV_NOTIFICATION_CODE, previousBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
 
         Intent nextBroadcastIntent = new Intent(context, NextSongNotificationReceiver.class);
-        PendingIntent nextIntent = PendingIntent.getBroadcast(context,
-                MusicActivity.NEXT_NOTIFICATION_CODE, nextBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        PendingIntent nextIntent;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            nextIntent = PendingIntent.getBroadcast(context,
+                    MusicActivity.NEXT_NOTIFICATION_CODE, nextBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+        }
+        else {
+            nextIntent = PendingIntent.getBroadcast(context,
+                    MusicActivity.NEXT_NOTIFICATION_CODE, nextBroadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "Music notification");
 
@@ -82,7 +95,6 @@ public class PlayNotificationReceiver extends BroadcastReceiver {
         builder.addAction(R.mipmap.ic_launcher, "Previous", previousIntent);
         builder.addAction(R.mipmap.ic_launcher, MusicActivity.getNotificationActionString(), playIntent);
         builder.addAction(R.mipmap.ic_launcher, "Next", nextIntent);
-        builder.setContentIntent(contentIntent);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify(MusicActivity.NOTIFICATION_CODE, builder.build());
