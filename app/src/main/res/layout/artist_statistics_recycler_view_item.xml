@@ -11,9 +11,21 @@
         android:id="@+id/statsArtistNameTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textStyle="bold"
         android:text="Name: qwe"
         android:textColor="?attr/main_text_color"
-        android:textSize="20sp"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"/>
+
+    <TextView
+        android:id="@+id/popularityTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Popularity: 123123123.123"
+        android:textColor="?attr/main_text_color"
+        android:textSize="16sp"
         android:gravity="center"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"/>
@@ -24,18 +36,7 @@
         android:layout_height="wrap_content"
         android:text="Number of songs: qwe"
         android:textColor="?attr/main_text_color"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"/>
-
-    <TextView
-        android:id="@+id/statsTotalLaunchTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Total launch times: 254"
-        android:textColor="?attr/main_text_color"
-        android:textSize="20sp"
+        android:textSize="16sp"
         android:gravity="center"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"/>
@@ -44,22 +45,42 @@
         android:id="@+id/totalTimeListenedTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Total time listened: 03h:52m:03s"
+        android:text="Total time listened: 03h:52m:03s (16.70%)"
         android:textColor="?attr/main_text_color"
-        android:textSize="20sp"
+        android:textSize="16sp"
         android:gravity="center"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"/>
 
-    <TextView
-        android:id="@+id/listenedTimePerLaunchTextView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Listened time per launch: 03h:52m:03s"
-        android:textColor="?attr/main_text_color"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"/>
+        android:orientation="horizontal"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="2dp"
+        android:weightSum="100">
+
+        <TextView
+            android:id="@+id/statsTotalLaunchTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Launches: 254"
+            android:textColor="?attr/main_text_color"
+            android:textSize="12sp"
+            android:gravity="start"
+            android:layout_weight="60"/>
+
+        <TextView
+            android:id="@+id/listenedTimePerLaunchTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Played time per launch: 03h:52m:03s"
+            android:textColor="?attr/main_text_color"
+            android:textSize="12sp"
+            android:gravity="end"
+            android:layout_weight="40"/>
+
+    </LinearLayout>
 
 </LinearLayout>

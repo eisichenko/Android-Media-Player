@@ -21,9 +21,9 @@ import com.example.android_media_player.Helpers.MediaStoreHelper;
 import com.example.android_media_player.MusicPlayer.Models.Song;
 import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.R;
-import com.google.gson.internal.bind.util.ISO8601Utils;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<SongStatisticsRecyclerViewAdapter.ViewHolder> {
     private final ArrayList<Song> songStatsList;
@@ -40,6 +40,8 @@ public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Song
         final TextView statsSongNameTextView;
         final TextView statsTotalLaunchTextView;
         final TextView totalTimeListenedTextView;
+        final TextView popularityTextView;
+        final TextView createdAtTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -47,6 +49,8 @@ public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Song
             statsSongNameTextView = itemView.findViewById(R.id.statsSongNameTextView);
             statsTotalLaunchTextView = itemView.findViewById(R.id.statsTotalLaunchTextView);
             totalTimeListenedTextView = itemView.findViewById(R.id.totalTimeListenedTextView);
+            popularityTextView = itemView.findViewById(R.id.popularityTextView);
+            createdAtTextView = itemView.findViewById(R.id.createdAtTextView);
 
             itemView.setOnLongClickListener(v -> {
                 showPopupMenu(v);
@@ -194,16 +198,24 @@ public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Song
         context.getTheme().resolveAttribute(R.attr.main_text_color, typedValue, true);
 
         holder.statsSongNameTextView.setTextColor(typedValue.data);
-        holder.statsSongNameTextView.setTypeface(Typeface.DEFAULT);
+        holder.statsSongNameTextView.setTypeface(Typeface.DEFAULT_BOLD);
         holder.statsSongNameTextView.setText("#" + (position + 1) + " Name: " + song.getName());
+
+        holder.popularityTextView.setTextColor(typedValue.data);
+        holder.popularityTextView.setTypeface(Typeface.DEFAULT);
+        holder.popularityTextView.setText("Popularity: " + String.format(Locale.US, "%,.2f", song.getPopularity()));
 
         holder.statsTotalLaunchTextView.setTextColor(typedValue.data);
         holder.statsTotalLaunchTextView.setTypeface(Typeface.DEFAULT);
-        holder.statsTotalLaunchTextView.setText("Total launched times: " + song.getLaunchedTimes().toString());
+        holder.statsTotalLaunchTextView.setText("Launches: " + String.format(Locale.US, "%,d", song.getLaunchedTimes()));
 
         holder.totalTimeListenedTextView.setTextColor(typedValue.data);
         holder.totalTimeListenedTextView.setTypeface(Typeface.DEFAULT);
         holder.totalTimeListenedTextView.setText("Total time listened: " + MusicActivity.convertStatisticsTime(song.getPlayedTime()));
+
+        holder.createdAtTextView.setTextColor(typedValue.data);
+        holder.createdAtTextView.setTypeface(Typeface.DEFAULT);
+        holder.createdAtTextView.setText("Created at: " + song.getLocalCreatedAt());
     }
 
     @Override

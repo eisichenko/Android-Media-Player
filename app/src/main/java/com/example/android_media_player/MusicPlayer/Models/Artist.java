@@ -6,11 +6,21 @@ public class Artist {
     private String artistName;
     private Integer numberOfSongs;
 
-    public Artist(String artistName, Long playedTime, Integer launchedTimes, Integer numberOfSongs) {
+    private Long playedTimePerLaunch;
+    private Double popularity;
+
+    public Artist(String artistName,
+                  Long playedTime,
+                  Integer launchedTimes,
+                  Integer numberOfSongs,
+                  Long playedTimePerLaunch,
+                  Double popularity) {
         this.playedTime = playedTime;
         this.launchedTimes = launchedTimes;
         this.artistName = artistName;
         this.numberOfSongs = numberOfSongs;
+        this.playedTimePerLaunch = playedTimePerLaunch;
+        this.popularity = popularity;
     }
 
     public Long getPlayedTime() {
@@ -37,15 +47,27 @@ public class Artist {
         this.artistName = artistName;
     }
 
-    public Long getPlayedTimePerLaunch() {
-        return playedTime / launchedTimes;
-    }
-
     public Integer getNumberOfSongs() {
         return numberOfSongs;
     }
 
     public void setNumberOfSongs(Integer val) {
         numberOfSongs = val;
+    }
+
+    public Double getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(Double popularity) {
+        this.popularity = popularity;
+    }
+
+    public Long getPlayedTimePerLaunch() {
+        return playedTimePerLaunch;
+    }
+
+    public void setPlayedTimePerLaunch(Long playedTimePerLaunch) {
+        this.playedTimePerLaunch = playedTimePerLaunch;
     }
 }

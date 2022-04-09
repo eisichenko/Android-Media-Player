@@ -36,7 +36,7 @@ public class MediaStoreHelper {
                 String name = cursor.getString(1);
                 String artist = cursor.getString(2);
 
-                Song newSong = new Song(path, name, artist, 0, 0L);
+                Song newSong = new Song(path, name, artist, 0, 0L, 0.0, null);
 
                 newSongList.add(newSong);
             }

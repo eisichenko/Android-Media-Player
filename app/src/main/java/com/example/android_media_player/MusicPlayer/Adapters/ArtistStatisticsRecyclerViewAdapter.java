@@ -17,6 +17,7 @@ import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.R;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class ArtistStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<ArtistStatisticsRecyclerViewAdapter.ViewHolder> {
     private final ArrayList<Artist> artistList;
@@ -32,6 +33,7 @@ public class ArtistStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Ar
         final TextView totalTimeListenedTextView;
         final TextView listenedTimePerLaunchTextView;
         final TextView numberOfSongsTextView;
+        final TextView popularityTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -41,6 +43,7 @@ public class ArtistStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Ar
             totalTimeListenedTextView = itemView.findViewById(R.id.totalTimeListenedTextView);
             listenedTimePerLaunchTextView = itemView.findViewById(R.id.listenedTimePerLaunchTextView);
             numberOfSongsTextView = itemView.findViewById(R.id.numberOfSongsTextView);
+            popularityTextView = itemView.findViewById(R.id.popularityTextView);
         }
     }
 
@@ -61,17 +64,21 @@ public class ArtistStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Ar
         context.getTheme().resolveAttribute(R.attr.main_text_color, typedValue, true);
 
         holder.statsArtistNameTextView.setTextColor(typedValue.data);
-        holder.statsArtistNameTextView.setTypeface(Typeface.DEFAULT);
+        holder.statsArtistNameTextView.setTypeface(Typeface.DEFAULT_BOLD);
         holder.statsArtistNameTextView.setText("#" + (position + 1) + " Name: " + artist.getArtistName());
+
+        holder.popularityTextView.setTextColor(typedValue.data);
+        holder.popularityTextView.setTypeface(Typeface.DEFAULT);
+        holder.popularityTextView.setText("Popularity: " + String.format(Locale.US, "%,.2f", artist.getPopularity()));
 
         holder.numberOfSongsTextView.setTextColor(typedValue.data);
         holder.numberOfSongsTextView.setTypeface(Typeface.DEFAULT);
-        holder.numberOfSongsTextView.setText(String.format("Number of songs: %s",
+        holder.numberOfSongsTextView.setText(String.format("Number of songs: %,d",
                 artist.getNumberOfSongs()));
 
         holder.statsTotalLaunchTextView.setTextColor(typedValue.data);
         holder.statsTotalLaunchTextView.setTypeface(Typeface.DEFAULT);
-        holder.statsTotalLaunchTextView.setText("Total launched times: " + artist.getLaunchedTimes().toString());
+        holder.statsTotalLaunchTextView.setText("Launches: " + String.format("%,d", artist.getLaunchedTimes()));
 
         holder.totalTimeListenedTextView.setTextColor(typedValue.data);
         holder.totalTimeListenedTextView.setTypeface(Typeface.DEFAULT);
@@ -82,10 +89,10 @@ public class ArtistStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Ar
         holder.listenedTimePerLaunchTextView.setTextColor(typedValue.data);
         holder.listenedTimePerLaunchTextView.setTypeface(Typeface.DEFAULT);
         if (artist.getLaunchedTimes() == 0) {
-            holder.listenedTimePerLaunchTextView.setText("Listened time per launch: 0s");
+            holder.listenedTimePerLaunchTextView.setText("Played time per launch: 0s");
         }
         else {
-            holder.listenedTimePerLaunchTextView.setText("Listened time per launch: " + MusicActivity.convertStatisticsTime(artist.getPlayedTimePerLaunch()));
+            holder.listenedTimePerLaunchTextView.setText("Played time per launch: " + MusicActivity.convertStatisticsTime(artist.getPlayedTimePerLaunch()));
         }
     }
 

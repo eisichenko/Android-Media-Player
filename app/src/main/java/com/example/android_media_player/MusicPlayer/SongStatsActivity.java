@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.Helpers.MediaStoreHelper;
+import com.example.android_media_player.Helpers.StringHelper;
 import com.example.android_media_player.MainActivity;
 import com.example.android_media_player.MusicPlayer.Adapters.SongStatisticsRecyclerViewAdapter;
 import com.example.android_media_player.MusicPlayer.Models.Song;
@@ -41,7 +42,7 @@ public class SongStatsActivity extends AppCompatActivity {
     ArrayList<Song> statisticsList;
 
     public static DatabaseHelper.SortType currentSortType = DatabaseHelper.SortType.DESCENDING;
-    public String lastColumnName = DatabaseHelper.PLAYED_TIME_COLUMN;
+    public String lastColumnName = DatabaseHelper.POPULARITY_COLUMN;
     public String currentFilterSubstring = "";
 
     public final DatabaseHelper dbHelper = new DatabaseHelper(this);
@@ -147,6 +148,40 @@ public class SongStatsActivity extends AppCompatActivity {
                 setAdapter(statisticsList);
             }
         }
+        else if (itemId == R.id.sortByPopularityMenuItem) {
+            if (statisticsList.size() > 0) {
+                lastColumnName = DatabaseHelper.POPULARITY_COLUMN;
+
+                settings.edit().putString(MainActivity.SONG_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
+
+                if (currentFilterSubstring.length() > 0) {
+                    statisticsList = dbHelper.getSongsBySubstring(currentFilterSubstring,
+                            currentSortType, lastColumnName);
+                }
+                else {
+                    setTitle("Song statistics");
+                    statisticsList = dbHelper.selectAllSongs(currentSortType, lastColumnName);
+                }
+                setAdapter(statisticsList);
+            }
+        }
+        else if (itemId == R.id.sortByCreatedAtMenuItem) {
+            if (statisticsList.size() > 0) {
+                lastColumnName = DatabaseHelper.CREATED_AT_COLUMN;
+
+                settings.edit().putString(MainActivity.SONG_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
+
+                if (currentFilterSubstring.length() > 0) {
+                    statisticsList = dbHelper.getSongsBySubstring(currentFilterSubstring,
+                            currentSortType, lastColumnName);
+                }
+                else {
+                    setTitle("Song statistics");
+                    statisticsList = dbHelper.selectAllSongs(currentSortType, lastColumnName);
+                }
+                setAdapter(statisticsList);
+            }
+        }
         else if (itemId == R.id.filterBySubstringMenuItem) {
             final EditText editText = new EditText(this);
             editText.setHint("Filter string");
@@ -227,6 +262,8 @@ public class SongStatsActivity extends AppCompatActivity {
             Toast.makeText(this, "Filter reset was successful", Toast.LENGTH_SHORT).show();
         }
 
+        setTitle(StringHelper.capitalize(lastColumnName));
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -258,7 +295,7 @@ public class SongStatsActivity extends AppCompatActivity {
         String sortTypeStr = settings.getString(MainActivity.SONG_SORT_ORDER_CACHE_NAME, DatabaseHelper.SortType.DESCENDING.toString());
         currentSortType = DatabaseHelper.SortType.valueOf(sortTypeStr);
 
-        lastColumnName = settings.getString(MainActivity.SONG_SORT_LAST_COLUMN_CACHE_NAME, DatabaseHelper.PLAYED_TIME_COLUMN);
+        lastColumnName = settings.getString(MainActivity.SONG_SORT_LAST_COLUMN_CACHE_NAME, DatabaseHelper.POPULARITY_COLUMN);
 
         if (themeString != null) {
             if (themeString.equals(ThemeType.DAY.toString())) {
@@ -276,7 +313,7 @@ public class SongStatsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_stats);
 
-        setTitle("Song statistics");
+        setTitle(StringHelper.capitalize(lastColumnName));
 
         noneTextView = findViewById(R.id.noneTextView);
         statisticsRecyclerView = findViewById(R.id.statisticsRecyclerView);

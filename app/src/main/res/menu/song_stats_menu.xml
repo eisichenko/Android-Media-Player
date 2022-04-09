@@ -16,6 +16,14 @@
         android:id="@+id/sortByTimeMenuItem"
         android:title="Sort by time" />
 
+    <item android:name="sort_by_popularity"
+        android:id="@+id/sortByPopularityMenuItem"
+        android:title="Sort by popularity" />
+
+    <item android:name="sort_by_created_at"
+        android:id="@+id/sortByCreatedAtMenuItem"
+        android:title="Sort by created at" />
+
     <item android:name="filter_by_substring"
         android:id="@+id/filterBySubstringMenuItem"
         android:title="Filter by substring"/>

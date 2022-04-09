@@ -11,20 +11,21 @@
         android:id="@+id/statsSongNameTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textStyle="bold"
         android:text="Name: qwe"
         android:textColor="?attr/main_text_color"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:gravity="center"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"/>
 
     <TextView
-        android:id="@+id/statsTotalLaunchTextView"
+        android:id="@+id/popularityTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Total launch times: 254"
+        android:text="Popularity: 123456789.123"
         android:textColor="?attr/main_text_color"
-        android:textSize="20sp"
+        android:textSize="16sp"
         android:gravity="center"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"/>
@@ -35,9 +36,39 @@
         android:layout_height="wrap_content"
         android:text="Total time listened: 03h:52m:03s"
         android:textColor="?attr/main_text_color"
-        android:textSize="20sp"
+        android:textSize="16sp"
         android:gravity="center"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="2dp"
+        android:weightSum="100">
+
+        <TextView
+            android:id="@+id/statsTotalLaunchTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Launches: 254"
+            android:textColor="?attr/main_text_color"
+            android:textSize="12sp"
+            android:gravity="start"
+            android:layout_weight="68"/>
+
+        <TextView
+            android:id="@+id/createdAtTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:layout_weight="32"
+            android:text="Created at: 9 Apr 2022 19:12:56"
+            android:textColor="?attr/main_text_color"
+            android:textSize="12sp"/>
+
+    </LinearLayout>
+
 
 </LinearLayout>

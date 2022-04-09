@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.Helpers.MediaStoreHelper;
+import com.example.android_media_player.Helpers.StringHelper;
 import com.example.android_media_player.MainActivity;
 import com.example.android_media_player.MusicPlayer.Adapters.ArtistStatisticsRecyclerViewAdapter;
 import com.example.android_media_player.MusicPlayer.Models.Artist;
@@ -44,7 +45,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
     ArrayList<Artist> statisticsList;
 
     public static DatabaseHelper.SortType currentSortType = DatabaseHelper.SortType.DESCENDING;
-    public String lastColumnName = DatabaseHelper.PLAYED_TIME_COLUMN;
+    public String lastColumnName = DatabaseHelper.POPULARITY_COLUMN;
     public String currentFilterSubstring = "";
 
     public final DatabaseHelper dbHelper = new DatabaseHelper(this);
@@ -145,6 +146,22 @@ public class ArtistStatsActivity extends AppCompatActivity {
                 setAdapter(statisticsList);
             }
         }
+        else if (itemId == R.id.sortByPopularityMenuItem) {
+            if (statisticsList.size() > 0) {
+                lastColumnName = DatabaseHelper.POPULARITY_COLUMN;
+
+                settings.edit().putString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, lastColumnName).apply();
+
+                if (currentFilterSubstring.length() == 0) {
+                    statisticsList = dbHelper.selectAllArtists(currentSortType, lastColumnName);
+                }
+                else {
+                    statisticsList = dbHelper.getArtistsBySubstring(currentFilterSubstring, currentSortType, lastColumnName);
+                }
+
+                setAdapter(statisticsList);
+            }
+        }
         else if (itemId == R.id.sortByPlayedTimePerLaunchMenuItem) {
             if (statisticsList.size() > 0) {
                 lastColumnName = DatabaseHelper.TIME_PER_LAUNCH_COLUMN;
@@ -229,6 +246,8 @@ public class ArtistStatsActivity extends AppCompatActivity {
             Toast.makeText(this, "Filter reset was successful", Toast.LENGTH_SHORT).show();
         }
 
+        setTitle(StringHelper.capitalize(lastColumnName));
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -261,7 +280,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
         String sortTypeStr = settings.getString(MainActivity.ARTIST_SORT_ORDER_CACHE_NAME, DatabaseHelper.SortType.DESCENDING.toString());
         currentSortType = DatabaseHelper.SortType.valueOf(sortTypeStr);
 
-        lastColumnName = settings.getString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, DatabaseHelper.PLAYED_TIME_COLUMN);
+        lastColumnName = settings.getString(MainActivity.ARTIST_SORT_LAST_COLUMN_CACHE_NAME, DatabaseHelper.POPULARITY_COLUMN);
 
         if (themeString != null) {
             if (themeString.equals(ThemeType.DAY.toString())) {
@@ -279,7 +298,7 @@ public class ArtistStatsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_stats);
 
-        setTitle("Artist statistics");
+        setTitle(StringHelper.capitalize(lastColumnName));
 
         noneTextView = findViewById(R.id.noneTextView);
         statisticsRecyclerView = findViewById(R.id.statisticsRecyclerView);

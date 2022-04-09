@@ -16,6 +16,10 @@
         android:id="@+id/sortByTimeMenuItem"
         android:title="Sort by time" />
 
+    <item android:name="sort_by_popularity"
+        android:id="@+id/sortByPopularityMenuItem"
+        android:title="Sort by popularity" />
+
     <item android:name="sort_by_played_time_per_launch"
         android:id="@+id/sortByPlayedTimePerLaunchMenuItem"
         android:title="Sort by played time per launch"/>

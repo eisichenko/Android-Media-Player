@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,24 +21,19 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.documentfile.provider.DocumentFile;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
-import com.example.android_media_player.Helpers.PathHelper;
 import com.example.android_media_player.MainActivity;
+import com.example.android_media_player.MusicPlayer.Models.Artist;
 import com.example.android_media_player.MusicPlayer.Models.Song;
 import com.example.android_media_player.R;
 import com.example.android_media_player.ThemeType;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class AllStatisticsActivity extends AppCompatActivity {
@@ -99,17 +93,17 @@ public class AllStatisticsActivity extends AppCompatActivity {
                     .setTitle("Clear database")
                     .setMessage("You will lose all your data, are you sure?")
                     .setPositiveButton("Clear", (dialogInterface, i) -> {
-                        dbHelper.clearAll();
+                        dbHelper.truncateTables();
                         Toast.makeText(this, "DB was cleared successfully", Toast.LENGTH_SHORT).show();
 
-                        for (Song song : MusicActivity.songList) {
-                            song.setLaunchedTimes(0);
-                            song.setPlayedTime(0L);
+                        if (MusicActivity.songList != null) {
+                            for (Song song : MusicActivity.songList) {
+                                song.setLaunchedTimes(0);
+                                song.setPlayedTime(0L);
+                            }
                         }
 
-                        Intent intent = getIntent();
-                        finish();
-                        startActivity(intent);
+                        recreate();
                     })
                     .setNegativeButton("Cancel", null)
                     .show();
@@ -181,11 +175,12 @@ public class AllStatisticsActivity extends AppCompatActivity {
         long start = System.currentTimeMillis();
 
         try {
-            Song favoriteSong = dbHelper.getMostPlayedSong();
-            favoriteSongTextView.setText("The most played song: " + favoriteSong.getName());
+            Song mostPopularSong = dbHelper.getMostPopularSong();
+            favoriteSongTextView.setText("The most popular song: " + mostPopularSong.getName());
         }
         catch (Exception e) {
-            favoriteSongTextView.setText("The most played song: None");
+            favoriteSongTextView.setText("The most popular song: None");
+            e.printStackTrace();
         }
 
         System.out.println("MOST PLAYED: " + (System.currentTimeMillis() - start));
@@ -196,6 +191,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
         }
         catch (Exception e) {
             mostUnpopularSongTextView.setText("The most unpopular song: None");
+            e.printStackTrace();
         }
 
         totalPlayedTime = 0L;
@@ -205,7 +201,8 @@ public class AllStatisticsActivity extends AppCompatActivity {
             totalTimeListenedTextView.setText("Total listened time: " + MusicActivity.convertStatisticsTime(totalPlayedTime));
         }
         catch (Exception e) {
-            totalTimeListenedTextView.setText("Total listened time: 0s");
+            totalTimeListenedTextView.setText("Total listened time: None");
+            e.printStackTrace();
         }
 
         System.out.println("TOTAL PLAYED: " + (System.currentTimeMillis() - start));
@@ -214,10 +211,11 @@ public class AllStatisticsActivity extends AppCompatActivity {
 
         try {
             totalLaunchedTimes = dbHelper.getTotalLaunchedTimes();
-            totalLaunchedTimesTextView.setText("Total launched times: " + totalLaunchedTimes);
+            totalLaunchedTimesTextView.setText("Total launched times: " + String.format(Locale.US, "%,d", totalLaunchedTimes));
         }
         catch (Exception e) {
-            totalLaunchedTimesTextView.setText("Total launched times: 0");
+            totalLaunchedTimesTextView.setText("Total launched times: None");
+            e.printStackTrace();
         }
 
         System.out.println("TOTAL LAUNCHED: " + (System.currentTimeMillis() - start));
@@ -227,17 +225,19 @@ public class AllStatisticsActivity extends AppCompatActivity {
             averageTimeListenedTextView.setText("Average listened time: " + MusicActivity.convertStatisticsTime(averagePlayedTime));
         }
         catch (Exception e) {
-            averageTimeListenedTextView.setText("Average listened time: 0s");
+            averageTimeListenedTextView.setText("Average listened time: None");
+            e.printStackTrace();
         }
 
         System.out.println("AVERAGE PLAYED: " + (System.currentTimeMillis() - start));
 
         try {
             Float averageLaunchedTimes = dbHelper.getAverageLaunchTime();
-            averageLaunchedTimesTextView.setText("Average launched times: " + String.format("%.2f", averageLaunchedTimes));
+            averageLaunchedTimesTextView.setText("Average launched times: " + String.format(Locale.US, "%,.2f", averageLaunchedTimes));
         }
         catch (Exception e) {
-            averageLaunchedTimesTextView.setText("Average launched times: 0");
+            averageLaunchedTimesTextView.setText("Average launched times: None");
+            e.printStackTrace();
         }
 
         try {
@@ -246,22 +246,25 @@ public class AllStatisticsActivity extends AppCompatActivity {
         }
         catch (Exception e) {
             playedTimePerLaunchTextView.setText("Played time per launch: 0s");
+            e.printStackTrace();
         }
 
         try {
-            String favoriteArtist = dbHelper.getFavoriteArtist();
-            favoriteArtistTextView.setText(String.format("Favorite artist: %s", favoriteArtist));
+            Artist mostPopularArtist = dbHelper.getMostPopularArtist();
+            favoriteArtistTextView.setText(String.format("The most popular artist: %s", mostPopularArtist.getArtistName()));
         }
         catch (Exception e) {
-            favoriteArtistTextView.setText(String.format("Favorite artist: %s", "None"));
+            favoriteArtistTextView.setText(String.format("The most popular artist: %s", "None"));
+            e.printStackTrace();
         }
 
         try {
-            String mostUnpopularArtist = dbHelper.getMostUnpopularArtist();
-            mostUnpopularArtistTextView.setText(String.format("The most unpopular artist: %s", mostUnpopularArtist));
+            Artist mostUnpopularArtist = dbHelper.getMostUnpopularArtist();
+            mostUnpopularArtistTextView.setText(String.format("The most unpopular artist: %s", mostUnpopularArtist.getArtistName()));
         }
         catch (Exception e) {
             mostUnpopularArtistTextView.setText(String.format("The most unpopular artist: %s", "None"));
+            e.printStackTrace();
         }
 
         songStatsButton.setOnClickListener(v -> startActivity(new Intent(this, SongStatsActivity.class)));
@@ -310,24 +313,17 @@ public class AllStatisticsActivity extends AppCompatActivity {
                             throw new Exception("Couldn't get load file");
                         }
 
+                        long start = System.currentTimeMillis();
+
                         InputStream inputStream = getContentResolver().openInputStream(loadUri);
                         Scanner s = new Scanner(inputStream).useDelimiter("\\A");
                         String loadedJson = s.hasNext() ? s.next() : "";
                         System.out.println(loadedJson);
                         ArrayList<Song> loadedList = new Gson().fromJson(loadedJson, new TypeToken<ArrayList<Song>>(){}.getType());
 
-                        for (Song song : loadedList) {
-                            if (song.getName() == null ||
-                                song.getPlayedTime() == null ||
-                                song.getLaunchedTimes() == null) {
-                                throw new Exception("Invalid JSON file");
-                            }
-                        }
+                        dbHelper.recreateDatabaseWithData(loadedList);
 
-                        dbHelper.clearAll();
-                        for (Song song : loadedList) {
-                            dbHelper.add(song);
-                        }
+                        System.out.println(System.currentTimeMillis() - start + " LOAD FROM FILE TIME");
 
                         Toast.makeText(this, "Statistics were loaded from file " + chosenLoadFile.getName(), Toast.LENGTH_SHORT).show();
 
