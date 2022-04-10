@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.Helpers.MediaStoreHelper;
+import com.example.android_media_player.Helpers.StringHelper;
 import com.example.android_media_player.MusicPlayer.Models.Song;
 import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.R;
@@ -203,7 +204,7 @@ public class SongStatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Song
 
         holder.popularityTextView.setTextColor(typedValue.data);
         holder.popularityTextView.setTypeface(Typeface.DEFAULT);
-        holder.popularityTextView.setText("Popularity: " + String.format(Locale.US, "%,.2f", song.getPopularity()));
+        holder.popularityTextView.setText("Popularity: " + StringHelper.formatPopularity(song.getPopularity()));
 
         holder.statsTotalLaunchTextView.setTextColor(typedValue.data);
         holder.statsTotalLaunchTextView.setTypeface(Typeface.DEFAULT);
