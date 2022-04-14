@@ -747,4 +747,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             throw new Exception("No songs");
         }
     }
+
+    public Integer getTotalNumberOfSongs() throws Exception {
+        String query = "SELECT COUNT(" + SONG_NAME_COLUMN + ") FROM " + STATISTICS_TABLE;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            Integer res = cursor.getInt(0);
+            cursor.close();
+            db.close();
+            return res;
+        }
+        else {
+            cursor.close();
+            db.close();
+            throw new Exception("No songs");
+        }
+    }
 }

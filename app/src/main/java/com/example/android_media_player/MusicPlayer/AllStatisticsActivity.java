@@ -47,6 +47,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
     TextView mostUnpopularSongTextView;
     TextView favoriteArtistTextView;
     TextView mostUnpopularArtistTextView;
+    TextView totalNumberOfSongsTextView;
 
     Button songStatsButton;
     Button artistStatsButton;
@@ -171,6 +172,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
         artistStatsButton = findViewById(R.id.artistStatsButton);
         favoriteArtistTextView = findViewById(R.id.favoriteArtistTextView);
         mostUnpopularArtistTextView = findViewById(R.id.mostUnpopularArtistTextView);
+        totalNumberOfSongsTextView = findViewById(R.id.totalNumberOfSongsTextView);
 
         long start = System.currentTimeMillis();
 
@@ -203,6 +205,14 @@ public class AllStatisticsActivity extends AppCompatActivity {
         catch (Exception e) {
             totalTimeListenedTextView.setText("Total listened time: None");
             e.printStackTrace();
+        }
+
+        try {
+            Integer totalNumberOfSongs = dbHelper.getTotalNumberOfSongs();
+            totalNumberOfSongsTextView.setText("Total number of songs: " + String.format(Locale.US, "%,d", totalNumberOfSongs));
+        }
+        catch (Exception e) {
+            totalNumberOfSongsTextView.setText("Total number of songs: 0");
         }
 
         System.out.println("TOTAL PLAYED: " + (System.currentTimeMillis() - start));
