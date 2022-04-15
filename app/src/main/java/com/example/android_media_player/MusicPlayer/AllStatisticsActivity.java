@@ -48,6 +48,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
     TextView favoriteArtistTextView;
     TextView mostUnpopularArtistTextView;
     TextView totalNumberOfSongsTextView;
+    TextView statsSinceTextView;
 
     Button songStatsButton;
     Button artistStatsButton;
@@ -173,6 +174,7 @@ public class AllStatisticsActivity extends AppCompatActivity {
         favoriteArtistTextView = findViewById(R.id.favoriteArtistTextView);
         mostUnpopularArtistTextView = findViewById(R.id.mostUnpopularArtistTextView);
         totalNumberOfSongsTextView = findViewById(R.id.totalNumberOfSongsTextView);
+        statsSinceTextView = findViewById(R.id.statsSinceTextView);
 
         long start = System.currentTimeMillis();
 
@@ -274,6 +276,15 @@ public class AllStatisticsActivity extends AppCompatActivity {
         }
         catch (Exception e) {
             mostUnpopularArtistTextView.setText(String.format("The most unpopular artist: %s", "None"));
+            e.printStackTrace();
+        }
+
+        try {
+            Song oldestSong = dbHelper.getTheOldestSong();
+            statsSinceTextView.setText("Stats since: " + oldestSong.getLocalCreatedAt());
+        }
+        catch (Exception e) {
+            statsSinceTextView.setText("Stats since: None");
             e.printStackTrace();
         }
 

@@ -672,6 +672,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public Song getTheOldestSong() throws Exception {
+        String query = String.format("SELECT %s, \n" +
+                        "%s, \n" +
+                        "%s, \n" +
+                        "%s, \n" +
+                        "%s / (julianday(datetime('now')) - julianday(%s)) as %s, \n" +
+                        "%s\n" +
+                        "FROM %s\n" +
+                        "ORDER BY %s ASC",
+                SONG_NAME_COLUMN,
+                ARTIST_NAME_COLUMN,
+                LAUNCHED_TIMES_COLUMN,
+                PLAYED_TIME_COLUMN,
+                PLAYED_TIME_COLUMN, CREATED_AT_COLUMN, POPULARITY_COLUMN,
+                CREATED_AT_COLUMN,
+                STATISTICS_TABLE,
+                CREATED_AT_COLUMN);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            String curName = cursor.getString(0);
+            String artist = cursor.getString(1);
+            Integer highScore = cursor.getInt(2);
+            Long timePlayed = cursor.getLong(3);
+            Double popularity = cursor.getDouble(4);
+            String createdAt = cursor.getString(5);
+            cursor.close();
+            db.close();
+            return new Song(null, curName, artist, highScore, timePlayed, popularity, createdAt);
+        }
+        else {
+            cursor.close();
+            db.close();
+            throw new Exception("No songs");
+        }
+    }
+
     public Long getTotalPlayedTime() throws Exception {
         String query = "SELECT SUM(" + PLAYED_TIME_COLUMN + ") FROM " + STATISTICS_TABLE;
 

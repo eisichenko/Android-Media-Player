@@ -48,7 +48,7 @@
             android:text="Total time listened: 12m:32s"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textColor="?attr/main_text_color"/>
 
         <TextView
@@ -60,7 +60,7 @@
             android:text="Total number of songs: 0"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textColor="?attr/main_text_color"/>
 
         <TextView
@@ -72,7 +72,7 @@
             android:text="Average time listened: 12m:32s"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textColor="?attr/main_text_color"/>
 
         <TextView
@@ -84,7 +84,7 @@
             android:text="Total launched times: 123"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textColor="?attr/main_text_color"/>
 
         <TextView
@@ -96,7 +96,7 @@
             android:text="Average launched times: 123"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textColor="?attr/main_text_color"/>
 
         <TextView
@@ -108,7 +108,7 @@
             android:text="Played time per launch: 123"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textColor="?attr/main_text_color"/>
 
         <TextView
@@ -120,7 +120,7 @@
             android:text="Favorite song: Qweqwe"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textColor="?attr/main_text_color"/>
 
         <TextView
@@ -132,7 +132,7 @@
             android:text="The most unpopular song: Qweqwe"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textColor="?attr/main_text_color"/>
 
         <TextView
@@ -144,7 +144,7 @@
             android:text="Favorite artist: Qweqwe"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textColor="?attr/main_text_color"/>
 
         <TextView
@@ -156,7 +156,19 @@
             android:text="The most unpopular artist: Qweqwe"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:textSize="22sp"
+            android:textSize="20sp"
+            android:textColor="?attr/main_text_color"/>
+
+        <TextView
+            android:id="@+id/statsSinceTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:text="Stats since: 13 Apr 2022 21:09:59 GMT+03:00"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="20sp"
             android:textColor="?attr/main_text_color"/>
 
     </LinearLayout>
