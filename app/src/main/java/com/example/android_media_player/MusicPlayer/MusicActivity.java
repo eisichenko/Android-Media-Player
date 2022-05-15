@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
+import com.example.android_media_player.Helpers.MediaPlayerHelper;
 import com.example.android_media_player.Helpers.MediaStoreHelper;
 import com.example.android_media_player.Helpers.PathHelper;
 import com.example.android_media_player.MainActivity;
@@ -213,7 +214,7 @@ public class MusicActivity extends AppCompatActivity {
 
                 if (!wasPlaying) {
                     try {
-                        MusicActivity.mediaPlayer.reset();
+                        MediaPlayerHelper.resetMediaPlayer(MusicActivity.mediaPlayer);
 
                         if (currentSong != null){
                             MusicActivity.mediaPlayer.setDataSource(currentSong.getPath());
@@ -291,7 +292,8 @@ public class MusicActivity extends AppCompatActivity {
 
                 if (!wasPlaying) {
                     try {
-                        MusicActivity.mediaPlayer.reset();
+                        MediaPlayerHelper.resetMediaPlayer(MusicActivity.mediaPlayer);
+
                         if (currentSong != null) {
                             MusicActivity.mediaPlayer.setDataSource(currentSong.getPath());
                             MusicActivity.mediaPlayer.prepare();
@@ -816,7 +818,7 @@ public class MusicActivity extends AppCompatActivity {
             currentSong = prevSong;
 
             try {
-                MusicActivity.mediaPlayer.reset();
+                MediaPlayerHelper.resetMediaPlayer(MusicActivity.mediaPlayer);
                 MusicActivity.mediaPlayer.setDataSource(prevSong.getPath());
                 MusicActivity.mediaPlayer.prepare();
             } catch (Exception e) {
@@ -873,7 +875,7 @@ public class MusicActivity extends AppCompatActivity {
             playedSongs.push(currentSong);
 
             try {
-                MusicActivity.mediaPlayer.reset();
+                MediaPlayerHelper.resetMediaPlayer(MusicActivity.mediaPlayer);
                 MusicActivity.mediaPlayer.setDataSource(nextSong.getPath());
                 MusicActivity.mediaPlayer.prepare();
             } catch (Exception e) {
@@ -982,7 +984,7 @@ public class MusicActivity extends AppCompatActivity {
                 }
 
                 try {
-                    mediaPlayer.reset();
+                    MediaPlayerHelper.resetMediaPlayer(MusicActivity.mediaPlayer);
                     mediaPlayer.setDataSource(currentSong.getPath());
                     mediaPlayer.prepare();
                 } catch (Exception e) {

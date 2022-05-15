@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
+import com.example.android_media_player.Helpers.MediaPlayerHelper;
 import com.example.android_media_player.MusicPlayer.Models.Song;
 import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.R;
@@ -77,7 +78,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 MusicActivity.playedSongs.push(MusicActivity.currentSong);
                 MusicActivity.selectedPosition = getAdapterPosition();
                 try {
-                    MusicActivity.mediaPlayer.reset();
+                    MediaPlayerHelper.resetMediaPlayer(MusicActivity.mediaPlayer);
                     MusicActivity.mediaPlayer.setDataSource(MusicActivity.currentSong.getPath());
                     MusicActivity.mediaPlayer.prepare();
                 } catch (Exception e) {

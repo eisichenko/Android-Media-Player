@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.android_media_player.Helpers.DatabaseHelper;
+import com.example.android_media_player.Helpers.MediaPlayerHelper;
 import com.example.android_media_player.MusicPlayer.Models.Song;
 import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.R;
@@ -53,7 +54,7 @@ public class NextSongNotificationReceiver extends BroadcastReceiver {
         MusicActivity.playedSongs.push(MusicActivity.currentSong);
 
         try {
-            MusicActivity.mediaPlayer.reset();
+            MediaPlayerHelper.resetMediaPlayer(MusicActivity.mediaPlayer);
             MusicActivity.mediaPlayer.setDataSource(MusicActivity.currentSong.getPath());
             MusicActivity.mediaPlayer.prepare();
         } catch (Exception e) {
