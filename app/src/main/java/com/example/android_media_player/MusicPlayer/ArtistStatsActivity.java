@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.android_media_player.Helpers.ColorPickerHelper;
 import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.Helpers.MediaStoreHelper;
 import com.example.android_media_player.Helpers.StringHelper;
@@ -297,6 +298,8 @@ public class ArtistStatsActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_stats);
+
+        ColorPickerHelper.setActionBarColor(getSupportActionBar(), settings);
 
         setTitle(StringHelper.capitalize(lastColumnName));
 

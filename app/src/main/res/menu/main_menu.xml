@@ -14,6 +14,18 @@
         android:icon="@drawable/ic_stats"
         app:showAsAction="always" />
 
+    <item android:name="colorPickerItem"
+        android:title="Color Picker"
+        android:id="@+id/colorPickerItem"
+        android:icon="@drawable/ic_color_picker"
+        app:showAsAction="always" />
+
+    <item android:name="resetColorItem"
+        android:title="Reset Color"
+        android:id="@+id/resetColorItem"
+        android:icon="@drawable/ic_reset_color"
+        app:showAsAction="always" />
+
     <item android:name="aboutMenuItem"
         android:title="About"
         android:id="@+id/aboutMenuItem"

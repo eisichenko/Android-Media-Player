@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,12 +33,17 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.android_media_player.Helpers.ColorPickerHelper;
 import com.example.android_media_player.Helpers.LocalFolder;
 import com.example.android_media_player.Helpers.MediaStoreHelper;
 import com.example.android_media_player.Helpers.PathHelper;
 import com.example.android_media_player.MusicPlayer.AllStatisticsActivity;
 import com.example.android_media_player.MusicPlayer.MusicActivity;
 import com.example.android_media_player.VideoPlayer.VideoActivity;
+import com.skydoves.colorpickerview.ColorPickerDialog;
+import com.skydoves.colorpickerview.flag.BubbleFlag;
+import com.skydoves.colorpickerview.flag.FlagMode;
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,12 +77,14 @@ public class MainActivity extends AppCompatActivity {
     public static final String ARTIST_SORT_ORDER_CACHE_NAME = "artist_sort_order";
     public static final String SONG_SORT_LAST_COLUMN_CACHE_NAME = "song_last_column";
     public static final String ARTIST_SORT_LAST_COLUMN_CACHE_NAME = "artist_last_column";
+    public static final String COLOR_PICKER_LAST_COLOR_CACHE_NAME = "color_picker_last_color";
 
     public static final String channelName = "Media Player Channel";
     public static final String channelDescription = "Cool Media Player";
     public static final String CHANNEL_ID = "1";
 
     public static ThemeType currentTheme = ThemeType.DAY;
+    public static final String DEFAULT_APP_COLOR = "#FF0029F7";
 
     public ArrayList<LocalFolder> subfolders;
 
@@ -147,7 +156,33 @@ public class MainActivity extends AppCompatActivity {
         else if (itemId == R.id.statsMenuItem) {
             startActivity(new Intent(this, AllStatisticsActivity.class));
         }
+        else if (itemId == R.id.colorPickerItem) {
+            BubbleFlag bubbleFlag = new BubbleFlag(this);
+            bubbleFlag.setFlagMode(FlagMode.ALWAYS);
 
+            ColorPickerDialog.Builder builder = new ColorPickerDialog.Builder(this)
+                    .setTitle("Color Picker")
+                    .setPreferenceName(COLOR_PICKER_LAST_COLOR_CACHE_NAME)
+                    .setPositiveButton("Select",
+                            (ColorEnvelopeListener) (envelope, fromUser) -> {
+                                System.out.println("PICKED COLOR: #" + envelope.getHexCode());
+                                ((MainActivity) this).getSupportActionBar().setBackgroundDrawable(new ColorDrawable(envelope.getColor()));
+                                settings.edit().putString(COLOR_PICKER_LAST_COLOR_CACHE_NAME, "#" + envelope.getHexCode()).apply();
+                            })
+                    .setNegativeButton("Cancel",
+                            (dialogInterface, i) -> {
+                                dialogInterface.dismiss();
+                            })
+                    .attachAlphaSlideBar(false)
+                    .attachBrightnessSlideBar(true)
+                    .setBottomSpace(12);
+            builder.getColorPickerView().setFlagView(bubbleFlag);
+            builder.show();
+        }
+        else if (itemId == R.id.resetColorItem) {
+            ((MainActivity) this).getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(DEFAULT_APP_COLOR)));
+            settings.edit().remove(COLOR_PICKER_LAST_COLOR_CACHE_NAME).apply();
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -200,7 +235,6 @@ public class MainActivity extends AppCompatActivity {
         settings = getSharedPreferences(APP_PREFERENCES_NAME, Context.MODE_PRIVATE);
 
         String themeString = settings.getString(THEME_CACHE_NAME, null);
-
         String uriString = settings.getString(FOLDER_URI_CACHE_NAME, null);
 
         if (uriString != null) {
@@ -224,6 +258,8 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ColorPickerHelper.setActionBarColor(getSupportActionBar(), settings);
 
         createNotificationChannel();
 

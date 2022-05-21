@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.documentfile.provider.DocumentFile;
 
+import com.example.android_media_player.Helpers.ColorPickerHelper;
 import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.MainActivity;
 import com.example.android_media_player.MusicPlayer.Models.Artist;
@@ -159,6 +160,8 @@ public class AllStatisticsActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
+
+        ColorPickerHelper.setActionBarColor(getSupportActionBar(), settings);
 
         setTitle("Statistics");
 

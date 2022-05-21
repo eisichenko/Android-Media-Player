@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.android_media_player.Helpers.ColorPickerHelper;
 import com.example.android_media_player.Helpers.DatabaseHelper;
 import com.example.android_media_player.Helpers.MediaPlayerHelper;
 import com.example.android_media_player.Helpers.MediaStoreHelper;
@@ -600,6 +601,8 @@ public class MusicActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
 
+        ColorPickerHelper.setActionBarColor(getSupportActionBar(), settings);
+
         System.out.println("MUSIC CREATE");
 
         audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
@@ -608,17 +611,24 @@ public class MusicActivity extends AppCompatActivity {
 
         songNameTextView = findViewById(R.id.songNameTextView);
         nowPlayingTextView = findViewById(R.id.nowPlayingTextView);
-        prevSongImageView = findViewById(R.id.prevSongImageView);
         noneTextView = findViewById(R.id.noneTextView);
         hiddenTextView = findViewById(R.id.hiddenTextView);
         currentVolumeTextView = findViewById(R.id.currentVolumeTextView);
-        back5ImageView = findViewById(R.id.back5ImageView);
         playImageView = findViewById(R.id.playImageView);
-        forward5ImageView = findViewById(R.id.forward5ImageView);
+        prevSongImageView = findViewById(R.id.prevSongImageView);
         nextSongImageView = findViewById(R.id.nextSongImageView);
+        forward5ImageView = findViewById(R.id.forward5ImageView);
+        back5ImageView = findViewById(R.id.back5ImageView);
         currentTimeTextView = findViewById(R.id.currentTimeTextView);
         totalTimeTextView = findViewById(R.id.totalTimeTextView);
         musicSeekBar = findViewById(R.id.musicSeekBar);
+
+        ColorPickerHelper.setSeekBarColor(musicSeekBar, settings);
+
+        ColorPickerHelper.setImageViewColor(prevSongImageView, settings);
+        ColorPickerHelper.setImageViewColor(nextSongImageView, settings);
+        ColorPickerHelper.setImageViewColor(forward5ImageView, settings);
+        ColorPickerHelper.setImageViewColor(back5ImageView, settings);
 
         songsRecyclerView = findViewById(R.id.songsRecyclerView);
         songsRecyclerView.setFocusable(false);
