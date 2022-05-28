@@ -11,86 +11,84 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:background="?attr/main_background_color"
+        android:orientation="vertical"
         android:weightSum="100">
 
         <TextView
             android:id="@+id/currentVolumeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Volume: 50%"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:textSize="16sp"
             android:layout_marginBottom="0dp"
-            android:paddingBottom="0dp"
-            android:textColor="?attr/blurred_text_color"
             android:layout_weight="1"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:paddingBottom="0dp"
+            android:text="Volume: 50%"
+            android:textColor="?attr/blurred_text_color"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/nowPlayingTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Now playing:"
             android:layout_gravity="center"
-            android:textSize="22sp"
+            android:layout_weight="7"
+            android:gravity="center"
+            android:text="Now playing:"
             android:textColor="?attr/blurred_text_color"
-            android:layout_weight="10"
-            android:gravity="center"/>
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/songNameTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="middle"
-            android:singleLine="true"
-            android:paddingTop="5dp"
-            android:paddingBottom="10dp"
-            android:text="qwe"
-            android:freezesText="true"
             android:layout_gravity="center"
+            android:layout_weight="1"
             android:gravity="center"
-            android:textSize="22sp"
-            android:layout_weight="10"
-            android:textColor="?attr/main_text_color" />
+            android:paddingTop="5dp"
+            android:singleLine="true"
+            android:ellipsize="middle"
+            android:text="qwe"
+            android:textColor="?attr/main_text_color"
+            android:textSize="21sp" />
 
         <TextView
             android:id="@+id/noneTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:textSize="22sp"
-            android:visibility="gone"
-            android:textColor="#f00"
             android:layout_gravity="center"
-            android:text="No music"/>
+            android:layout_marginTop="40dp"
+            android:text="No music"
+            android:textColor="#f00"
+            android:textSize="22sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/hiddenTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textSize="22sp"
-            android:visibility="gone"
-            android:textColor="?attr/main_text_color"
             android:layout_gravity="center"
-            android:text="List was hidden"/>
+            android:layout_marginTop="10dp"
+            android:text="List was hidden"
+            android:textColor="?attr/main_text_color"
+            android:textSize="22sp"
+            android:visibility="gone" />
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_weight="80"
             android:layout_height="250dp"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="20dp"
+            android:layout_weight="86">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/songsRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
         </RelativeLayout>
 
@@ -103,35 +101,33 @@
                 android:id="@+id/currentTimeTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="?attr/main_text_color"
                 android:freezesText="true"
-                android:text="00:00"/>
+                android:text="00:00"
+                android:textColor="?attr/main_text_color" />
 
             <SeekBar
                 android:id="@+id/musicSeekBar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:thumbTint="#A210C6"
                 android:layout_weight="1"
-                />
+                android:thumbTint="#A210C6" />
 
             <TextView
                 android:id="@+id/totalTimeTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:freezesText="true"
-                android:textColor="?attr/main_text_color"
-                android:text="00:00"/>
+                android:text="00:00"
+                android:textColor="?attr/main_text_color" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:weightSum="5"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:weightSum="5">
 
             <ImageView
                 android:id="@+id/prevSongImageView"
